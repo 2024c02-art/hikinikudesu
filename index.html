@@ -19,12 +19,12 @@
       color: #0f172a; margin: 0; min-height: 100vh; overflow-x: hidden;
     }
     .pocket-glass {
-      background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(14px);
+      background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(14px);
       border: 1.5px solid rgba(255, 255, 255, 0.96); box-shadow: 0 10px 28px -6px rgba(15, 23, 42, 0.08);
     }
     .pk-card {
       position: relative; border-radius: 12px; overflow: hidden;
-      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
+      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease;
       box-shadow: 0 6px 14px rgba(15, 23, 42, 0.16), inset 0 0 0 1px rgba(255,255,255,0.65);
     }
     .pk-card:hover { transform: translateY(-4px) scale(1.04); z-index: 30; box-shadow: 0 14px 26px rgba(15, 23, 42, 0.24); }
@@ -53,10 +53,10 @@
     .card-bg-Dragon { background: linear-gradient(155deg, #fef3c7 0%, #fbbf24 45%, #b45309 100%); }
     .card-bg-Colorless { background: linear-gradient(155deg, #ffffff 0%, #f1f5f9 50%, #cbd5e1 100%); }
     .card-bg-Trainer { background: linear-gradient(155deg, #f0fdfa 0%, #ccfbf1 55%, #5eead4 100%); }
-    .card-bg-Energy { background: linear-gradient(155deg, #eff6ff 0%, #bfdbfe 50%, #60a5fa 100%); }
 
     .playable-glow { box-shadow: 0 0 0 3px #10b981, 0 0 18px rgba(16, 185, 129, 0.9) !important; animation: pulseMint 1.4s infinite; }
     .evolve-glow { box-shadow: 0 0 0 3px #0ea5e9, 0 0 18px rgba(14, 165, 233, 0.9) !important; animation: pulseSky 1.4s infinite; }
+    .drop-target-glow { box-shadow: 0 0 0 3.5px #f59e0b, 0 0 22px rgba(245, 158, 11, 0.95) !important; transform: scale(1.05); }
     @keyframes pulseMint { 0%,100% { box-shadow: 0 0 0 2.5px #10b981, 0 0 10px rgba(16,185,129,0.6); } 50% { box-shadow: 0 0 0 4.5px #34d399, 0 0 22px rgba(16,185,129,1); } }
     @keyframes pulseSky { 0%,100% { box-shadow: 0 0 0 2.5px #0ea5e9, 0 0 10px rgba(14,165,233,0.6); } 50% { box-shadow: 0 0 0 4.5px #38bdf8, 0 0 22px rgba(14,165,233,1); } }
 
@@ -71,15 +71,25 @@
     @keyframes packPop { 0% { opacity: 0; transform: translateY(26px) scale(0.75); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
     .anim-pack-pop { animation: packPop 0.38s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
 
+    /* 本家ポケポケ風ブライトスタジアム盤面 */
     .pocket-arena {
-      background: radial-gradient(ellipse at 50% 48%, rgba(56, 189, 248, 0.25) 0%, transparent 62%), radial-gradient(circle at 50% 0%, #e0f2fe 0%, #cbd5e1 45%, #94a3b8 100%);
+      background:
+        radial-gradient(ellipse at 50% 46%, rgba(56, 189, 248, 0.26) 0%, transparent 60%),
+        radial-gradient(circle at 50% 0%, #e0f2fe 0%, #dbeafe 45%, #cbd5e1 100%);
     }
-    .arena-mat {
-      background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(241,245,249,0.92) 50%, rgba(255,255,255,0.86) 100%);
-      border: 2px solid rgba(255, 255, 255, 0.96); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.12);
+    .pocket-mat {
+      background: linear-gradient(180deg, rgba(255,255,255,0.82) 0%, rgba(241,245,249,0.92) 50%, rgba(255,255,255,0.88) 100%);
+      border: 2px solid rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12), inset 0 0 24px rgba(186, 230, 253, 0.45);
     }
-    @keyframes lungeUp { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-42px) scale(1.14); z-index: 50; } }
-    @keyframes lungeDown { 0%,100% { transform: translateY(0); } 40% { transform: translateY(42px) scale(1.14); z-index: 50; } }
+    .pocket-card-back {
+      background: radial-gradient(circle at 50% 50%, #38bdf8 0%, #1d4ed8 55%, #0f172a 100%);
+      border: 2.5px solid #e0f2fe;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.25);
+    }
+
+    @keyframes lungeUp { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-44px) scale(1.14); z-index: 50; } }
+    @keyframes lungeDown { 0%,100% { transform: translateY(0); } 40% { transform: translateY(44px) scale(1.14); z-index: 50; } }
     .anim-lunge-up { animation: lungeUp 0.44s ease; }
     .anim-lunge-down { animation: lungeDown 0.44s ease; }
     @keyframes hitShake { 0%,100% { transform: translate(0,0); } 20% { transform: translate(-11px,5px) rotate(-3deg); filter: brightness(1.45); } 50% { transform: translate(11px,-5px) rotate(3deg); } 80% { transform: translate(-5px,3px); } }
@@ -92,6 +102,10 @@
     }
     @keyframes cutinSlide { 0% { opacity: 0; transform: translateX(-100%) skewX(-12deg); } 20%,80% { opacity: 1; transform: translateX(0) skewX(-12deg); } 100% { opacity: 0; transform: translateX(100%) skewX(-12deg); } }
     .cutin-banner { animation: cutinSlide 1.25s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+    @keyframes orbPulse { 0%,100% { transform: scale(1); box-shadow: 0 0 0 3px rgba(250,204,21,0.5), 0 8px 18px rgba(15,23,42,0.25); } 50% { transform: scale(1.08); box-shadow: 0 0 0 6px rgba(250,204,21,0.85), 0 12px 24px rgba(15,23,42,0.35); } }
+    .energy-orb-ready { animation: orbPulse 1.4s infinite ease-in-out; cursor: grab; }
+    .energy-orb-ready:active { cursor: grabbing; }
 
     .tilt-wrap { perspective: 900px; }
     .tilt-card { transform-style: preserve-3d; transition: transform 0.1s ease-out; }
@@ -110,7 +124,7 @@
           <h1 class="text-sm sm:text-base font-black text-slate-800">ポケポケDX <span class="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">〜超克の光〜</span></h1>
           <span id="header-rank-badge" class="hidden sm:inline-block px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 font-black text-[10px]">モンスター級 • 1000RP</span>
         </div>
-        <p class="text-[10px] text-slate-500 hidden md:block font-bold">全カード固有ベクターアート・全15拡張パック・オンラインレート戦＆友達対戦</p>
+        <p class="text-[10px] text-slate-500 hidden md:block font-bold">本家ポケポケ完全準拠（20枚デッキ・エネルギーゾーン・3ポイント先取）＆オンライン対戦</p>
       </div>
     </div>
 
@@ -142,16 +156,16 @@
           <div class="space-y-3 text-center lg:text-left flex-1">
             <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2">
               <span class="px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 text-[11px] font-black shadow-xs">
-                全カード固有SVG・全15拡張パック・10連開封・レート＆友達対戦
+                本家ポケポケ完全準拠ルール • 20枚デッキ・エネルギーゾーン・3PT先取
               </span>
               <span id="home-record-badge" class="px-3 py-1 rounded-full bg-sky-100 text-sky-800 text-[11px] font-extrabold">1000 RP • 0勝 / 0連勝</span>
             </div>
             <h2 class="text-2xl sm:text-4xl font-black text-slate-900 leading-tight">
-              世界中のライバルや友達と<br />
-              <span class="bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">本格60枚カードバトル！</span>
+              エネルギーゾーンから直感付与！<br />
+              <span class="bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">本家ポケポケそのままの爽快バトル！</span>
             </h2>
             <p class="text-xs sm:text-sm text-slate-600 max-w-xl leading-relaxed font-medium">
-              ヒトカゲ→リザード→リザードンex、ビッパ→ビーダル、イーブイ全進化形、伝説・幻ポケモンまで1枚ずつ固有ベクターアートで描き分け。マスターボール級を目指してオンライン対戦へ挑もう！
+              20枚デッキ（同名2枚まで）＆毎ターン発生するエネルギー玉をドラッグ＆タップで付与！通常撃破1pt・ex撃破2ptの3ポイント先取でテンポよく遊べます。
             </p>
             <div class="pt-2 flex flex-wrap justify-center lg:justify-start gap-2.5">
               <button onclick="app.switchScreen('pack')" class="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:brightness-110 text-white font-black text-xs sm:text-sm shadow-lg transition active:scale-95">
@@ -170,14 +184,18 @@
           </div>
 
           <!-- 使用中デッキカード -->
-          <div class="flex flex-col gap-3 bg-white/90 border border-white rounded-3xl p-4 shadow-md w-full lg:w-80 shrink-0">
+          <div class="flex flex-col gap-3 bg-white/95 border border-white rounded-3xl p-4 shadow-md w-full lg:w-80 shrink-0">
             <div class="flex items-center justify-between">
-              <span class="text-[11px] font-extrabold text-slate-500">使用中の60枚デッキ</span>
-              <span id="home-deck-valid" class="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-black">OK • 60枚</span>
+              <span class="text-[11px] font-extrabold text-slate-500">使用中の20枚デッキ</span>
+              <span id="home-deck-valid" class="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-black">OK • 20枚</span>
             </div>
             <select id="home-deck-selector" onchange="accountMgr.selectActiveDeck(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs sm:text-sm font-black text-slate-800"></select>
+            <div class="flex items-center justify-between text-[11px] bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200/80">
+              <span class="font-bold text-slate-500">発生エネルギー:</span>
+              <span id="home-deck-energies" class="flex items-center gap-1 font-black"></span>
+            </div>
             <div class="grid grid-cols-2 gap-2">
-              <button onclick="app.switchScreen('deck'); deckBuilder.setViewMode('build');" class="py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold">デッキ編成</button>
+              <button onclick="app.switchScreen('deck'); deckBuilder.setViewMode('build');" class="py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold">20枚デッキ編成</button>
               <button onclick="app.switchScreen('deck'); deckBuilder.setViewMode('dex');" class="py-2.5 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-800 text-xs font-extrabold">図鑑・生成</button>
             </div>
           </div>
@@ -189,30 +207,30 @@
         <button onclick="app.switchScreen('lobby'); onlineLobby.setTab('ranked');" class="pocket-glass hover:bg-white p-4 sm:p-5 rounded-3xl text-left transition transform hover:-translate-y-1">
           <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-rose-500 to-purple-600 text-white flex items-center justify-center font-black text-xs mb-2.5 shadow">RANK</div>
           <h3 class="font-black text-sm text-slate-800">オンラインレート戦</h3>
-          <p class="text-[11px] text-slate-500 mt-1">全国マッチングでRPを競いマスターボール級へ！</p>
+          <p class="text-[11px] text-slate-500 mt-1">3ポイント先取の真剣勝負でマスターボール級へ！</p>
         </button>
         <button onclick="app.switchScreen('lobby'); onlineLobby.setTab('friend');" class="pocket-glass hover:bg-white p-4 sm:p-5 rounded-3xl text-left transition transform hover:-translate-y-1">
           <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-black text-xs mb-2.5 shadow">P2P</div>
           <h3 class="font-black text-sm text-slate-800">友達とバトル</h3>
-          <p class="text-[11px] text-slate-500 mt-1">6桁の合言葉で友達とP2Pリアルタイム対戦。</p>
+          <p class="text-[11px] text-slate-500 mt-1">6桁の合言葉で友達とリアルタイム対戦。</p>
         </button>
         <button onclick="app.switchScreen('pack')" class="pocket-glass hover:bg-white p-4 sm:p-5 rounded-3xl text-left transition transform hover:-translate-y-1">
           <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 text-white flex items-center justify-center font-black text-xs mb-2.5 shadow">PACK</div>
           <h3 class="font-black text-sm text-slate-800">拡張パック (全15弾)</h3>
-          <p class="text-[11px] text-slate-500 mt-1">スワイプ開封＆10連一括開封（SR以上確定）。</p>
+          <p class="text-[11px] text-slate-500 mt-1">スワイプ切り裂き＆10連一括開封（SR以上確定）。</p>
         </button>
         <button onclick="accountMgr.openModal()" class="pocket-glass hover:bg-white p-4 sm:p-5 rounded-3xl text-left transition transform hover:-translate-y-1">
           <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center font-black text-xs mb-2.5 shadow">USER</div>
           <h3 class="font-black text-sm text-slate-800">アカウント＆セーブ</h3>
-          <p class="text-[11px] text-slate-500 mt-1">アカウント別に戦績・レート・所持カードを保存。</p>
+          <p class="text-[11px] text-slate-500 mt-1">アカウント別に戦績・レート・所持カードを独立保存。</p>
         </button>
       </div>
     </section>
 
-    <!-- ==================== 2. バトルロビー（レート戦・友達対戦・CPU） ==================== -->
+    <!-- ==================== 2. バトルロビー ==================== -->
     <section id="screen-lobby" class="hidden flex-1 flex flex-col items-center p-4 sm:p-6 max-w-4xl mx-auto w-full gap-5">
       <div class="text-center space-y-1">
-        <span class="px-3 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-[11px] font-black">BATTLE STADIUM LOBBY</span>
+        <span class="px-3 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-[11px] font-black">POCKET STADIUM LOBBY</span>
         <h2 class="text-2xl sm:text-3xl font-black text-slate-900">対戦モードを選択</h2>
       </div>
 
@@ -244,7 +262,7 @@
         </div>
 
         <div id="ranked-idle-box" class="text-center space-y-3 pt-2">
-          <p class="text-xs text-slate-600 font-bold">レートが近い対戦相手とリアルタイムP2Pマッチングを行います（待機5秒で同ランク帯のAIライバルとも即対戦可能）。</p>
+          <p class="text-xs text-slate-600 font-bold">20枚デッキ・3ポイント先取のランクマッチ！レートが近いプレイヤーとリアルタイム対戦します。</p>
           <button onclick="onlineLobby.startRankedMatch()" class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600 hover:brightness-110 text-white font-black text-base shadow-xl transition active:scale-95">
             レート戦マッチング開始！
           </button>
@@ -260,10 +278,9 @@
         </div>
       </div>
 
-      <!-- タブ2: 友達とバトル（合言葉P2P） -->
+      <!-- タブ2: 友達とバトル -->
       <div id="lobby-panel-friend" class="hidden w-full pocket-glass rounded-3xl p-6 space-y-5">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- ホスト側 -->
           <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
             <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">HOST • 部屋を作る</span>
             <h3 class="text-base font-black text-slate-900">合言葉を発行して友達を待つ</h3>
@@ -276,7 +293,6 @@
             </div>
           </div>
 
-          <!-- ゲスト側 -->
           <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
             <span class="px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 text-[10px] font-black">GUEST • 部屋に入る</span>
             <h3 class="text-base font-black text-slate-900">合言葉を入力して参加</h3>
@@ -290,17 +306,18 @@
 
       <!-- タブ3: CPU対戦 -->
       <div id="lobby-panel-cpu" class="hidden w-full pocket-glass rounded-3xl p-6 space-y-4">
-        <h3 class="text-lg font-black text-slate-900">CPUトレーニング対戦</h3>
+        <h3 class="text-lg font-black text-slate-900">ひとりであそぶ (CPUバトルトレーニング)</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="space-y-1.5">
-            <label class="text-xs font-extrabold text-slate-500">相手の使用デッキ (全8種)</label>
+            <label class="text-xs font-extrabold text-slate-500">相手の使用デッキ (20枚スターター全8種)</label>
             <select id="cpu-opp-deck" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-bold"></select>
           </div>
           <div class="space-y-1.5">
-            <label class="text-xs font-extrabold text-slate-500">CPU思考レベル</label>
+            <label class="text-xs font-extrabold text-slate-500">CPU難易度</label>
             <select id="cpu-difficulty" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-bold">
-              <option value="normal">スタンダード</option>
-              <option value="hard">マスターAI (特性・サポート積極活用)</option>
+              <option value="easy">初級 (ステップアップバトル)</option>
+              <option value="normal" selected>中級 (スタンダード)</option>
+              <option value="hard">上級 (エキスパートAI)</option>
             </select>
           </div>
         </div>
@@ -363,51 +380,58 @@
       </div>
     </section>
 
-    <!-- ==================== 4. デッキビルダー＆図鑑 ==================== -->
+    <!-- ==================== 4. 20枚デッキビルダー＆図鑑 ==================== -->
     <section id="screen-deck" class="hidden flex-1 flex flex-col p-3 sm:p-5 max-w-7xl mx-auto w-full gap-3">
       <div class="pocket-glass p-3.5 rounded-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-2">
           <select id="deck-slot-select" onchange="deckBuilder.switchSlot(this.value)" class="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-black text-slate-800"></select>
           <input id="deck-name-input" type="text" placeholder="デッキ名..." class="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 w-40" />
-          <span id="deck-count-badge" class="px-3 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800 font-black">60 / 60枚</span>
+          <span id="deck-count-badge" class="px-3 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800 font-black">20 / 20枚</span>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
           <button onclick="deckBuilder.createNewDeckSlot()" class="px-3 py-1.5 rounded-xl bg-indigo-100 hover:bg-indigo-200 text-indigo-800 text-xs font-extrabold">+ 新規スロット</button>
           <select id="preset-deck-select" onchange="deckBuilder.loadPreset(this.value)" class="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-sky-700">
-            <option value="">-- スターター読込 (全8種) --</option>
+            <option value="">-- 20枚スターター読込 (全8種) --</option>
           </select>
           <button onclick="deckBuilder.clearDeck()" class="px-2.5 py-1.5 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-extrabold">全解除</button>
           <button onclick="deckBuilder.saveDeck()" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs font-black shadow">デッキ保存</button>
         </div>
       </div>
 
+      <!-- 発生するエネルギータイプ設定バー（本家ポケポケ仕様：最大3タイプ） -->
+      <div class="pocket-glass p-3 rounded-2xl flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-black text-slate-800">発生するエネルギータイプ (1〜3タイプ選択):</span>
+          <span id="deck-selected-energies" class="flex items-center gap-1"></span>
+        </div>
+        <div id="energy-type-toggles" class="flex flex-wrap gap-1.5"></div>
+      </div>
+
       <div class="pocket-glass p-2.5 rounded-2xl flex flex-wrap gap-2 items-center">
         <div class="flex rounded-xl overflow-hidden border border-slate-200 bg-slate-100 p-0.5 mr-1">
-          <button id="tab-mode-build" onclick="deckBuilder.setViewMode('build')" class="px-3 py-1 rounded-lg bg-white text-slate-900 shadow-xs text-xs font-black">デッキ編成</button>
-          <button id="tab-mode-dex" onclick="deckBuilder.setViewMode('dex')" class="px-3 py-1 rounded-lg text-slate-600 text-xs font-black">図鑑・生成</button>
+          <button id="tab-mode-build" onclick="deckBuilder.setViewMode('build')" class="px-3 py-1 rounded-lg bg-white text-slate-900 shadow-xs text-xs font-black">デッキ編成 (同名2枚まで)</button>
+          <button id="tab-mode-dex" onclick="deckBuilder.setViewMode('dex')" class="px-3 py-1 rounded-lg text-slate-600 text-xs font-black">図鑑・ポイント交換</button>
         </div>
         <button onclick="deckBuilder.setFilter('ALL')" class="filter-btn px-3 py-1 rounded-xl bg-sky-600 text-white text-xs font-extrabold" data-filter="ALL">すべて</button>
         <button onclick="deckBuilder.setFilter('Pokemon')" class="filter-btn px-3 py-1 rounded-xl bg-white text-slate-700 border border-slate-200 text-xs font-bold" data-filter="Pokemon">ポケモン</button>
         <button onclick="deckBuilder.setFilter('Trainer')" class="filter-btn px-3 py-1 rounded-xl bg-white text-slate-700 border border-slate-200 text-xs font-bold" data-filter="Trainer">トレーナーズ</button>
-        <button onclick="deckBuilder.setFilter('Energy')" class="filter-btn px-3 py-1 rounded-xl bg-white text-slate-700 border border-slate-200 text-xs font-bold" data-filter="Energy">エネルギー</button>
         <input type="text" id="deck-search" oninput="deckBuilder.render()" placeholder="カード名・ワザ・特性検索..." class="ml-auto bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 w-full sm:w-52" />
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
-        <div class="lg:col-span-8 pocket-glass rounded-3xl p-3.5 overflow-y-auto max-h-[64vh]">
+        <div class="lg:col-span-8 pocket-glass rounded-3xl p-3.5 overflow-y-auto max-h-[60vh]">
           <div id="pool-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3"></div>
         </div>
-        <div class="lg:col-span-4 pocket-glass rounded-3xl p-3.5 flex flex-col max-h-[64vh]">
+        <div class="lg:col-span-4 pocket-glass rounded-3xl p-3.5 flex flex-col max-h-[60vh]">
           <div class="pb-2.5 border-b border-slate-200 space-y-1.5">
             <div class="flex justify-between items-center text-xs font-black text-slate-800">
-              <span>デッキ構成リスト</span>
-              <span id="deck-breakdown" class="text-slate-500 font-bold">ポケ:0 / トレ:0 / エネ:0</span>
+              <span>20枚デッキリスト</span>
+              <span id="deck-breakdown" class="text-slate-500 font-bold">ポケモン:0 / トレーナーズ:0</span>
             </div>
             <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden flex">
-              <div id="bar-poke" class="bg-rose-500 h-full" style="width: 33%"></div>
-              <div id="bar-train" class="bg-sky-500 h-full" style="width: 33%"></div>
-              <div id="bar-ene" class="bg-amber-400 h-full" style="width: 34%"></div>
+              <div id="bar-poke" class="bg-rose-500 h-full" style="width: 50%"></div>
+              <div id="bar-train" class="bg-sky-500 h-full" style="width: 50%"></div>
             </div>
           </div>
           <div id="current-deck-list" class="flex-1 overflow-y-auto divide-y divide-slate-200/70 my-2 pr-1"></div>
@@ -415,10 +439,11 @@
       </div>
     </section>
 
-    <!-- ==================== 5. バトルアリーナ画面 ==================== -->
+    <!-- ==================== 5. 本家ポケポケ準拠バトルアリーナ画面 ==================== -->
     <section id="screen-battle" class="hidden flex-1 flex flex-col pocket-arena relative overflow-hidden">
       <canvas id="battle-vfx-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-40"></canvas>
 
+      <!-- カットインバナー -->
       <div id="battle-cutin-layer" class="hidden absolute inset-x-0 top-1/3 z-50 pointer-events-none flex justify-center">
         <div class="cutin-banner px-8 py-3 bg-gradient-to-r from-slate-950 via-indigo-900 to-slate-950 border-y-2 border-amber-400 text-white shadow-2xl">
           <div id="battle-cutin-sub" class="text-[11px] font-black text-amber-300 tracking-widest uppercase">ACTION</div>
@@ -429,11 +454,12 @@
       <!-- 対戦スタンプポップアップ -->
       <div id="battle-emote-bubble" class="hidden absolute top-14 right-4 z-50 px-4 py-2 rounded-2xl bg-slate-900 text-white font-black text-xs shadow-xl border border-amber-300"></div>
 
+      <!-- 上部ヘッダーバー -->
       <div class="bg-white/92 backdrop-blur-md border-b border-slate-200 px-3 py-1.5 flex items-center justify-between text-xs z-20 gap-2">
         <div class="flex items-center gap-2 overflow-x-auto">
           <span id="battle-mode-badge" class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-black shrink-0">CPU戦</span>
           <span id="battle-turn-badge" class="px-3 py-0.5 rounded-full bg-sky-100 border border-sky-300 text-sky-800 font-black shrink-0">ターン 1</span>
-          <span id="battle-stadium-badge" class="px-3 py-0.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 font-extrabold cursor-pointer shrink-0" onclick="battle.inspectStadium()">スタジアム: なし</span>
+          <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-black shrink-0">3ポイント先取</span>
         </div>
         <div class="flex items-center gap-1.5 shrink-0">
           <button onclick="battle.sendEmote('よろしく！')" class="px-2 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 font-black text-[11px]">挨拶</button>
@@ -443,74 +469,119 @@
         </div>
       </div>
 
-      <div id="battle-arena-body" class="flex-1 flex flex-col justify-between p-2 sm:p-3 max-w-6xl mx-auto w-full gap-1.5 relative">
-        <!-- 相手フィールド -->
-        <div class="flex flex-col gap-1.5 arena-mat p-2 rounded-3xl">
-          <div class="flex flex-wrap items-center justify-between px-2 gap-1">
+      <!-- メインスタジアム盤面 -->
+      <div id="battle-arena-body" class="flex-1 flex flex-col justify-between p-1.5 sm:p-2.5 max-w-5xl mx-auto w-full gap-1 relative">
+
+        <!-- 相手側エリア（上段） -->
+        <div class="pocket-mat rounded-3xl p-2 flex flex-col gap-1.5 relative">
+          <div class="flex items-center justify-between px-2">
             <div class="flex items-center gap-2">
               <span class="text-xs font-black text-rose-600" id="opp-name">対戦相手</span>
-              <span class="text-[11px] bg-slate-200/80 px-2 py-0.5 rounded-full font-bold">手札: <b id="opp-hand-count">7</b></span>
-              <span class="text-[11px] bg-slate-200/80 px-2 py-0.5 rounded-full font-bold">山札: <b id="opp-deck-count">46</b></span>
+              <span class="text-[11px] bg-slate-200/80 px-2 py-0.5 rounded-full font-bold">手札: <b id="opp-hand-count">5</b></span>
             </div>
-            <div class="flex items-center gap-1">
-              <span class="text-[11px] text-slate-500 font-bold mr-1">相手サイド:</span>
-              <div id="opp-prizes" class="flex gap-1"></div>
+            <!-- 相手獲得ポイントゲージ（●●○ 3ポイント） -->
+            <div class="flex items-center gap-1.5 bg-white/90 border border-rose-200 px-3 py-1 rounded-full shadow-xs">
+              <span class="text-[10px] font-black text-rose-700">相手PT</span>
+              <div id="opp-points-dots" class="flex gap-1.5"></div>
             </div>
           </div>
-          <div class="grid grid-cols-12 gap-2 items-center">
-            <div class="col-span-8 sm:col-span-9 flex items-center justify-center gap-1.5 overflow-x-auto py-1" id="opp-bench"></div>
-            <div class="col-span-4 sm:col-span-3 flex justify-center relative" id="opp-active"></div>
+
+          <div class="grid grid-cols-12 gap-1.5 items-center">
+            <!-- 左：相手ベンチ（最大3枠） -->
+            <div class="col-span-7 sm:col-span-7 flex items-center justify-center gap-1.5" id="opp-bench"></div>
+            <!-- 中央：相手バトル場（1枠） -->
+            <div class="col-span-3 sm:col-span-3 flex justify-center relative" id="opp-active"></div>
+            <!-- 右端：相手山札・トラッシュ -->
+            <div class="col-span-2 sm:col-span-2 flex flex-col items-center justify-center gap-1 text-[10px] font-black text-slate-600">
+              <div class="pocket-card-back w-11 h-14 rounded-lg flex flex-col items-center justify-center text-white shadow">
+                <span class="text-[8px] opacity-80">山札</span>
+                <span id="opp-deck-count" class="text-xs font-black">15</span>
+              </div>
+              <button onclick="battle.inspectDiscard('opp')" class="px-2 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-[9px]">トラッシュ <span id="opp-discard-count">0</span></button>
+            </div>
           </div>
         </div>
 
-        <!-- 中央ガイド -->
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-2 z-20">
-          <div id="battle-banner" class="text-center py-1.5 px-4 rounded-full bg-white/95 border border-sky-300 text-xs sm:text-sm font-extrabold text-slate-800 shadow max-w-full truncate">
-            手札の緑枠カードを使うか、バトル場をタップしてワザを使おう！
+        <!-- 中央ガイド＆セットアップ完了ボタン -->
+        <div class="flex flex-wrap items-center justify-center gap-2 z-20 my-0.5">
+          <div id="battle-banner" class="text-center py-1.5 px-4 rounded-full bg-white/95 border-2 border-sky-300 text-xs sm:text-sm font-black text-slate-800 shadow max-w-full truncate">
+            初期配置：バトル場とベンチにポケモンを置いて「バトル開始！」を押そう！
           </div>
+          <button id="btn-setup-ready" onclick="battle.confirmSetup()" class="px-5 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs sm:text-sm font-black shadow-lg animate-bounce">
+            バトル開始！（オープン）
+          </button>
           <button id="quick-attack-btn" onclick="battle.inspectFieldPokemon('player', 'active', 0)" class="hidden px-4 py-1.5 rounded-full bg-gradient-to-r from-rose-500 to-orange-500 text-white text-xs font-black shadow-lg animate-bounce shrink-0">
-            ワザを使う！
+            ワザを選ぶ！
           </button>
         </div>
 
-        <!-- 自分フィールド -->
-        <div class="flex flex-col gap-1.5 arena-mat p-2 rounded-3xl">
-          <div class="grid grid-cols-12 gap-2 items-center">
+        <!-- 自分側エリア（下段） -->
+        <div class="pocket-mat rounded-3xl p-2 flex flex-col gap-1.5 relative">
+          <div class="grid grid-cols-12 gap-1.5 items-center">
+            <!-- 左：自分バトル場（1枠） -->
             <div class="col-span-4 sm:col-span-3 flex justify-center relative" id="player-active"></div>
-            <div class="col-span-8 sm:col-span-9 flex items-center justify-center gap-1.5 overflow-x-auto py-1" id="player-bench"></div>
-          </div>
-          <div class="flex flex-wrap items-center justify-between px-2 gap-2 pt-1 border-t border-slate-200/80">
-            <div class="flex items-center gap-1">
-              <span class="text-[11px] text-sky-700 font-black mr-1">あなたサイド:</span>
-              <div id="player-prizes" class="flex gap-1"></div>
+            <!-- 中央：自分ベンチ（最大3枠） -->
+            <div class="col-span-6 sm:col-span-6 flex items-center justify-center gap-1.5" id="player-bench"></div>
+            <!-- 右端：本家ポケポケ「エネルギーゾーン」＋山札・トラッシュ -->
+            <div class="col-span-2 sm:col-span-3 flex flex-col items-center justify-center gap-1.5">
+              <!-- エネルギーゾーン -->
+              <div id="energy-zone-box" class="bg-gradient-to-b from-slate-900 to-indigo-950 border-2 border-sky-300 rounded-2xl p-1.5 sm:p-2 flex flex-col items-center shadow-lg w-full max-w-[116px]">
+                <div class="text-[8px] sm:text-[9px] font-black text-sky-200 tracking-tight">ENERGY ZONE</div>
+                <div class="flex items-center justify-center gap-1.5 my-1">
+                  <!-- 今ターンのエネルギー玉（タップ＆ドラッグ可能） -->
+                  <div id="current-energy-orb" draggable="true" onclick="battle.clickEnergyOrb()" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center border-2 border-white bg-slate-700 text-white font-black text-xs transition">
+                    --
+                  </div>
+                  <!-- 次ターンの予告エネルギー -->
+                  <div class="flex flex-col items-center">
+                    <span class="text-[7px] text-slate-300 font-bold">NEXT</span>
+                    <div id="next-energy-orb" class="w-5 h-5 rounded-full border border-white/70 flex items-center justify-center text-[8px] font-black bg-slate-800 text-white">?</div>
+                  </div>
+                </div>
+                <div id="energy-zone-hint" class="text-[8px] font-bold text-amber-300 text-center leading-tight">ドラッグorタップ</div>
+              </div>
+
+              <!-- 山札＆トラッシュ -->
+              <div class="flex items-center gap-1.5 text-[9px] font-black text-slate-700">
+                <div class="px-2 py-0.5 rounded bg-blue-900 text-white">山札 <span id="player-deck-count">15</span></div>
+                <button onclick="battle.inspectDiscard('player')" class="px-2 py-0.5 rounded bg-slate-200 hover:bg-slate-300">トラッシュ <span id="player-discard-count">0</span></button>
+              </div>
             </div>
-            <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-bold">
-              <span id="flag-vstar" class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-black">VSTAR: 可</span>
-              <span id="flag-energy" class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">エネ: 可</span>
-              <span id="flag-supporter" class="px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-300">サポート: 可</span>
-              <button onclick="battle.inspectDiscard('player')" class="px-2 py-0.5 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700">トラッシュ (<span id="player-discard-count">0</span>)</button>
-              <span class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">山札 (<span id="player-deck-count">46</span>)</span>
+          </div>
+
+          <!-- 自分側ステータス＆獲得ポイントバー -->
+          <div class="flex flex-wrap items-center justify-between px-2 gap-2 pt-1 border-t border-slate-200/80">
+            <!-- 自分獲得ポイントゲージ（●●○ 3ポイント） -->
+            <div class="flex items-center gap-1.5 bg-white/95 border border-sky-300 px-3 py-1 rounded-full shadow-xs">
+              <span class="text-[10px] font-black text-sky-700">あなたPT</span>
+              <div id="player-points-dots" class="flex gap-1.5"></div>
+            </div>
+
+            <div class="flex items-center gap-1.5 text-[11px] font-bold">
+              <span id="flag-energy-zone" class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-black">エネ発生: 未付与</span>
+              <span id="flag-supporter" class="px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-300">サポート: 可</span>
             </div>
           </div>
         </div>
 
-        <!-- 手札エリア -->
+        <!-- 手札エリア（最下部） -->
         <div class="bg-white/95 backdrop-blur-md border-t border-slate-200 p-2 rounded-t-3xl flex flex-col gap-1.5 shadow-lg">
           <div class="flex items-center justify-between px-2">
             <div class="flex items-center gap-2">
-              <span class="text-xs font-extrabold text-slate-700">手札 (<span id="player-hand-count">7</span>枚)</span>
+              <span class="text-xs font-extrabold text-slate-700">手札 (<span id="player-hand-count">5</span>枚)</span>
               <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">緑枠: 使用可</span>
               <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 font-bold hidden sm:inline">青枠: 進化可</span>
             </div>
             <div class="flex gap-2">
-              <button onclick="battle.initiateRetreat()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-extrabold text-slate-700">にげる</button>
-              <button onclick="battle.endTurn()" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-black text-xs shadow">ターン終了</button>
+              <button id="btn-retreat" onclick="battle.initiateRetreat()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-extrabold text-slate-700">にげる</button>
+              <button id="btn-end-turn" onclick="battle.endTurn()" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-black text-xs shadow">ターン終了</button>
             </div>
           </div>
-          <div id="player-hand" class="flex items-center gap-2 overflow-x-auto pb-1 min-h-[144px] px-1"></div>
+          <div id="player-hand" class="flex items-center gap-2 overflow-x-auto pb-1 min-h-[140px] px-1"></div>
         </div>
       </div>
 
+      <!-- バトルログドロワー -->
       <div id="battle-log-drawer" class="hidden absolute right-3 top-12 w-72 sm:w-80 max-h-80 pocket-glass rounded-2xl p-3.5 z-30 shadow-2xl flex flex-col">
         <div class="flex justify-between items-center pb-2 border-b border-slate-200">
           <span class="text-xs font-black text-slate-800">バトルログ</span>
@@ -528,7 +599,7 @@
       <div class="flex justify-between items-center border-b border-slate-200 pb-3">
         <div>
           <h3 class="text-lg font-black text-slate-900">マルチアカウント＆セーブ管理</h3>
-          <p class="text-[11px] text-emerald-600 font-bold">アカウントごとにレート・所持カード・デッキを独立保存</p>
+          <p class="text-[11px] text-emerald-600 font-bold">アカウントごとにレート・所持カード・20枚デッキを独立保存</p>
         </div>
         <button onclick="accountMgr.closeModal()" class="w-8 h-8 rounded-full bg-slate-100 font-bold">✕</button>
       </div>
@@ -572,7 +643,7 @@
     </div>
   </div>
 
-  <!-- 3Dチルト対応カード詳細モーダル -->
+  <!-- 3Dチルト対応カード詳細＆ワザ発動モーダル -->
   <div id="modal-card-detail" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this) ui.closeCardModal()">
     <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-5 shadow-2xl flex flex-col gap-4">
       <div id="modal-card-body" class="tilt-wrap"></div>
@@ -596,7 +667,7 @@
     <div class="bg-white border-2 border-amber-400 rounded-3xl max-w-md w-full p-7 text-center shadow-2xl space-y-4">
       <div id="result-badge" class="w-16 h-16 mx-auto rounded-full bg-amber-100 border-2 border-amber-400 flex items-center justify-center font-black text-xl text-amber-600">WIN</div>
       <h2 id="result-title" class="text-3xl font-black text-amber-500">VICTORY!</h2>
-      <p id="result-reason" class="text-sm text-slate-600 font-bold">サイドを6枚取り切りました！</p>
+      <p id="result-reason" class="text-sm text-slate-600 font-bold">3ポイント先取しました！</p>
       <div id="result-reward-box" class="bg-amber-50 rounded-2xl p-3 border border-amber-200 text-xs text-amber-800 font-extrabold">報酬獲得</div>
       <button onclick="app.finishBattleResult()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-black text-base shadow-lg">ホームへ戻る</button>
     </div>
@@ -641,6 +712,7 @@
     };
 
     /* ==================== 2. 全カード固有ベクターSVGアート ==================== */
+    const ENERGY_TYPES = ['Grass', 'Fire', 'Water', 'Lightning', 'Psychic', 'Fighting', 'Darkness', 'Metal'];
     const TYPE_META = {
       Grass:     { code: '草', c1: '#4ade80', c2: '#15803d', glow: '#86efac' },
       Fire:      { code: '炎', c1: '#fb923c', c2: '#b91c1c', glow: '#fca5a5' },
@@ -652,8 +724,7 @@
       Metal:     { code: '鋼', c1: '#e2e8f0', c2: '#475569', glow: '#f8fafc' },
       Dragon:    { code: '竜', c1: '#fbbf24', c2: '#78350f', glow: '#fde68a' },
       Colorless: { code: '無', c1: '#f8fafc', c2: '#64748b', glow: '#ffffff' },
-      Trainer:   { code: 'TR', c1: '#2dd4bf', c2: '#0f766e', glow: '#99f6e4' },
-      Energy:    { code: 'EN', c1: '#60a5fa', c2: '#1e40af', glow: '#93c5fd' }
+      Trainer:   { code: 'TR', c1: '#2dd4bf', c2: '#0f766e', glow: '#99f6e4' }
     };
     const RARITY_STARS = { C: '◆', U: '◆◆', R: '◆◆◆', RR: '◆◆◆◆', SR: '★', SAR: '★★', UR: '★★★' };
 
@@ -677,7 +748,7 @@
       c_bidoof: `<g transform="translate(80,58)"><circle cx="24" cy="14" r="9" fill="#78350f"/><circle cx="31" cy="8" r="8" fill="#92400e"/><ellipse cx="2" cy="12" rx="24" ry="18" fill="#a16207" stroke="#451a03" stroke-width="1.5"/><circle cx="-22" cy="-6" r="5" fill="#451a03"/><circle cx="-4" cy="-8" r="5" fill="#451a03"/><circle cx="-13" cy="2" r="14" fill="#a16207" stroke="#451a03" stroke-width="1.5"/><circle cx="-19" cy="-1" r="2.8" fill="#0f172a"/><circle cx="-8" cy="-1" r="2.8" fill="#0f172a"/><rect x="-18" y="8" width="4.5" height="6" rx="1" fill="#fff" stroke="#451a03"/><rect x="-13" y="8" width="4.5" height="6" rx="1" fill="#fff" stroke="#451a03"/></g>`,
       c_bibarel: `<g transform="translate(80,58)"><ellipse cx="28" cy="14" rx="18" ry="10" transform="rotate(-18 28 14)" fill="#334155" stroke="#0f172a" stroke-width="1.5"/><line x1="16" y1="16" x2="40" y2="10" stroke="#64748b" stroke-width="1.2"/><ellipse cx="-2" cy="10" rx="22" ry="22" fill="#92400e" stroke="#451a03" stroke-width="1.5"/><ellipse cx="-6" cy="14" rx="14" ry="15" fill="#fef3c7"/><circle cx="-7" cy="-8" r="14" fill="#92400e" stroke="#451a03" stroke-width="1.5"/><rect x="-11" y="0" width="4" height="5.5" rx="1" fill="#fff" stroke="#451a03"/><rect x="-7" y="0" width="4" height="5.5" rx="1" fill="#fff" stroke="#451a03"/></g>`,
       c_eevee: `<g transform="translate(80,58)"><ellipse cx="-10" cy="-24" rx="5" ry="16" transform="rotate(-18 -10 -24)" fill="#b45309"/><ellipse cx="10" cy="-24" rx="5" ry="16" transform="rotate(18 10 -24)" fill="#b45309"/><ellipse cx="0" cy="8" rx="18" ry="10" fill="#fef3c7"/><ellipse cx="0" cy="18" rx="14" ry="14" fill="#b45309"/><circle cx="0" cy="-8" r="12" fill="#b45309"/></g>`,
-      c_sylveon_ex: `<g transform="translate(80,58)"><path d="M-12,-4 Q-38,-14 -44,8 Q-34,18 -24,6 M12,-4 Q38,-14 44,8 Q-34,18 24,6" fill="none" stroke="#f472b6" stroke-width="3.5" stroke-linecap="round"/><ellipse cx="-10" cy="-26" rx="5" ry="18" transform="rotate(-16 -10 -26)" fill="#fbcfe8" stroke="#db2777" stroke-width="1.4"/><ellipse cx="10" cy="-26" rx="5" ry="18" transform="rotate(16 10 -26)" fill="#fbcfe8" stroke="#db2777" stroke-width="1.4"/><ellipse cx="0" cy="14" rx="14" ry="16" fill="#fff" stroke="#f472b6" stroke-width="1.5"/><circle cx="0" cy="-8" r="12" fill="#fff" stroke="#f472b6" stroke-width="1.5"/><polygon points="0,2 -9,-3 -9,7" fill="#f472b6"/><polygon points="0,2 9,-3 9,7" fill="#f472b6"/></g>`,
+      c_sylveon_ex: `<g transform="translate(80,58)"><path d="M-12,-4 Q-38,-14 -44,8 Q-34,18 -24,6 M12,-4 Q38,-14 44,8 Q34,18 24,6" fill="none" stroke="#f472b6" stroke-width="3.5" stroke-linecap="round"/><ellipse cx="-10" cy="-26" rx="5" ry="18" transform="rotate(-16 -10 -26)" fill="#fbcfe8" stroke="#db2777" stroke-width="1.4"/><ellipse cx="10" cy="-26" rx="5" ry="18" transform="rotate(16 10 -26)" fill="#fbcfe8" stroke="#db2777" stroke-width="1.4"/><ellipse cx="0" cy="14" rx="14" ry="16" fill="#fff" stroke="#f472b6" stroke-width="1.5"/><circle cx="0" cy="-8" r="12" fill="#fff" stroke="#f472b6" stroke-width="1.5"/><polygon points="0,2 -9,-3 -9,7" fill="#f472b6"/><polygon points="0,2 9,-3 9,7" fill="#f472b6"/></g>`,
       c_umbreon_vmax: `<g transform="translate(80,58)"><ellipse cx="-11" cy="-26" rx="4.5" ry="18" transform="rotate(-15 -11 -26)" fill="#0f172a" stroke="#facc15" stroke-width="1.5"/><ellipse cx="11" cy="-26" rx="4.5" ry="18" transform="rotate(15 11 -26)" fill="#0f172a" stroke="#facc15" stroke-width="1.5"/><ellipse cx="0" cy="14" rx="15" ry="17" fill="#0f172a"/><circle cx="0" cy="-8" r="12" fill="#0f172a"/><circle cx="0" cy="-13" r="4" fill="none" stroke="#facc15" stroke-width="2"/><ellipse cx="-5" cy="-7" rx="2.5" ry="1.8" fill="#ef4444"/><ellipse cx="5" cy="-7" rx="2.5" ry="1.8" fill="#ef4444"/></g>`,
       c_espeon_ex: `<g transform="translate(80,58)"><polygon points="-10,-16 -24,-34 -4,-20" fill="#e879f9"/><polygon points="10,-16 24,-34 4,-20" fill="#e879f9"/><ellipse cx="0" cy="14" rx="14" ry="16" fill="#f0abfc"/><circle cx="0" cy="-8" r="12" fill="#f0abfc"/><circle cx="0" cy="-11" r="3" fill="#ef4444"/></g>`,
       c_ralts: `<g transform="translate(80,58)"><path d="M-12,32 L-7,4 L7,4 L12,32 Z" fill="#fff" stroke="#94a3b8" stroke-width="1.5"/><path d="M-15,-4 A15,15 0 0,1 15,-4 Z" fill="#4ade80" stroke="#15803d" stroke-width="1.5"/><polygon points="0,-16 -3,-26 3,-26" fill="#f43f5e"/></g>`,
@@ -714,12 +785,10 @@
       const m = TYPE_META[card.type] || TYPE_META.Colorless;
       let subject = UNIQUE_ART[card.id] || '';
       if (!subject) {
-        if (card.category === 'Trainer') {
-          if (card.subType === 'Supporter') subject = `<g transform="translate(80,58)"><rect x="-32" y="-34" width="64" height="68" rx="14" fill="rgba(255,255,255,0.4)" stroke="#fff" stroke-width="1.5"/><circle cx="0" cy="-15" r="12" fill="#fde68a"/><path d="M-20,32 C-20,10 -10,0 0,0 C10,0 20,10 20,32 Z" fill="${m.c1}" stroke="#fff" stroke-width="2"/></g>`;
-          else if (card.subType === 'Stadium') subject = `<g transform="translate(80,58)"><ellipse cx="0" cy="16" rx="46" ry="15" fill="${m.c2}" stroke="#fff" stroke-width="2"/><ellipse cx="0" cy="12" rx="36" ry="10" fill="${m.c1}"/><rect x="-34" y="-12" width="8" height="24" fill="#fff"/><rect x="26" y="-12" width="8" height="24" fill="#fff"/></g>`;
-          else subject = `<g transform="translate(80,56)"><polygon points="0,-28 24,-14 24,14 0,28 -24,14 -24,-14" fill="${m.c1}" stroke="#fff" stroke-width="2.5"/><circle cx="0" cy="0" r="10" fill="#fff"/></g>`;
+        if (card.subType === 'Supporter') {
+          subject = `<g transform="translate(80,58)"><rect x="-32" y="-34" width="64" height="68" rx="14" fill="rgba(255,255,255,0.4)" stroke="#fff" stroke-width="1.5"/><circle cx="0" cy="-15" r="12" fill="#fde68a"/><path d="M-20,32 C-20,10 -10,0 0,0 C10,0 20,10 20,32 Z" fill="${m.c1}" stroke="#fff" stroke-width="2"/></g>`;
         } else {
-          subject = `<g transform="translate(80,56)"><circle cx="0" cy="0" r="30" fill="${m.c1}" stroke="#fff" stroke-width="3"/><text x="0" y="9" text-anchor="middle" font-size="24" font-weight="900" fill="#fff">${m.code}</text></g>`;
+          subject = `<g transform="translate(80,56)"><polygon points="0,-28 24,-14 24,14 0,28 -24,14 -24,-14" fill="${m.c1}" stroke="#fff" stroke-width="2.5"/><circle cx="0" cy="0" r="10" fill="#fff"/></g>`;
         }
       }
       return `<svg viewBox="0 0 160 112" class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><circle cx="80" cy="56" r="42" fill="${m.glow}" opacity="0.45"/><circle cx="80" cy="56" r="32" fill="none" stroke="#fff" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.75"/>${subject}</svg>`;
@@ -727,7 +796,7 @@
 
     /* ==================== 3. 全15種類の拡張パック ==================== */
     const PACKS = [
-      { id: 'triumphant', series: 'pocket', name: '超克の光', sub: 'アルセウスex / ギラティナVSTAR', artCard: 'c_arceus_ex', type: 'Colorless', grad: 'from-indigo-900 via-purple-900 to-amber-700', accent: 'bg-amber-400 text-slate-950' },
+      { id: 'triumphant', series: 'pocket', name: '超克の光', sub: 'アルセウスex / ギラティナex', artCard: 'c_arceus_ex', type: 'Colorless', grad: 'from-indigo-900 via-purple-900 to-amber-700', accent: 'bg-amber-400 text-slate-950' },
       { id: 'genetic_charizard', series: 'pocket', name: '最強の遺伝子 リザードン', sub: 'リザードンex / ファイヤーex', artCard: 'c_charizard_ex', type: 'Fire', grad: 'from-rose-900 via-red-800 to-orange-700', accent: 'bg-amber-300 text-slate-950' },
       { id: 'genetic_mewtwo', series: 'pocket', name: '最強の遺伝子 ミュウツー', sub: 'ミュウツーex / サーナイトex', artCard: 'c_mewtwo_ex', type: 'Psychic', grad: 'from-purple-950 via-fuchsia-900 to-indigo-800', accent: 'bg-fuchsia-300 text-slate-950' },
       { id: 'genetic_pikachu', series: 'pocket', name: '最強の遺伝子 ピカチュウ', sub: 'ピカチュウex / サンダーex', artCard: 'c_pikachu_ex', type: 'Lightning', grad: 'from-amber-700 via-yellow-600 to-orange-700', accent: 'bg-yellow-300 text-slate-950' },
@@ -736,132 +805,191 @@
       { id: 'spacetime_palkia', series: 'pocket', name: '時空の激闘 パルキア', sub: 'パルキアex / ゲッコウガex', artCard: 'c_palkia_ex', type: 'Water', grad: 'from-blue-950 via-indigo-900 to-pink-800', accent: 'bg-pink-300 text-slate-950' },
       { id: 'shining_high', series: 'sv', name: 'シャイニングハイ', sub: '色違いレックウザex / ナンジャモ', artCard: 'c_shiny_rayquaza', type: 'Darkness', grad: 'from-slate-950 via-zinc-800 to-amber-700', accent: 'bg-amber-300 text-slate-950' },
       { id: 'celestial_guardians', series: 'sv', name: '双天の守護者', sub: 'ソルガレオex / ルナアーラex', artCard: 'c_solgaleo_ex', type: 'Psychic', grad: 'from-orange-800 via-indigo-950 to-violet-900', accent: 'bg-amber-300 text-slate-950' },
-      { id: 'obsidian_flames', series: 'sv', name: '黒炎の支配者', sub: '悪リザードンex / バンギラス', artCard: 'c_dark_charizard_ex', type: 'Darkness', grad: 'from-neutral-950 via-red-950 to-amber-800', accent: 'bg-rose-400 text-slate-950' },
-      { id: 'blue_sky_stream', series: 'swsh', name: '蒼空ストリーム', sub: 'レックウザVMAX / カイリューV', artCard: 'c_rayquaza_vmax', type: 'Dragon', grad: 'from-emerald-950 via-sky-900 to-amber-700', accent: 'bg-emerald-300 text-slate-950' },
-      { id: 'jet_black_spirit', series: 'swsh', name: '漆黒のガイスト', sub: 'こくばバドレックスVMAX', artCard: 'c_calyrex_shadow', type: 'Psychic', grad: 'from-indigo-950 via-slate-900 to-purple-900', accent: 'bg-purple-300 text-slate-950' },
-      { id: 'eevee_heroes', series: 'swsh', name: 'イーブイヒーローズ', sub: 'ブラッキーVMAX / ニンフィアex', artCard: 'c_umbreon_vmax', type: 'Darkness', grad: 'from-pink-900 via-purple-900 to-amber-800', accent: 'bg-pink-300 text-slate-950' },
+      { id: 'obsidian_flames', series: 'sv', name: '黒炎の支配者', sub: '悪リザードンex / トドロクツキex', artCard: 'c_dark_charizard_ex', type: 'Darkness', grad: 'from-neutral-950 via-red-950 to-amber-800', accent: 'bg-rose-400 text-slate-950' },
+      { id: 'blue_sky_stream', series: 'swsh', name: '蒼空ストリーム', sub: 'レックウザex / カイリュー', artCard: 'c_rayquaza_vmax', type: 'Dragon', grad: 'from-emerald-950 via-sky-900 to-amber-700', accent: 'bg-emerald-300 text-slate-950' },
+      { id: 'jet_black_spirit', series: 'swsh', name: '漆黒のガイスト', sub: 'こくばバドレックスex', artCard: 'c_calyrex_shadow', type: 'Psychic', grad: 'from-indigo-950 via-slate-900 to-purple-900', accent: 'bg-purple-300 text-slate-950' },
+      { id: 'eevee_heroes', series: 'swsh', name: 'イーブイヒーローズ', sub: 'ブラッキーex / ニンフィアex', artCard: 'c_umbreon_vmax', type: 'Darkness', grad: 'from-pink-900 via-purple-900 to-amber-800', accent: 'bg-pink-300 text-slate-950' },
       { id: 'pokemon_151', series: 'swsh', name: '強化拡張パック 151', sub: 'フシギバナex / カメックスex', artCard: 'c_venusaur_ex', type: 'Grass', grad: 'from-red-800 via-slate-800 to-blue-800', accent: 'bg-white text-slate-950' },
-      { id: 'vstar_universe', series: 'swsh', name: 'ハイクラス VSTARユニバース', sub: 'ギラティナVSTAR / アルセウスUR', artCard: 'c_giratina_vstar', type: 'Dragon', grad: 'from-amber-900 via-yellow-800 to-purple-950', accent: 'bg-yellow-300 text-slate-950' }
+      { id: 'vstar_universe', series: 'swsh', name: 'ハイクラス VSTARユニバース', sub: 'ギラティナex / アルセウスUR', artCard: 'c_giratina_vstar', type: 'Dragon', grad: 'from-amber-900 via-yellow-800 to-purple-950', accent: 'bg-yellow-300 text-slate-950' }
     ];
 
-    /* ==================== 4. カードデータベース ==================== */
+    /* ==================== 4. 本家ポケポケ仕様カードデータベース ==================== */
+    // 本家ポケポケ同様、エネルギーカードは存在せず、20枚デッキ＋エネルギーゾーン方式に完全最適化
     const CARDS = [
-      { id: 'c_charmander', name: 'ヒトカゲ', category: 'Pokemon', stage: 'Basic', type: 'Fire', hp: 70, rarity: 'C', pack: 'genetic_charizard', retreat: 1, weakness: 'Water', attacks: [{ name: 'ひのこ', cost: ['Fire'], damage: 30, text: '' }] },
-      { id: 'c_charmeleon', name: 'リザード', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'ヒトカゲ', type: 'Fire', hp: 100, rarity: 'U', pack: 'genetic_charizard', retreat: 2, weakness: 'Water', attacks: [{ name: 'かえん', cost: ['Fire', 'Fire'], damage: 60, text: '' }] },
-      { id: 'c_charizard_ex', name: 'リザードンex', category: 'Pokemon', stage: 'Stage2', evolvesFrom: 'リザード', isEx: true, prizeValue: 2, type: 'Fire', hp: 330, rarity: 'SAR', pack: 'genetic_charizard', retreat: 2, weakness: 'Water', ability: { name: 'れんごくしはい', text: '山札から基本炎エネルギーを2枚まで加速。' }, attacks: [{ name: 'バーニングダーク', cost: ['Fire', 'Fire'], damage: 180, text: '相手がとったサイド×30追加！' }] },
-      { id: 'c_dark_charizard_ex', name: '悪リザードンex', category: 'Pokemon', stage: 'Stage2', evolvesFrom: 'リザード', isEx: true, prizeValue: 2, type: 'Darkness', hp: 330, rarity: 'UR', pack: 'obsidian_flames', retreat: 2, weakness: 'Grass', ability: { name: 'れんごくしはい', text: '山札から基本炎エネルギーを2枚まで加速。' }, attacks: [{ name: 'バーニングダーク', cost: ['Fire', 'Fire'], damage: 180, text: '相手がとったサイド×30追加！' }] },
-      { id: 'c_moltres_ex', name: 'ファイヤーex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Fire', hp: 190, rarity: 'SR', pack: 'genetic_charizard', retreat: 1, weakness: 'Lightning', ability: { name: 'れっかのまい', text: 'トラッシュから炎エネ1枚加速。' }, attacks: [{ name: 'ヒートブラスト', cost: ['Fire', 'Colorless', 'Colorless'], damage: 110, text: '' }] },
-      { id: 'c_entei_v', name: 'エンテイV', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Fire', hp: 230, rarity: 'RR', pack: 'triumphant', retreat: 2, weakness: 'Water', ability: { name: 'しゅんそく', text: '山札を1枚引く。' }, attacks: [{ name: 'バーニングロンド', cost: ['Fire', 'Colorless'], damage: 40, text: 'ベンチ数×20追加！' }] },
+      // 炎タイプ
+      { id: 'c_charmander', name: 'ヒトカゲ', category: 'Pokemon', stage: 'Basic', type: 'Fire', hp: 60, rarity: 'C', pack: 'genetic_charizard', retreat: 1, weakness: 'Water', attacks: [{ name: 'ひのこ', cost: ['Fire'], damage: 30, text: '' }] },
+      { id: 'c_charmeleon', name: 'リザード', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'ヒトカゲ', type: 'Fire', hp: 90, rarity: 'U', pack: 'genetic_charizard', retreat: 2, weakness: 'Water', attacks: [{ name: 'ほのおのツメ', cost: ['Fire', 'Colorless', 'Colorless'], damage: 60, text: '' }] },
+      { id: 'c_charizard_ex', name: 'リザードンex', category: 'Pokemon', stage: 'Stage2', evolvesFrom: 'リザード', isEx: true, pointValue: 2, type: 'Fire', hp: 180, rarity: 'SAR', pack: 'genetic_charizard', retreat: 2, weakness: 'Water', attacks: [{ name: 'きりさく', cost: ['Fire', 'Colorless', 'Colorless'], damage: 60, text: '' }, { name: 'ぐれんのあらし', cost: ['Fire', 'Fire', 'Colorless', 'Colorless'], damage: 200, text: 'このポケモンの炎エネルギーを2個トラッシュ。' }] },
+      { id: 'c_dark_charizard_ex', name: '悪リザードンex', category: 'Pokemon', stage: 'Stage2', evolvesFrom: 'リザード', isEx: true, pointValue: 2, type: 'Darkness', hp: 180, rarity: 'UR', pack: 'obsidian_flames', retreat: 2, weakness: 'Grass', ability: { name: 'れんごくしはい', text: 'エネルギーゾーンから炎エネルギーを2個つける。' }, attacks: [{ name: 'バーニングダーク', cost: ['Fire', 'Fire', 'Colorless'], damage: 150, text: '相手がとったポイント×30ダメージ追加！' }] },
+      { id: 'c_moltres_ex', name: 'ファイヤーex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Fire', hp: 140, rarity: 'SR', pack: 'genetic_charizard', retreat: 1, weakness: 'Lightning', ability: { name: 'れっかのまい', text: '自分のベンチの炎ポケモンに炎エネルギーを1個つける。' }, attacks: [{ name: 'ヒートブラスト', cost: ['Fire', 'Colorless', 'Colorless'], damage: 70, text: '' }] },
+      { id: 'c_entei_v', name: 'エンテイex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Fire', hp: 130, rarity: 'RR', pack: 'triumphant', retreat: 2, weakness: 'Water', ability: { name: 'しゅんそく', text: '山札を1枚引く。' }, attacks: [{ name: 'バーニングロンド', cost: ['Fire', 'Colorless'], damage: 40, text: 'お互いのベンチの数×20追加！' }] },
 
-      { id: 'c_squirtle', name: 'ゼニガメ', category: 'Pokemon', stage: 'Basic', type: 'Water', hp: 70, rarity: 'C', pack: 'pokemon_151', retreat: 1, weakness: 'Lightning', attacks: [{ name: 'みずでっぽう', cost: ['Water'], damage: 30, text: '' }] },
-      { id: 'c_wartortle', name: 'カメール', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'ゼニガメ', type: 'Water', hp: 100, rarity: 'U', pack: 'pokemon_151', retreat: 2, weakness: 'Lightning', attacks: [{ name: 'なみのり', cost: ['Water', 'Water'], damage: 60, text: '' }] },
-      { id: 'c_blastoise_ex', name: 'カメックスex', category: 'Pokemon', stage: 'Stage2', evolvesFrom: 'カメール', isEx: true, prizeValue: 2, type: 'Water', hp: 330, rarity: 'SR', pack: 'pokemon_151', retreat: 3, weakness: 'Lightning', attacks: [{ name: 'ツインカノン', cost: ['Water', 'Water'], damage: 220, text: '' }] },
-      { id: 'c_palkia_ex', name: 'パルキアex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Water', hp: 280, rarity: 'UR', pack: 'spacetime_palkia', retreat: 2, weakness: 'Lightning', isVstar: true, vstarPower: { name: 'スターポータル', text: 'トラッシュから水エネを3枚加速！' }, attacks: [{ name: 'あくうのうねり', cost: ['Water', 'Water', 'Colorless'], damage: 80, text: 'ベンチ数×20追加！' }] },
-      { id: 'c_greninja_ex', name: 'ゲッコウガex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Water', hp: 260, rarity: 'SR', pack: 'spacetime_palkia', retreat: 1, weakness: 'Lightning', attacks: [{ name: 'ぶんしんれんだ', cost: ['Water', 'Colorless', 'Colorless'], damage: 140, text: 'ベンチにも50ダメージ！' }] },
-      { id: 'c_radiant_greninja', name: 'かがやくゲッコウガ', category: 'Pokemon', stage: 'Basic', type: 'Water', hp: 130, rarity: 'R', pack: 'spacetime_palkia', retreat: 1, weakness: 'Lightning', ability: { name: 'かくしふだ', text: '手札からエネをトラッシュし2枚引く。' }, attacks: [{ name: 'げっこうしゅりけん', cost: ['Water', 'Water', 'Colorless'], damage: 90, text: '' }] },
+      // 水タイプ
+      { id: 'c_squirtle', name: 'ゼニガメ', category: 'Pokemon', stage: 'Basic', type: 'Water', hp: 60, rarity: 'C', pack: 'pokemon_151', retreat: 1, weakness: 'Lightning', attacks: [{ name: 'みずでっぽう', cost: ['Water'], damage: 20, text: '' }] },
+      { id: 'c_wartortle', name: 'カメール', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'ゼニガメ', type: 'Water', hp: 80, rarity: 'U', pack: 'pokemon_151', retreat: 1, weakness: 'Lightning', attacks: [{ name: 'なみのり', cost: ['Water', 'Colorless'], damage: 40, text: '' }] },
+      { id: 'c_blastoise_ex', name: 'カメックスex', category: 'Pokemon', stage: 'Stage2', evolvesFrom: 'カメール', isEx: true, pointValue: 2, type: 'Water', hp: 180, rarity: 'SR', pack: 'pokemon_151', retreat: 3, weakness: 'Lightning', attacks: [{ name: 'なみのり', cost: ['Water', 'Colorless'], damage: 40, text: '' }, { name: 'ハイドロバズーカ', cost: ['Water', 'Water', 'Colorless'], damage: 100, text: '水エネが5個以上なら+60ダメージ！' }] },
+      { id: 'c_palkia_ex', name: 'パルキアex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Water', hp: 150, rarity: 'UR', pack: 'spacetime_palkia', retreat: 2, weakness: 'Lightning', attacks: [{ name: 'きりさく', cost: ['Water'], damage: 30, text: '' }, { name: 'ディメンションストーム', cost: ['Water', 'Water', 'Water', 'Colorless'], damage: 150, text: '相手ベンチ全員にも20ダメージ！' }] },
+      { id: 'c_greninja_ex', name: 'ゲッコウガex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Water', hp: 140, rarity: 'SR', pack: 'spacetime_palkia', retreat: 1, weakness: 'Lightning', ability: { name: 'みずしゅりけん', text: '相手のポケモン1匹に20ダメージ！' }, attacks: [{ name: 'ミストスラッシュ', cost: ['Water', 'Colorless'], damage: 60, text: '' }] },
+      { id: 'c_radiant_greninja', name: 'ゲッコウガ', category: 'Pokemon', stage: 'Basic', type: 'Water', hp: 120, rarity: 'R', pack: 'spacetime_palkia', retreat: 1, weakness: 'Lightning', ability: { name: 'みずしゅりけん', text: '相手のポケモン1匹に20ダメージ！' }, attacks: [{ name: 'しゅりけん連打', cost: ['Water', 'Colorless'], damage: 50, text: '' }] },
 
-      { id: 'c_bulbasaur', name: 'フシギダネ', category: 'Pokemon', stage: 'Basic', type: 'Grass', hp: 70, rarity: 'C', pack: 'pokemon_151', retreat: 1, weakness: 'Fire', attacks: [{ name: 'つるのムチ', cost: ['Grass'], damage: 30, text: '' }] },
-      { id: 'c_ivysaur', name: 'フシギソウ', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'フシギダネ', type: 'Grass', hp: 100, rarity: 'U', pack: 'pokemon_151', retreat: 2, weakness: 'Fire', attacks: [{ name: 'はっぱカッター', cost: ['Grass', 'Grass'], damage: 60, text: '' }] },
-      { id: 'c_venusaur_ex', name: 'フシギバナex', category: 'Pokemon', stage: 'Stage2', evolvesFrom: 'フシギソウ', isEx: true, prizeValue: 2, type: 'Grass', hp: 340, rarity: 'SR', pack: 'pokemon_151', retreat: 3, weakness: 'Fire', attacks: [{ name: 'ジャイアントブルーム', cost: ['Grass', 'Grass', 'Colorless'], damage: 180, text: 'HP30回復＆どくにする！' }] },
-      { id: 'c_celebi_ex', name: 'セレビィex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Grass', hp: 190, rarity: 'SAR', pack: 'mythical_island', retreat: 1, weakness: 'Fire', attacks: [{ name: 'パワフルブルーム', cost: ['Grass', 'Colorless'], damage: 60, text: 'エネルギー数×50ダメージ！' }] },
-      { id: 'c_ogerpon_ex', name: 'オーガポンex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Grass', hp: 210, rarity: 'RR', pack: 'triumphant', retreat: 1, weakness: 'Fire', ability: { name: 'みどりのまい', text: '手札から草エネをつけ1枚引く。' }, attacks: [{ name: 'まんようしぐれ', cost: ['Grass', 'Grass', 'Grass'], damage: 90, text: 'お互いのエネ数×30追加！' }] },
+      // 草タイプ
+      { id: 'c_bulbasaur', name: 'フシギダネ', category: 'Pokemon', stage: 'Basic', type: 'Grass', hp: 70, rarity: 'C', pack: 'pokemon_151', retreat: 1, weakness: 'Fire', attacks: [{ name: 'つるのムチ', cost: ['Grass', 'Colorless'], damage: 40, text: '' }] },
+      { id: 'c_ivysaur', name: 'フシギソウ', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'フシギダネ', type: 'Grass', hp: 90, rarity: 'U', pack: 'pokemon_151', retreat: 2, weakness: 'Fire', attacks: [{ name: 'はっぱカッター', cost: ['Grass', 'Colorless', 'Colorless'], damage: 60, text: '' }] },
+      { id: 'c_venusaur_ex', name: 'フシギバナex', category: 'Pokemon', stage: 'Stage2', evolvesFrom: 'フシギソウ', isEx: true, pointValue: 2, type: 'Grass', hp: 190, rarity: 'SR', pack: 'pokemon_151', retreat: 3, weakness: 'Fire', attacks: [{ name: 'はっぱカッター', cost: ['Grass', 'Colorless', 'Colorless'], damage: 60, text: '' }, { name: 'ジャイアントブルーム', cost: ['Grass', 'Grass', 'Colorless', 'Colorless'], damage: 100, text: 'このポケモンのHPを30回復！' }] },
+      { id: 'c_celebi_ex', name: 'セレビィex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Grass', hp: 130, rarity: 'SAR', pack: 'mythical_island', retreat: 1, weakness: 'Fire', attacks: [{ name: 'パワフルブルーム', cost: ['Grass', 'Colorless'], damage: 50, text: 'エネルギーの数×50ダメージ！' }] },
+      { id: 'c_ogerpon_ex', name: 'オーガポンex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Grass', hp: 130, rarity: 'RR', pack: 'triumphant', retreat: 1, weakness: 'Fire', ability: { name: 'みどりのまい', text: '草エネルギーを1個つけ、1枚引く。' }, attacks: [{ name: 'まんようしぐれ', cost: ['Grass', 'Grass', 'Grass'], damage: 60, text: 'お互いのエネルギー数×20追加！' }] },
 
-      { id: 'c_pikachu_ex', name: 'ピカチュウex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Lightning', hp: 200, rarity: 'UR', pack: 'genetic_pikachu', retreat: 1, weakness: 'Fighting', ability: { name: 'がんばりハート', text: 'HP満タンならきぜつせずHP10で耐える。' }, attacks: [{ name: 'トパーズボルト', cost: ['Lightning', 'Lightning', 'Colorless'], damage: 240, text: 'エネを2個トラッシュ。' }] },
-      { id: 'c_zapdos_ex', name: 'サンダーex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Lightning', hp: 200, rarity: 'SR', pack: 'genetic_pikachu', retreat: 1, weakness: 'Lightning', attacks: [{ name: 'ハリケーンサンダー', cost: ['Lightning', 'Lightning', 'Lightning'], damage: 150, text: 'ベンチにも50ダメージ！' }] },
-      { id: 'c_raikou_v', name: 'ライコウV', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Lightning', hp: 210, rarity: 'SR', pack: 'triumphant', retreat: 1, weakness: 'Fighting', ability: { name: 'しゅんそく', text: '山札を1枚引く。' }, attacks: [{ name: 'ライトニングロンド', cost: ['Lightning', 'Colorless'], damage: 40, text: 'ベンチ数×20追加！' }] },
-      { id: 'c_miraidon_ex', name: 'ミライドンex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Lightning', hp: 220, rarity: 'RR', pack: 'spacetime_dialga', retreat: 1, weakness: 'Fighting', ability: { name: 'タンデムユニット', text: '山札から雷たねをベンチに出す。' }, attacks: [{ name: 'フォトンブラスター', cost: ['Lightning', 'Lightning', 'Colorless'], damage: 220, text: '' }] },
+      // 雷タイプ
+      { id: 'c_pikachu_ex', name: 'ピカチュウex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Lightning', hp: 120, rarity: 'UR', pack: 'genetic_pikachu', retreat: 1, weakness: 'Fighting', attacks: [{ name: 'エレキサークル', cost: ['Lightning', 'Lightning'], damage: 30, text: '自分の雷ベンチの数×30ダメージ！' }] },
+      { id: 'c_zapdos_ex', name: 'サンダーex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Lightning', hp: 130, rarity: 'SR', pack: 'genetic_pikachu', retreat: 1, weakness: 'Lightning', attacks: [{ name: 'つつく', cost: ['Lightning'], damage: 20, text: '' }, { name: 'ハリケーンサンダー', cost: ['Lightning', 'Lightning', 'Lightning'], damage: 100, text: 'コイントスで表の数×50（平均100）！' }] },
+      { id: 'c_raikou_v', name: 'ライコウex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Lightning', hp: 130, rarity: 'SR', pack: 'triumphant', retreat: 1, weakness: 'Fighting', ability: { name: 'しゅんそく', text: '山札を1枚引く。' }, attacks: [{ name: 'ライトニングロンド', cost: ['Lightning', 'Colorless'], damage: 40, text: 'ベンチの数×20追加！' }] },
+      { id: 'c_miraidon_ex', name: 'ミライドンex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Lightning', hp: 140, rarity: 'RR', pack: 'spacetime_dialga', retreat: 1, weakness: 'Fighting', ability: { name: 'タンデムユニット', text: '山札から雷たねをベンチに出す。' }, attacks: [{ name: 'フォトンブラスター', cost: ['Lightning', 'Lightning', 'Colorless'], damage: 120, text: '' }] },
 
-      { id: 'c_ralts', name: 'ラルトス', category: 'Pokemon', stage: 'Basic', type: 'Psychic', hp: 70, rarity: 'C', pack: 'genetic_mewtwo', retreat: 1, weakness: 'Darkness', attacks: [{ name: 'テレポートブレイク', cost: ['Psychic'], damage: 20, text: '' }] },
-      { id: 'c_kirlia', name: 'キルリア', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'ラルトス', type: 'Psychic', hp: 90, rarity: 'U', pack: 'genetic_mewtwo', retreat: 1, weakness: 'Darkness', ability: { name: 'リファイン', text: '手札を1枚トラッシュし2枚引く。' }, attacks: [{ name: 'マジカルショット', cost: ['Psychic', 'Colorless'], damage: 40, text: '' }] },
-      { id: 'c_gardevoir_ex', name: 'サーナイトex', category: 'Pokemon', stage: 'Stage2', evolvesFrom: 'キルリア', isEx: true, prizeValue: 2, type: 'Psychic', hp: 310, rarity: 'SAR', pack: 'genetic_mewtwo', retreat: 2, weakness: 'Darkness', ability: { name: 'サイコエンブレイス', text: 'トラッシュから超エネ1枚加速。' }, attacks: [{ name: 'ミラクルフォース', cost: ['Psychic', 'Psychic', 'Colorless'], damage: 190, text: '' }] },
-      { id: 'c_mewtwo_ex', name: 'ミュウツーex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Psychic', hp: 230, rarity: 'SR', pack: 'genetic_mewtwo', retreat: 2, weakness: 'Darkness', attacks: [{ name: 'フォトンキネシス', cost: ['Psychic', 'Psychic', 'Colorless'], damage: 120, text: '場の超エネ数×30追加！' }] },
-      { id: 'c_mew_ex', name: 'ミュウex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Psychic', hp: 180, rarity: 'SAR', pack: 'mythical_island', retreat: 0, weakness: 'Darkness', ability: { name: 'リスタート', text: '手札が3枚になるように引く。' }, attacks: [{ name: 'ゲノムハック', cost: ['Colorless', 'Colorless', 'Colorless'], damage: 140, text: '' }] },
-      { id: 'c_calyrex_shadow', name: 'こくばバドレックスVMAX', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Psychic', hp: 320, rarity: 'SAR', pack: 'jet_black_spirit', retreat: 2, weakness: 'Darkness', attacks: [{ name: 'ダイガイスト', cost: ['Colorless', 'Colorless', 'Colorless'], damage: 40, text: '場の超エネ数×30追加！' }] },
-      { id: 'c_lunala_ex', name: 'ルナアーラex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Psychic', hp: 270, rarity: 'UR', pack: 'celestial_guardians', retreat: 2, weakness: 'Darkness', attacks: [{ name: 'シャドーレイ', cost: ['Psychic', 'Psychic', 'Colorless'], damage: 190, text: '' }] },
-      { id: 'c_espeon_ex', name: 'エーフィex', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'イーブイ', isEx: true, prizeValue: 2, type: 'Psychic', hp: 260, rarity: 'SR', pack: 'eevee_heroes', retreat: 1, weakness: 'Darkness', attacks: [{ name: 'サイコアウト', cost: ['Psychic', 'Colorless', 'Colorless'], damage: 160, text: '' }] },
-      { id: 'c_sylveon_ex', name: 'ニンフィアex', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'イーブイ', isEx: true, prizeValue: 2, type: 'Psychic', hp: 270, rarity: 'SAR', pack: 'eevee_heroes', retreat: 1, weakness: 'Metal', attacks: [{ name: 'マジカルチャーム', cost: ['Psychic', 'Colorless', 'Colorless'], damage: 170, text: '' }] },
+      // 超タイプ
+      { id: 'c_ralts', name: 'ラルトス', category: 'Pokemon', stage: 'Basic', type: 'Psychic', hp: 60, rarity: 'C', pack: 'genetic_mewtwo', retreat: 1, weakness: 'Darkness', attacks: [{ name: 'ねんりき', cost: ['Psychic'], damage: 10, text: '' }] },
+      { id: 'c_kirlia', name: 'キルリア', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'ラルトス', type: 'Psychic', hp: 80, rarity: 'U', pack: 'genetic_mewtwo', retreat: 1, weakness: 'Darkness', attacks: [{ name: 'マジカルショット', cost: ['Psychic', 'Colorless'], damage: 30, text: '' }] },
+      { id: 'c_gardevoir_ex', name: 'サーナイト', category: 'Pokemon', stage: 'Stage2', evolvesFrom: 'キルリア', type: 'Psychic', hp: 110, rarity: 'SAR', pack: 'genetic_mewtwo', retreat: 2, weakness: 'Darkness', ability: { name: 'トランスシェイド', text: '自分のバトル場の超ポケモンに超エネルギーを1個つける！' }, attacks: [{ name: 'サイコショット', cost: ['Psychic', 'Psychic', 'Colorless'], damage: 60, text: '' }] },
+      { id: 'c_mewtwo_ex', name: 'ミュウツーex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Psychic', hp: 150, rarity: 'SR', pack: 'genetic_mewtwo', retreat: 2, weakness: 'Darkness', attacks: [{ name: 'ねんどうだん', cost: ['Psychic', 'Colorless'], damage: 50, text: '' }, { name: 'サイコドライブ', cost: ['Psychic', 'Psychic', 'Colorless', 'Colorless'], damage: 150, text: 'このポケモンの超エネルギーを2個トラッシュ。' }] },
+      { id: 'c_mew_ex', name: 'ミュウex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Psychic', hp: 130, rarity: 'SAR', pack: 'mythical_island', retreat: 1, weakness: 'Darkness', attacks: [{ name: 'サイコレポート', cost: ['Psychic'], damage: 20, text: '' }, { name: 'ゲノムハック', cost: ['Colorless', 'Colorless', 'Colorless'], damage: 100, text: '相手のワザの力をコピーして攻撃！' }] },
+      { id: 'c_calyrex_shadow', name: 'こくばバドレックスex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Psychic', hp: 150, rarity: 'SAR', pack: 'jet_black_spirit', retreat: 2, weakness: 'Darkness', attacks: [{ name: 'ダイガイスト', cost: ['Psychic', 'Psychic', 'Colorless'], damage: 40, text: '場の超エネルギー数×30追加！' }] },
+      { id: 'c_lunala_ex', name: 'ルナアーラex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Psychic', hp: 150, rarity: 'UR', pack: 'celestial_guardians', retreat: 2, weakness: 'Darkness', attacks: [{ name: 'シャドーレイ', cost: ['Psychic', 'Psychic', 'Colorless'], damage: 110, text: '' }] },
+      { id: 'c_espeon_ex', name: 'エーフィex', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'イーブイ', isEx: true, pointValue: 2, type: 'Psychic', hp: 140, rarity: 'SR', pack: 'eevee_heroes', retreat: 1, weakness: 'Darkness', attacks: [{ name: 'サイコアウト', cost: ['Psychic', 'Colorless'], damage: 80, text: '' }] },
+      { id: 'c_sylveon_ex', name: 'ニンフィアex', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'イーブイ', isEx: true, pointValue: 2, type: 'Psychic', hp: 140, rarity: 'SAR', pack: 'eevee_heroes', retreat: 1, weakness: 'Metal', attacks: [{ name: 'マジカルチャーム', cost: ['Psychic', 'Colorless', 'Colorless'], damage: 100, text: '' }] },
 
-      { id: 'c_eevee', name: 'イーブイ', category: 'Pokemon', stage: 'Basic', type: 'Colorless', hp: 70, rarity: 'C', pack: 'eevee_heroes', retreat: 1, weakness: 'Fighting', attacks: [{ name: 'たいあたり', cost: ['Colorless'], damage: 20, text: '' }] },
-      { id: 'c_arceus_ex', name: 'アルセウスex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Colorless', hp: 280, rarity: 'UR', pack: 'triumphant', retreat: 2, weakness: 'Fighting', ability: { name: 'しんわのかがやき', text: '山札を2枚引く。' }, attacks: [{ name: 'トリニティノヴァ', cost: ['Colorless', 'Colorless', 'Colorless'], damage: 180, text: '山札から基本エネ2枚加速！' }] },
+      // 無色・鋼・竜・悪・闘タイプ
+      { id: 'c_eevee', name: 'イーブイ', category: 'Pokemon', stage: 'Basic', type: 'Colorless', hp: 60, rarity: 'C', pack: 'eevee_heroes', retreat: 1, weakness: 'Fighting', attacks: [{ name: 'たいあたり', cost: ['Colorless'], damage: 20, text: '' }] },
+      { id: 'c_arceus_ex', name: 'アルセウスex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Colorless', hp: 140, rarity: 'UR', pack: 'triumphant', retreat: 2, weakness: 'Fighting', ability: { name: 'しんわのかがやき', text: '山札を1枚引く。' }, attacks: [{ name: 'アルティメットフォース', cost: ['Colorless', 'Colorless', 'Colorless'], damage: 70, text: '自分のベンチの数×20ダメージ追加！' }] },
       { id: 'c_bidoof', name: 'ビッパ', category: 'Pokemon', stage: 'Basic', type: 'Colorless', hp: 60, rarity: 'C', pack: 'triumphant', retreat: 1, weakness: 'Fighting', attacks: [{ name: 'ころがる', cost: ['Colorless'], damage: 20, text: '' }] },
-      { id: 'c_bibarel', name: 'ビーダル', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'ビッパ', type: 'Colorless', hp: 120, rarity: 'R', pack: 'triumphant', retreat: 2, weakness: 'Fighting', ability: { name: 'はたらくまえば', text: '手札が5枚になるように引く。' }, attacks: [{ name: 'テールスマッシュ', cost: ['Colorless', 'Colorless', 'Colorless'], damage: 100, text: '' }] },
+      { id: 'c_bibarel', name: 'ビーダル', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'ビッパ', type: 'Colorless', hp: 100, rarity: 'R', pack: 'triumphant', retreat: 2, weakness: 'Fighting', ability: { name: 'はたらくまえば', text: '手札が4枚になるように山札を引く。' }, attacks: [{ name: 'テールスマッシュ', cost: ['Colorless', 'Colorless', 'Colorless'], damage: 70, text: '' }] },
+      { id: 'c_dialga_ex', name: 'ディアルガex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Metal', hp: 150, rarity: 'UR', pack: 'spacetime_dialga', retreat: 2, weakness: 'Fire', attacks: [{ name: 'メタルターボ', cost: ['Metal', 'Metal'], damage: 30, text: 'ベンチに鋼エネルギーを2個つける！' }, { name: 'ヘビーインパクト', cost: ['Metal', 'Metal', 'Colorless', 'Colorless'], damage: 100, text: '' }] },
+      { id: 'c_solgaleo_ex', name: 'ソルガレオex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Metal', hp: 150, rarity: 'UR', pack: 'celestial_guardians', retreat: 2, weakness: 'Fire', attacks: [{ name: 'メテオドライブ', cost: ['Metal', 'Metal', 'Colorless'], damage: 120, text: '' }] },
+      { id: 'c_gholdengo_ex', name: 'サーフゴーex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Metal', hp: 140, rarity: 'RR', pack: 'spacetime_dialga', retreat: 2, weakness: 'Fire', ability: { name: 'ボーナスコイン', text: '山札を1枚引く。' }, attacks: [{ name: 'ゴールドラッシュ', cost: ['Metal', 'Colorless'], damage: 80, text: '' }] },
+      { id: 'c_rayquaza_vmax', name: 'レックウザex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Dragon', hp: 150, rarity: 'UR', pack: 'blue_sky_stream', retreat: 2, weakness: 'None', attacks: [{ name: 'りゅうのはどう', cost: ['Fire', 'Lightning', 'Colorless'], damage: 130, text: '' }] },
+      { id: 'c_shiny_rayquaza', name: '色違いレックウザex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Dragon', hp: 150, rarity: 'SAR', pack: 'shining_high', retreat: 1, weakness: 'None', attacks: [{ name: 'ガリョウテンセイ', cost: ['Fire', 'Lightning', 'Colorless'], damage: 140, text: '' }] },
+      { id: 'c_giratina_vstar', name: 'ギラティナex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Dragon', hp: 150, rarity: 'UR', pack: 'vstar_universe', retreat: 2, weakness: 'None', ability: { name: 'はくうのさけび', text: 'このポケモンに超エネルギーを1個つける。' }, attacks: [{ name: 'カオスインパクト', cost: ['Psychic', 'Psychic', 'Psychic', 'Colorless'], damage: 130, text: '' }] },
+      { id: 'c_umbreon_vmax', name: 'ブラッキーex', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'イーブイ', isEx: true, pointValue: 2, type: 'Darkness', hp: 140, rarity: 'SAR', pack: 'eevee_heroes', retreat: 2, weakness: 'Grass', ability: { name: 'ダークシグナル', text: '相手のベンチを呼び出す！' }, attacks: [{ name: 'くろいまなざし', cost: ['Darkness', 'Colorless', 'Colorless'], damage: 90, text: '' }] },
+      { id: 'c_roaring_moon_ex', name: 'トドロクツキex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Darkness', hp: 140, rarity: 'RR', pack: 'triumphant', retreat: 2, weakness: 'Grass', attacks: [{ name: 'カラミティストーム', cost: ['Darkness', 'Darkness', 'Colorless'], damage: 110, text: '' }] },
+      { id: 'c_darkrai_vstar', name: 'ダークライex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Darkness', hp: 140, rarity: 'SR', pack: 'vstar_universe', retreat: 2, weakness: 'Grass', ability: { name: 'ナイトメアオーラ', text: '悪エネルギーをつけたとき相手に20ダメージ！' }, attacks: [{ name: 'ダークプリズム', cost: ['Darkness', 'Darkness', 'Colorless'], damage: 80, text: '' }] },
+      { id: 'c_lucario_ex', name: 'ルカリオex', category: 'Pokemon', stage: 'Basic', isEx: true, pointValue: 2, type: 'Fighting', hp: 140, rarity: 'RR', pack: 'spacetime_dialga', retreat: 2, weakness: 'Psychic', attacks: [{ name: 'はどうだん', cost: ['Fighting', 'Fighting', 'Colorless'], damage: 90, text: 'ベンチにも30ダメージ！' }] },
 
-      { id: 'c_dialga_ex', name: 'ディアルガex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Metal', hp: 280, rarity: 'UR', pack: 'spacetime_dialga', retreat: 2, weakness: 'Fire', isVstar: true, vstarPower: { name: 'スタークロノス', text: '相手に200ダメージ＆2枚ドロー！' }, attacks: [{ name: 'メタルブラスト', cost: ['Colorless', 'Colorless', 'Colorless'], damage: 60, text: '鋼エネ数×40追加！' }] },
-      { id: 'c_solgaleo_ex', name: 'ソルガレオex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Metal', hp: 280, rarity: 'UR', pack: 'celestial_guardians', retreat: 2, weakness: 'Fire', attacks: [{ name: 'メテオドライブ', cost: ['Metal', 'Metal', 'Colorless'], damage: 230, text: '' }] },
-      { id: 'c_gholdengo_ex', name: 'サーフゴーex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Metal', hp: 260, rarity: 'RR', pack: 'spacetime_dialga', retreat: 2, weakness: 'Fire', ability: { name: 'ボーナスコイン', text: '山札を1枚引く。' }, attacks: [{ name: 'ゴールドラッシュ', cost: ['Metal'], damage: 150, text: '' }] },
-      { id: 'c_rayquaza_vmax', name: 'レックウザVMAX', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Dragon', hp: 320, rarity: 'UR', pack: 'blue_sky_stream', retreat: 2, weakness: 'None', ability: { name: 'そうくうのはどう', text: '手札を1枚トラッシュし3枚引く。' }, attacks: [{ name: 'ダイバースト', cost: ['Fire', 'Lightning'], damage: 220, text: '' }] },
-      { id: 'c_shiny_rayquaza', name: '色違いレックウザex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Dragon', hp: 290, rarity: 'SAR', pack: 'shining_high', retreat: 1, weakness: 'None', attacks: [{ name: 'ガリョウテンセイ', cost: ['Fire', 'Lightning', 'Colorless'], damage: 250, text: '' }] },
-      { id: 'c_giratina_vstar', name: 'ギラティナVSTAR', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Dragon', hp: 280, rarity: 'UR', pack: 'vstar_universe', retreat: 2, weakness: 'None', isVstar: true, vstarPower: { name: 'スターレクイエム', text: '相手のバトルポケモンを強制きぜつ！' }, attacks: [{ name: 'ロストインパクト', cost: ['Grass', 'Psychic', 'Colorless'], damage: 240, text: '' }] },
-      { id: 'c_umbreon_vmax', name: 'ブラッキーVMAX', category: 'Pokemon', stage: 'Stage1', evolvesFrom: 'イーブイ', isEx: true, prizeValue: 2, type: 'Darkness', hp: 310, rarity: 'SAR', pack: 'eevee_heroes', retreat: 2, weakness: 'Grass', ability: { name: 'ダークシグナル', text: '相手のベンチを呼び出す！' }, attacks: [{ name: 'ダイアーク', cost: ['Darkness', 'Colorless', 'Colorless'], damage: 160, text: '' }] },
-      { id: 'c_roaring_moon_ex', name: 'トドロクツキex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Darkness', hp: 230, rarity: 'RR', pack: 'triumphant', retreat: 2, weakness: 'Grass', attacks: [{ name: 'カラミティストーム', cost: ['Darkness', 'Darkness', 'Colorless'], damage: 160, text: 'スタジアムがあれば+80ダメージ！' }] },
-      { id: 'c_darkrai_vstar', name: 'ダークライVSTAR', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Darkness', hp: 270, rarity: 'SR', pack: 'vstar_universe', retreat: 2, weakness: 'Grass', isVstar: true, vstarPower: { name: 'スターアビス', text: 'トラッシュからグッズを2枚回収！' }, attacks: [{ name: 'あくのはどう', cost: ['Darkness', 'Colorless'], damage: 60, text: '悪エネ数×30追加！' }] },
-      { id: 'c_lucario_ex', name: 'ルカリオex', category: 'Pokemon', stage: 'Basic', isEx: true, prizeValue: 2, type: 'Fighting', hp: 250, rarity: 'RR', pack: 'spacetime_dialga', retreat: 2, weakness: 'Psychic', attacks: [{ name: 'はどうだん', cost: ['Fighting', 'Fighting'], damage: 130, text: 'ベンチにも50ダメージ！' }] },
-
-      // トレーナーズ＆エネルギー
-      { id: 't_prof_research', name: '博士の研究', category: 'Trainer', subType: 'Supporter', type: 'Trainer', rarity: 'U', pack: 'pokemon_151', text: '手札をすべてトラッシュし、山札を7枚引く。' },
-      { id: 't_iono', name: 'ナンジャモ', category: 'Trainer', subType: 'Supporter', type: 'Trainer', rarity: 'SAR', pack: 'shining_high', text: 'お互い手札を山札の下に戻し、残りサイド枚数ぶん引く。' },
-      { id: 't_boss_orders', name: 'ボスの指令', category: 'Trainer', subType: 'Supporter', type: 'Trainer', rarity: 'SR', pack: 'genetic_charizard', text: '相手のベンチポケモンをバトル場と入れ替える。' },
-      { id: 't_arven', name: 'ペパー', category: 'Trainer', subType: 'Supporter', type: 'Trainer', rarity: 'U', pack: 'triumphant', text: '山札からグッズを2枚まで手札に加える。' },
-      { id: 't_cynthia', name: 'シロナの覇気', category: 'Trainer', subType: 'Supporter', type: 'Trainer', rarity: 'SAR', pack: 'vstar_universe', text: '手札が6枚になるように山札を引く。' },
-      { id: 't_ultra_ball', name: 'ハイパーボール', category: 'Trainer', subType: 'Item', type: 'Trainer', rarity: 'U', pack: 'genetic_charizard', text: '手札を2枚トラッシュし、好きなポケモンを1枚手札に加える。' },
-      { id: 't_nest_ball', name: 'ネストボール', category: 'Trainer', subType: 'Item', type: 'Trainer', rarity: 'U', pack: 'triumphant', text: '山札からたねポケモンを1枚ベンチに出す。' },
-      { id: 't_rare_candy', name: 'ふしぎなアメ', category: 'Trainer', subType: 'Item', type: 'Trainer', rarity: 'R', pack: 'genetic_charizard', text: '手札の2進化ポケモンを場のたねポケモンに直接のせて進化！' },
-      { id: 't_switch', name: 'ポケモンいれかえ', category: 'Trainer', subType: 'Item', type: 'Trainer', rarity: 'C', pack: 'pokemon_151', text: 'バトルポケモンとベンチポケモンを入れ替える。' },
-      { id: 't_potion_max', name: 'すごいキズぐすり', category: 'Trainer', subType: 'Item', type: 'Trainer', rarity: 'U', pack: 'genetic_pikachu', text: 'バトルポケモンのHPを120回復する。' },
-      { id: 't_earthen_vessel', name: '大地の器', category: 'Trainer', subType: 'Item', type: 'Trainer', rarity: 'U', pack: 'triumphant', text: '手札を1枚トラッシュし、基本エネルギーを2枚手札に加える。' },
-      { id: 't_artazon', name: 'ボウルタウン', category: 'Trainer', subType: 'Stadium', type: 'Trainer', rarity: 'U', pack: 'triumphant', text: 'たねポケモンを展開するスタジアム。' },
-      { id: 't_magma_basin', name: 'マグマの滝壺', category: 'Trainer', subType: 'Stadium', type: 'Trainer', rarity: 'U', pack: 'genetic_charizard', text: '炎ポケモンのエネルギーを加速するスタジアム。' },
-
-      { id: 'e_fire', name: '基本炎エネルギー', category: 'Energy', energyType: 'Fire', isBasicEnergy: true, type: 'Fire', rarity: 'C', pack: 'genetic_charizard', text: '炎エネルギー1個ぶん。' },
-      { id: 'e_lightning', name: '基本雷エネルギー', category: 'Energy', energyType: 'Lightning', isBasicEnergy: true, type: 'Lightning', rarity: 'C', pack: 'genetic_pikachu', text: '雷エネルギー1個ぶん。' },
-      { id: 'e_psychic', name: '基本超エネルギー', category: 'Energy', energyType: 'Psychic', isBasicEnergy: true, type: 'Psychic', rarity: 'C', pack: 'genetic_mewtwo', text: '超エネルギー1個ぶん。' },
-      { id: 'e_water', name: '基本水エネルギー', category: 'Energy', energyType: 'Water', isBasicEnergy: true, type: 'Water', rarity: 'C', pack: 'spacetime_palkia', text: '水エネルギー1個ぶん。' },
-      { id: 'e_grass', name: '基本草エネルギー', category: 'Energy', energyType: 'Grass', isBasicEnergy: true, type: 'Grass', rarity: 'C', pack: 'mythical_island', text: '草エネルギー1個ぶん。' },
-      { id: 'e_darkness', name: '基本悪エネルギー', category: 'Energy', energyType: 'Darkness', isBasicEnergy: true, type: 'Darkness', rarity: 'C', pack: 'eevee_heroes', text: '悪エネルギー1個ぶん。' },
-      { id: 'e_metal', name: '基本鋼エネルギー', category: 'Energy', energyType: 'Metal', isBasicEnergy: true, type: 'Metal', rarity: 'C', pack: 'spacetime_dialga', text: '鋼エネルギー1個ぶん。' },
-      { id: 'e_fighting', name: '基本闘エネルギー', category: 'Energy', energyType: 'Fighting', isBasicEnergy: true, type: 'Fighting', rarity: 'C', pack: 'spacetime_dialga', text: '闘エネルギー1個ぶん。' },
-      { id: 'e_double_turbo', name: 'ダブルターボエネルギー', category: 'Energy', energyType: 'Colorless', energyAmount: 2, isBasicEnergy: false, type: 'Colorless', rarity: 'U', pack: 'vstar_universe', text: '無色エネルギー2個ぶん！' }
+      // 本家ポケポケおなじみのトレーナーズ（グッズ・サポート）
+      { id: 't_prof_research', name: '博士の研究', category: 'Trainer', subType: 'Supporter', type: 'Trainer', rarity: 'U', pack: 'pokemon_151', text: '自分の山札を2枚引く。（サポートは1ターンに1枚）' },
+      { id: 't_pokeball', name: 'モンスターボール', category: 'Trainer', subType: 'Item', type: 'Trainer', rarity: 'C', pack: 'pokemon_151', text: '自分の山札から「たねポケモン」をランダムに1枚手札に加える。' },
+      { id: 't_potion', name: 'きずぐすり', category: 'Trainer', subType: 'Item', type: 'Trainer', rarity: 'C', pack: 'pokemon_151', text: '自分のポケモン1匹のHPを20回復する。' },
+      { id: 't_x_speed', name: 'スピーダー', category: 'Trainer', subType: 'Item', type: 'Trainer', rarity: 'C', pack: 'pokemon_151', text: 'この番、バトルポケモンの「にげる」ためのエネルギーが1個少なくなる。' },
+      { id: 't_sabrina', name: 'ナツメ', category: 'Trainer', subType: 'Supporter', type: 'Trainer', rarity: 'SR', pack: 'genetic_charizard', text: '相手のバトルポケモンをベンチポケモンと入れ替える。' },
+      { id: 't_giovanni', name: 'サカキ', category: 'Trainer', subType: 'Supporter', type: 'Trainer', rarity: 'SR', pack: 'genetic_mewtwo', text: 'この番、自分のポケモンが使うワザのダメージを+10する。' },
+      { id: 't_misty', name: 'カスミ', category: 'Trainer', subType: 'Supporter', type: 'Trainer', rarity: 'SAR', pack: 'genetic_pikachu', text: '自分の水ポケモン1匹に水エネルギーを1〜2個つける！' },
+      { id: 't_erika', name: 'エリカ', category: 'Trainer', subType: 'Supporter', type: 'Trainer', rarity: 'SR', pack: 'genetic_charizard', text: '自分の草ポケモン1匹のHPを50回復する。' },
+      { id: 't_red_card', name: 'レッドカード', category: 'Trainer', subType: 'Item', type: 'Trainer', rarity: 'U', pack: 'genetic_mewtwo', text: '相手は手札をすべて山札に戻して切り、3枚引く。' },
+      { id: 't_rare_candy', name: 'ふしぎなアメ', category: 'Trainer', subType: 'Item', type: 'Trainer', rarity: 'R', pack: 'triumphant', text: '手札の2進化ポケモンを場のたねポケモンに直接のせて進化！' }
     ];
     const CARD_MAP = Object.fromEntries(CARDS.map(c => [c.id, c]));
 
-    /* ==================== 5. 構築済み60枚デッキ（全8種） ==================== */
+    /* ==================== 5. 本家ポケポケ仕様 20枚構築済みデッキ（全8種） ==================== */
     const PRESET_DECKS = {
-      charizard: { name: 'リザードンex 爆炎デッキ', cards: [...Array(4).fill('c_charmander'), ...Array(2).fill('c_charmeleon'), ...Array(3).fill('c_charizard_ex'), ...Array(2).fill('c_arceus_ex'), ...Array(2).fill('c_bidoof'), ...Array(2).fill('c_bibarel'), ...Array(1).fill('c_moltres_ex'), ...Array(4).fill('t_prof_research'), ...Array(4).fill('t_iono'), ...Array(3).fill('t_boss_orders'), ...Array(2).fill('t_arven'), ...Array(4).fill('t_ultra_ball'), ...Array(4).fill('t_nest_ball'), ...Array(4).fill('t_rare_candy'), ...Array(2).fill('t_switch'), ...Array(2).fill('t_magma_basin'), ...Array(15).fill('e_fire')] },
-      pikachu: { name: 'ピカチュウex＆アルセウス', cards: [...Array(4).fill('c_pikachu_ex'), ...Array(3).fill('c_raikou_v'), ...Array(3).fill('c_miraidon_ex'), ...Array(2).fill('c_arceus_ex'), ...Array(2).fill('c_bidoof'), ...Array(2).fill('c_bibarel'), ...Array(4).fill('t_prof_research'), ...Array(4).fill('t_iono'), ...Array(3).fill('t_boss_orders'), ...Array(4).fill('t_nest_ball'), ...Array(4).fill('t_ultra_ball'), ...Array(3).fill('t_earthen_vessel'), ...Array(3).fill('t_switch'), ...Array(2).fill('t_potion_max'), ...Array(2).fill('t_artazon'), ...Array(15).fill('e_lightning')] },
-      mewtwo: { name: 'ミュウツーex＆サーナイト', cards: [...Array(3).fill('c_mewtwo_ex'), ...Array(4).fill('c_ralts'), ...Array(3).fill('c_kirlia'), ...Array(3).fill('c_gardevoir_ex'), ...Array(1).fill('c_mew_ex'), ...Array(2).fill('c_calyrex_shadow'), ...Array(4).fill('t_prof_research'), ...Array(4).fill('t_iono'), ...Array(3).fill('t_boss_orders'), ...Array(4).fill('t_ultra_ball'), ...Array(4).fill('t_nest_ball'), ...Array(3).fill('t_rare_candy'), ...Array(2).fill('t_earthen_vessel'), ...Array(2).fill('t_cynthia'), ...Array(2).fill('t_artazon'), ...Array(16).fill('e_psychic')] },
-      dialga: { name: 'ディアルガ＆パルキア時空', cards: [...Array(3).fill('c_dialga_ex'), ...Array(3).fill('c_palkia_ex'), ...Array(2).fill('c_gholdengo_ex'), ...Array(2).fill('c_radiant_greninja'), ...Array(2).fill('c_bidoof'), ...Array(2).fill('c_bibarel'), ...Array(4).fill('t_prof_research'), ...Array(3).fill('t_cynthia'), ...Array(3).fill('t_boss_orders'), ...Array(4).fill('t_nest_ball'), ...Array(4).fill('t_ultra_ball'), ...Array(3).fill('t_earthen_vessel'), ...Array(3).fill('t_switch'), ...Array(2).fill('t_artazon'), ...Array(2).fill('e_double_turbo'), ...Array(9).fill('e_metal'), ...Array(9).fill('e_water')] },
-      giratina: { name: 'ギラティナVSTAR＆アルセウス', cards: [...Array(3).fill('c_giratina_vstar'), ...Array(3).fill('c_arceus_ex'), ...Array(2).fill('c_bidoof'), ...Array(2).fill('c_bibarel'), ...Array(2).fill('c_mew_ex'), ...Array(2).fill('c_radiant_greninja'), ...Array(4).fill('t_prof_research'), ...Array(4).fill('t_iono'), ...Array(3).fill('t_boss_orders'), ...Array(4).fill('t_ultra_ball'), ...Array(4).fill('t_nest_ball'), ...Array(3).fill('t_earthen_vessel'), ...Array(3).fill('t_switch'), ...Array(2).fill('t_artazon'), ...Array(3).fill('e_double_turbo'), ...Array(8).fill('e_grass'), ...Array(8).fill('e_psychic')] },
-      eevee: { name: 'ブラッキーVMAX＆ニンフィア', cards: [...Array(4).fill('c_eevee'), ...Array(3).fill('c_umbreon_vmax'), ...Array(3).fill('c_sylveon_ex'), ...Array(2).fill('c_darkrai_vstar'), ...Array(2).fill('c_bidoof'), ...Array(2).fill('c_bibarel'), ...Array(4).fill('t_prof_research'), ...Array(4).fill('t_cynthia'), ...Array(3).fill('t_boss_orders'), ...Array(4).fill('t_nest_ball'), ...Array(4).fill('t_ultra_ball'), ...Array(3).fill('t_earthen_vessel'), ...Array(2).fill('t_switch'), ...Array(2).fill('t_artazon'), ...Array(2).fill('e_double_turbo'), ...Array(9).fill('e_darkness'), ...Array(7).fill('e_psychic')] },
-      rayquaza: { name: 'レックウザVMAX＆ファイヤー', cards: [...Array(3).fill('c_rayquaza_vmax'), ...Array(2).fill('c_shiny_rayquaza'), ...Array(3).fill('c_moltres_ex'), ...Array(2).fill('c_raikou_v'), ...Array(2).fill('c_bidoof'), ...Array(2).fill('c_bibarel'), ...Array(4).fill('t_prof_research'), ...Array(4).fill('t_iono'), ...Array(3).fill('t_boss_orders'), ...Array(4).fill('t_ultra_ball'), ...Array(4).fill('t_nest_ball'), ...Array(3).fill('t_earthen_vessel'), ...Array(3).fill('t_switch'), ...Array(2).fill('t_magma_basin'), ...Array(10).fill('e_fire'), ...Array(9).fill('e_lightning')] },
-      celebi: { name: 'セレビィex＆フシギバナ緑風', cards: [...Array(3).fill('c_celebi_ex'), ...Array(3).fill('c_bulbasaur'), ...Array(2).fill('c_ivysaur'), ...Array(2).fill('c_venusaur_ex'), ...Array(2).fill('c_ogerpon_ex'), ...Array(2).fill('c_bidoof'), ...Array(2).fill('c_bibarel'), ...Array(4).fill('t_prof_research'), ...Array(4).fill('t_iono'), ...Array(3).fill('t_boss_orders'), ...Array(4).fill('t_nest_ball'), ...Array(4).fill('t_rare_candy'), ...Array(3).fill('t_potion_max'), ...Array(2).fill('t_artazon'), ...Array(20).fill('e_grass')] }
+      charizard: {
+        name: 'リザードンex＆ファイヤー (炎)',
+        energies: ['Fire'],
+        cards: [
+          'c_charmander', 'c_charmander', 'c_charmeleon', 'c_charmeleon', 'c_charizard_ex', 'c_charizard_ex',
+          'c_moltres_ex', 'c_moltres_ex',
+          't_prof_research', 't_prof_research', 't_pokeball', 't_pokeball',
+          't_potion', 't_potion', 't_x_speed', 't_x_speed', 't_sabrina', 't_sabrina', 't_giovanni', 't_rare_candy'
+        ]
+      },
+      pikachu: {
+        name: 'ピカチュウex＆サンダー (雷)',
+        energies: ['Lightning'],
+        cards: [
+          'c_pikachu_ex', 'c_pikachu_ex', 'c_zapdos_ex', 'c_zapdos_ex', 'c_raikou_v', 'c_raikou_v', 'c_miraidon_ex', 'c_miraidon_ex',
+          't_prof_research', 't_prof_research', 't_pokeball', 't_pokeball',
+          't_potion', 't_potion', 't_x_speed', 't_x_speed', 't_sabrina', 't_sabrina', 't_giovanni', 't_giovanni'
+        ]
+      },
+      mewtwo: {
+        name: 'ミュウツーex＆サーナイト (超)',
+        energies: ['Psychic'],
+        cards: [
+          'c_mewtwo_ex', 'c_mewtwo_ex', 'c_ralts', 'c_ralts', 'c_kirlia', 'c_kirlia', 'c_gardevoir_ex', 'c_gardevoir_ex',
+          'c_mew_ex',
+          't_prof_research', 't_prof_research', 't_pokeball', 't_pokeball',
+          't_potion', 't_x_speed', 't_x_speed', 't_sabrina', 't_giovanni', 't_red_card', 't_rare_candy'
+        ]
+      },
+      palkia: {
+        name: 'パルキアex＆カスミ (水)',
+        energies: ['Water'],
+        cards: [
+          'c_palkia_ex', 'c_palkia_ex', 'c_greninja_ex', 'c_greninja_ex', 'c_squirtle', 'c_wartortle', 'c_blastoise_ex', 'c_radiant_greninja',
+          't_prof_research', 't_prof_research', 't_pokeball', 't_pokeball',
+          't_misty', 't_misty', 't_potion', 't_potion', 't_x_speed', 't_sabrina', 't_giovanni', 't_rare_candy'
+        ]
+      },
+      celebi: {
+        name: 'セレビィex＆エリカ (草)',
+        energies: ['Grass'],
+        cards: [
+          'c_celebi_ex', 'c_celebi_ex', 'c_ogerpon_ex', 'c_ogerpon_ex', 'c_bulbasaur', 'c_ivysaur', 'c_venusaur_ex',
+          't_prof_research', 't_prof_research', 't_pokeball', 't_pokeball',
+          't_erika', 't_erika', 't_potion', 't_potion', 't_x_speed', 't_sabrina', 't_sabrina', 't_giovanni', 't_rare_candy'
+        ]
+      },
+      arceus: {
+        name: 'アルセウスex＆ビーダル (無・鋼)',
+        energies: ['Metal'],
+        cards: [
+          'c_arceus_ex', 'c_arceus_ex', 'c_dialga_ex', 'c_dialga_ex', 'c_bidoof', 'c_bidoof', 'c_bibarel', 'c_bibarel',
+          't_prof_research', 't_prof_research', 't_pokeball', 't_pokeball',
+          't_potion', 't_potion', 't_x_speed', 't_x_speed', 't_sabrina', 't_sabrina', 't_giovanni', 't_red_card'
+        ]
+      },
+      darkrai: {
+        name: 'ダークライex＆ブラッキー (悪)',
+        energies: ['Darkness'],
+        cards: [
+          'c_darkrai_vstar', 'c_darkrai_vstar', 'c_eevee', 'c_eevee', 'c_umbreon_vmax', 'c_umbreon_vmax', 'c_roaring_moon_ex', 'c_roaring_moon_ex',
+          't_prof_research', 't_prof_research', 't_pokeball', 't_pokeball',
+          't_potion', 't_potion', 't_x_speed', 't_sabrina', 't_sabrina', 't_giovanni', 't_giovanni', 't_red_card'
+        ]
+      },
+      rayquaza: {
+        name: 'レックウザex＆ファイヤー (炎・雷)',
+        energies: ['Fire', 'Lightning'],
+        cards: [
+          'c_rayquaza_vmax', 'c_rayquaza_vmax', 'c_shiny_rayquaza', 'c_moltres_ex', 'c_moltres_ex', 'c_raikou_v', 'c_raikou_v',
+          't_prof_research', 't_prof_research', 't_pokeball', 't_pokeball',
+          't_potion', 't_potion', 't_x_speed', 't_x_speed', 't_sabrina', 't_sabrina', 't_giovanni', 't_giovanni', 't_red_card'
+        ]
+      }
     };
 
     /* ==================== 6. マルチアカウント＆レート管理 ==================== */
     const accountMgr = {
-      IDX_KEY: 'pokepokedx_acc_idx_v7',
-      DATA_PREFIX: 'pokepokedx_acc_v7_',
+      IDX_KEY: 'pokepokedx_pocket20_idx_v1',
+      DATA_PREFIX: 'pokepokedx_pocket20_acc_v1_',
       currentId: 'acc_default', index: [], data: null,
 
       getRankInfo(rp = 1000) {
-        if (rp >= 1800) return { title: 'マスターボール級', color: 'text-purple-700' };
-        if (rp >= 1500) return { title: 'ハイパーボール級', color: 'text-amber-700' };
-        if (rp >= 1200) return { title: 'スーパーボール級', color: 'text-sky-700' };
-        return { title: 'モンスターボール級', color: 'text-rose-700' };
+        if (rp >= 1800) return { title: 'マスターボール級' };
+        if (rp >= 1500) return { title: 'ハイパーボール級' };
+        if (rp >= 1200) return { title: 'スーパーボール級' };
+        return { title: 'モンスターボール級' };
       },
 
       createDefault(id, name = 'トレーナー', avatar = 'TR', password = '') {
         const collection = {};
-        CARDS.forEach(c => { collection[c.id] = c.isBasicEnergy ? 30 : 4; });
+        CARDS.forEach(c => { collection[c.id] = 2; });
         return {
           id, name, avatar, password,
           hourglass: 240, gold: 500, packPoints: 200,
-          rating: 1000, wins: 0, losses: 0, streak: 0, maxStreak: 0,
+          rating: 1000, wins: 0, losses: 0, streak: 0,
           collection, activeDeckSlot: 0,
           decks: [
-            { name: PRESET_DECKS.charizard.name, cards: [...PRESET_DECKS.charizard.cards] },
-            { name: PRESET_DECKS.pikachu.name, cards: [...PRESET_DECKS.pikachu.cards] },
-            { name: PRESET_DECKS.mewtwo.name, cards: [...PRESET_DECKS.mewtwo.cards] },
-            { name: PRESET_DECKS.eevee.name, cards: [...PRESET_DECKS.eevee.cards] }
+            { name: PRESET_DECKS.charizard.name, energies: [...PRESET_DECKS.charizard.energies], cards: [...PRESET_DECKS.charizard.cards] },
+            { name: PRESET_DECKS.pikachu.name, energies: [...PRESET_DECKS.pikachu.energies], cards: [...PRESET_DECKS.pikachu.cards] },
+            { name: PRESET_DECKS.mewtwo.name, energies: [...PRESET_DECKS.mewtwo.energies], cards: [...PRESET_DECKS.mewtwo.cards] },
+            { name: PRESET_DECKS.palkia.name, energies: [...PRESET_DECKS.palkia.energies], cards: [...PRESET_DECKS.palkia.cards] }
           ]
         };
       },
@@ -889,7 +1017,7 @@
           loaded = this.createDefault(accId, m.name, m.avatar, '');
         }
         if (loaded.rating === undefined) loaded.rating = 1000;
-        CARDS.forEach(c => { if (loaded.collection[c.id] === undefined) loaded.collection[c.id] = c.isBasicEnergy ? 30 : 2; });
+        CARDS.forEach(c => { if (loaded.collection[c.id] === undefined) loaded.collection[c.id] = 2; });
         this.data = loaded; this.saveCurrent();
       },
 
@@ -903,7 +1031,7 @@
 
       getActiveDeck() {
         const decks = this.data?.decks || [];
-        return decks[Math.min(this.data?.activeDeckSlot || 0, decks.length - 1)] || { name: PRESET_DECKS.charizard.name, cards: [...PRESET_DECKS.charizard.cards] };
+        return decks[Math.min(this.data?.activeDeckSlot || 0, decks.length - 1)] || PRESET_DECKS.charizard;
       },
 
       selectActiveDeck(idx) {
@@ -924,12 +1052,15 @@
 
         const sel = document.getElementById('home-deck-selector');
         if (sel) sel.innerHTML = (this.data.decks || []).map((d, i) => `<option value="${i}" ${i === this.data.activeDeckSlot ? 'selected' : ''}>${d.name} (${d.cards.length}枚)</option>`).join('');
-        const ok = this.getActiveDeck().cards.length === 60;
+        const ad = this.getActiveDeck();
+        const ok = ad.cards.length === 20;
         const vEl = document.getElementById('home-deck-valid');
         if (vEl) {
-          vEl.textContent = ok ? 'OK • 60枚' : `${this.getActiveDeck().cards.length}/60枚`;
+          vEl.textContent = ok ? 'OK • 20枚' : `${ad.cards.length}/20枚`;
           vEl.className = ok ? 'text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-black' : 'text-[10px] px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 font-black';
         }
+        const eEl = document.getElementById('home-deck-energies');
+        if (eEl) eEl.innerHTML = (ad.energies || ['Fire']).map(t => renderTypeBadgeSvg(t, 16)).join('');
       },
 
       openModal() {
@@ -1013,7 +1144,7 @@
       exportJson() {
         const blob = new Blob([JSON.stringify(this.data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = `pokepokedx_${this.data.name}.json`; a.click();
+        const a = document.createElement('a'); a.href = url; a.download = `pokepokedx_pocket_${this.data.name}.json`; a.click();
         URL.revokeObjectURL(url);
       },
 
@@ -1054,9 +1185,9 @@
         }
       },
 
-      ensure60Deck() {
-        if (accountMgr.getActiveDeck().cards.length !== 60) {
-          ui.toast('使用中のデッキが60枚ではありません！デッキ編成で60枚にしてください。');
+      ensure20Deck() {
+        if (accountMgr.getActiveDeck().cards.length !== 20) {
+          ui.toast('使用中のデッキが20枚ではありません！デッキ編成で20枚にしてください。');
           return false;
         }
         return true;
@@ -1072,18 +1203,16 @@
         document.getElementById('friend-join-status').textContent = '';
       },
 
-      // --- オンラインレート戦 ---
       startRankedMatch() {
-        if (!this.ensure60Deck()) return;
+        if (!this.ensure20Deck()) return;
         this.cancelNetwork();
         this.mode = 'ranked';
         document.getElementById('ranked-idle-box').classList.add('hidden');
         document.getElementById('ranked-searching-box').classList.remove('hidden');
         document.getElementById('ranked-status-text').textContent = 'オンラインレート戦の対戦相手を検索中...';
 
-        // 公開ロビー部屋への接続＆ホスト試行（PeerJS）
         const bucket = Math.floor((accountMgr.data.rating || 1000) / 300);
-        const lobbyId = `pokepokedx-ranked-b${bucket}-slot1`;
+        const lobbyId = `pokepokedx-p20-ranked-b${bucket}`;
         if (typeof Peer !== 'undefined') {
           try {
             const p = new Peer();
@@ -1092,11 +1221,10 @@
               const c = p.connect(lobbyId, { reliable: true });
               let connected = false;
               c.on('open', () => {
-                connected = true;
-                this.conn = c;
-                this.isHost = false;
+                connected = true; this.conn = c; this.isHost = false;
                 this.bindConnection(c, 'ranked');
-                c.send({ type: 'HELLO', name: accountMgr.data.name, rating: accountMgr.data.rating || 1000, deck: accountMgr.getActiveDeck().cards });
+                const ad = accountMgr.getActiveDeck();
+                c.send({ type: 'HELLO', name: accountMgr.data.name, rating: accountMgr.data.rating || 1000, deck: ad.cards, energies: ad.energies });
               });
               setTimeout(() => {
                 if (!connected && this.peer === p) {
@@ -1104,8 +1232,7 @@
                   const hp = new Peer(lobbyId);
                   this.peer = hp;
                   hp.on('connection', incoming => {
-                    this.conn = incoming;
-                    this.isHost = true;
+                    this.conn = incoming; this.isHost = true;
                     this.bindConnection(incoming, 'ranked');
                   });
                 }
@@ -1114,10 +1241,9 @@
           } catch (e) {}
         }
 
-        // 5秒以内に実プレイヤーが見つからない場合は同レート帯のランクマッチAIライバルと即開始
         this.searchTimer = setTimeout(() => {
           if (!this.conn) this.matchRankedShadowNow();
-        }, 5000);
+        }, 4500);
       },
 
       matchRankedShadowNow() {
@@ -1128,7 +1254,7 @@
 
         const rp = accountMgr.data.rating || 1000;
         const rivalRp = Math.max(850, rp + Math.floor(Math.random() * 90) - 45);
-        const names = ['サトシDX', 'シロナ_JP', 'レッドマスター', 'ナンジャモ推し', 'アルセウス使い', 'ハルカ_TCG'];
+        const names = ['サトシDX', 'シロナ_JP', 'レッドマスター', 'ナンジャモ推し', 'アルセウス使い', 'カスミ_TCG'];
         const deckKeys = Object.keys(PRESET_DECKS);
         const pickKey = deckKeys[Math.floor(Math.random() * deckKeys.length)];
         const rivalName = `${names[Math.floor(Math.random() * names.length)]} (${rivalRp}RP)`;
@@ -1136,34 +1262,28 @@
         battle.startBattle({ mode: 'ranked', oppDeckKey: pickKey, oppName: rivalName, oppRating: rivalRp, isOnlineP2P: false });
       },
 
-      // --- 友達とバトル（6桁合言葉） ---
       createFriendRoom() {
-        if (!this.ensure60Deck()) return;
+        if (!this.ensure20Deck()) return;
         this.cancelNetwork();
         if (typeof Peer === 'undefined') { ui.toast('P2P通信ライブラリが読み込めませんでした'); return; }
         const code = String(Math.floor(100000 + Math.random() * 900000));
-        const peerId = `pokepokedx-room-${code}`;
+        const peerId = `pokepokedx-p20-room-${code}`;
         document.getElementById('friend-host-box').classList.remove('hidden');
         document.getElementById('friend-room-code').textContent = code;
         document.getElementById('friend-host-status').textContent = '合言葉を発行中...';
 
         const p = new Peer(peerId);
         this.peer = p;
-        p.on('open', () => {
-          document.getElementById('friend-host-status').textContent = '友達の参加を待っています...';
-        });
+        p.on('open', () => { document.getElementById('friend-host-status').textContent = '友達の参加を待っています...'; });
         p.on('connection', incoming => {
-          this.conn = incoming;
-          this.isHost = true;
+          this.conn = incoming; this.isHost = true;
           this.bindConnection(incoming, 'friend');
         });
-        p.on('error', () => {
-          document.getElementById('friend-host-status').textContent = '接続エラー。もう一度発行してください。';
-        });
+        p.on('error', () => { document.getElementById('friend-host-status').textContent = '接続エラー。もう一度発行してください。'; });
       },
 
       joinFriendRoom() {
-        if (!this.ensure60Deck()) return;
+        if (!this.ensure20Deck()) return;
         const code = (document.getElementById('friend-join-input').value || '').trim();
         if (code.length < 4) { ui.toast('合言葉を入力してください'); return; }
         this.cancelNetwork();
@@ -1174,12 +1294,12 @@
         const p = new Peer();
         this.peer = p;
         p.on('open', () => {
-          const c = p.connect(`pokepokedx-room-${code}`, { reliable: true });
-          this.conn = c;
-          this.isHost = false;
+          const c = p.connect(`pokepokedx-p20-room-${code}`, { reliable: true });
+          this.conn = c; this.isHost = false;
           c.on('open', () => {
             this.bindConnection(c, 'friend');
-            c.send({ type: 'HELLO', name: accountMgr.data.name, rating: accountMgr.data.rating || 1000, deck: accountMgr.getActiveDeck().cards });
+            const ad = accountMgr.getActiveDeck();
+            c.send({ type: 'HELLO', name: accountMgr.data.name, rating: accountMgr.data.rating || 1000, deck: ad.cards, energies: ad.energies });
           });
           c.on('error', () => { st.textContent = '部屋が見つかりませんでした。'; });
         });
@@ -1189,14 +1309,14 @@
         if (this.searchTimer) { clearTimeout(this.searchTimer); this.searchTimer = null; }
         conn.on('data', msg => {
           if (msg.type === 'HELLO') {
-            // ホストがゲストの参加を受け取り、自分の情報も返して対戦開始
-            conn.send({ type: 'WELCOME', name: accountMgr.data.name, rating: accountMgr.data.rating || 1000, deck: accountMgr.getActiveDeck().cards });
+            const ad = accountMgr.getActiveDeck();
+            conn.send({ type: 'WELCOME', name: accountMgr.data.name, rating: accountMgr.data.rating || 1000, deck: ad.cards, energies: ad.energies });
             document.getElementById('ranked-idle-box').classList.remove('hidden');
             document.getElementById('ranked-searching-box').classList.add('hidden');
             document.getElementById('friend-host-box').classList.add('hidden');
             battle.startBattle({
               mode: modeType, oppName: `${msg.name} (${msg.rating}RP)`, oppRating: msg.rating,
-              oppCustomDeck: msg.deck, isOnlineP2P: true, isFirstPlayer: true
+              oppCustomDeck: msg.deck, oppEnergies: msg.energies, isOnlineP2P: true, isFirstPlayer: true
             });
           } else if (msg.type === 'WELCOME') {
             document.getElementById('ranked-idle-box').classList.remove('hidden');
@@ -1204,7 +1324,7 @@
             document.getElementById('friend-join-status').textContent = '';
             battle.startBattle({
               mode: modeType, oppName: `${msg.name} (${msg.rating}RP)`, oppRating: msg.rating,
-              oppCustomDeck: msg.deck, isOnlineP2P: true, isFirstPlayer: false
+              oppCustomDeck: msg.deck, oppEnergies: msg.energies, isOnlineP2P: true, isFirstPlayer: false
             });
           } else if (msg.type === 'SYNC_STATE') {
             battle.receiveRemoteState(msg);
@@ -1222,7 +1342,7 @@
       },
 
       launchCpu() {
-        if (!this.ensure60Deck()) return;
+        if (!this.ensure20Deck()) return;
         const k = document.getElementById('cpu-opp-deck').value;
         battle.startBattle({ mode: 'cpu', oppDeckKey: k, oppName: `CPU (${PRESET_DECKS[k].name})`, isOnlineP2P: false });
       }
@@ -1247,19 +1367,17 @@
         const isDark = c.type === 'Darkness';
         const textMain = isDark ? 'text-white' : 'text-slate-900';
 
-        let badgeText = 'エネ', badgeColor = 'bg-sky-600 text-white';
+        let badgeText = 'グッズ', badgeColor = 'bg-blue-600 text-white';
         if (c.category === 'Pokemon') {
           badgeText = c.stage === 'Basic' ? 'たね' : c.stage === 'Stage1' ? '1進化' : '2進化';
           badgeColor = c.stage === 'Basic' ? 'bg-slate-200 text-slate-700' : 'bg-sky-600 text-white';
-        } else if (c.category === 'Trainer') {
-          if (c.subType === 'Supporter') { badgeText = 'サポート'; badgeColor = 'bg-orange-500 text-white'; }
-          else if (c.subType === 'Stadium') { badgeText = 'スタジアム'; badgeColor = 'bg-emerald-600 text-white'; }
-          else { badgeText = 'グッズ'; badgeColor = 'bg-blue-600 text-white'; }
+        } else if (c.subType === 'Supporter') {
+          badgeText = 'サポート'; badgeColor = 'bg-orange-500 text-white';
         }
         const firstAtk = c.attacks && c.attacks[0];
 
         return `
-          <div onclick="${options.onClick || ''}" class="pk-card border-${c.rarity} ${glow} ${unowned} card-bg-${c.type} w-25 sm:w-28 h-36 sm:h-40 p-1.5 flex flex-col justify-between cursor-pointer shrink-0">
+          <div onclick="${options.onClick || ''}" class="pk-card border-${c.rarity} ${glow} ${unowned} card-bg-${c.type} w-24 sm:w-28 h-34 sm:h-40 p-1.5 flex flex-col justify-between cursor-pointer shrink-0">
             ${isHolo ? '<div class="holo-foil"></div>' : ''}
             <div class="flex items-center justify-between gap-0.5 leading-none z-10">
               <span class="px-1 py-0.5 rounded text-[7px] font-black shrink-0 ${badgeColor}">${badgeText}</span>
@@ -1276,7 +1394,7 @@
             </div>
             <div class="flex items-center justify-between text-[8px] font-black pt-0.5 z-10 ${textMain}">
               <span>${RARITY_STARS[c.rarity] || c.rarity}</span>
-              <span>${c.weakness && c.weakness !== 'None' ? `弱:${renderTypeBadgeSvg(c.weakness, 10)}` : ''}</span>
+              <span>${c.weakness && c.weakness !== 'None' ? `弱:${renderTypeBadgeSvg(c.weakness, 10)}+20` : ''}</span>
             </div>
           </div>
         `;
@@ -1302,14 +1420,13 @@
               ${generateCardArtworkSvg(card)}
             </div>
             <div class="bg-white/92 rounded-2xl p-2.5 space-y-2 text-slate-800 z-10">
-              ${card.vstarPower ? `<div class="bg-amber-100 border border-amber-400 rounded-xl p-2"><div class="text-[11px] font-black text-amber-800">VSTAR: ${card.vstarPower.name}</div><p class="text-[10px]">${card.vstarPower.text}</p></div>` : ''}
               ${card.ability ? `<div class="bg-rose-50 border border-rose-200 rounded-xl p-2"><div class="text-[11px] font-black text-rose-700">特性: ${card.ability.name}</div><p class="text-[10px]">${card.ability.text}</p></div>` : ''}
               ${card.attacks ? card.attacks.map((atk, idx) => {
                 const prev = dmgPreviewList && dmgPreviewList[idx];
                 return `<div class="border-b last:border-none border-slate-200 pb-1 last:pb-0">
                   <div class="flex justify-between items-center">
                     <span class="text-xs font-black flex items-center gap-1">${atk.cost.map(ct => renderTypeBadgeSvg(ct, 13)).join('')} ${atk.name}</span>
-                    <div><span class="font-black text-base">${atk.damage}</span>${prev ? `<span class="ml-1 px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 font-black text-[10px]">実ダメ:${prev.final}${prev.isWeak ? '(弱点×2)' : ''}</span>` : ''}</div>
+                    <div><span class="font-black text-base">${atk.damage}</span>${prev ? `<span class="ml-1 px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 font-black text-[10px]">実ダメ:${prev.final}${prev.isWeak ? '(弱点+20)' : ''}</span>` : ''}</div>
                   </div>
                   ${atk.text ? `<p class="text-[10px] text-slate-600 mt-0.5">${atk.text}</p>` : ''}
                 </div>`;
@@ -1317,7 +1434,7 @@
               ${card.text ? `<p class="text-xs text-slate-700 font-medium">${card.text}</p>` : ''}
             </div>
             <div class="flex justify-between text-[10px] font-black px-1 z-10 ${textMain}">
-              <span>${card.category === 'Pokemon' ? `弱点:${card.weakness || 'なし'} / にげる:${card.retreat || 0}` : 'TRAINER / ENERGY'}</span>
+              <span>${card.category === 'Pokemon' ? `弱点:${card.weakness && card.weakness !== 'None' ? card.weakness + '+20' : 'なし'} / にげる:${card.retreat || 0}` : 'TRAINER'}</span>
               <span>${RARITY_STARS[card.rarity]} (所持:${ownedCnt})</span>
             </div>
           </div>
@@ -1491,9 +1608,9 @@
       }
     };
 
-    /* ==================== 10. デッキビルダー＆図鑑 ==================== */
+    /* ==================== 10. 20枚デッキビルダー＆図鑑 ==================== */
     const deckBuilder = {
-      filter: 'ALL', viewMode: 'build', currentSlot: 0, tempDeck: [], tempName: '',
+      filter: 'ALL', viewMode: 'build', currentSlot: 0, tempDeck: [], tempEnergies: ['Fire'], tempName: '',
 
       init() {
         this.currentSlot = accountMgr.data.activeDeckSlot || 0;
@@ -1508,17 +1625,31 @@
 
       loadSlot() {
         const decks = accountMgr.data.decks || [];
-        const d = decks[this.currentSlot] || { name: '新規デッキ', cards: [] };
-        this.tempDeck = [...d.cards]; this.tempName = d.name;
+        const d = decks[this.currentSlot] || { name: '新規20枚デッキ', energies: ['Fire'], cards: [] };
+        this.tempDeck = [...d.cards];
+        this.tempEnergies = [...(d.energies || ['Fire'])];
+        this.tempName = d.name;
         document.getElementById('deck-slot-select').innerHTML = decks.map((dk, i) => `<option value="${i}" ${i === this.currentSlot ? 'selected' : ''}>スロット${i + 1}: ${dk.name}</option>`).join('');
         document.getElementById('deck-name-input').value = this.tempName;
       },
 
       switchSlot(i) { this.currentSlot = Number(i); this.loadSlot(); this.render(); },
 
+      toggleEnergyType(t) {
+        const idx = this.tempEnergies.indexOf(t);
+        if (idx !== -1) {
+          if (this.tempEnergies.length <= 1) { ui.toast('エネルギータイプは最低1つ必要です'); return; }
+          this.tempEnergies.splice(idx, 1);
+        } else {
+          if (this.tempEnergies.length >= 3) { ui.toast('エネルギータイプは最大3つまでです'); return; }
+          this.tempEnergies.push(t);
+        }
+        sound.energy(); this.render();
+      },
+
       createNewDeckSlot() {
         if (accountMgr.data.decks.length >= 8) { ui.toast('デッキスロットは最大8個です'); return; }
-        accountMgr.data.decks.push({ name: `カスタムデッキ ${accountMgr.data.decks.length + 1}`, cards: [...PRESET_DECKS.charizard.cards] });
+        accountMgr.data.decks.push({ name: `マイデッキ ${accountMgr.data.decks.length + 1}`, energies: [...PRESET_DECKS.charizard.energies], cards: [...PRESET_DECKS.charizard.cards] });
         this.currentSlot = accountMgr.data.decks.length - 1;
         accountMgr.saveCurrent(); this.loadSlot(); this.render();
       },
@@ -1540,17 +1671,20 @@
 
       loadPreset(k) {
         if (!k || !PRESET_DECKS[k]) return;
-        this.tempDeck = [...PRESET_DECKS[k].cards]; this.tempName = PRESET_DECKS[k].name;
-        document.getElementById('deck-name-input').value = this.tempName; this.render();
+        this.tempDeck = [...PRESET_DECKS[k].cards];
+        this.tempEnergies = [...PRESET_DECKS[k].energies];
+        this.tempName = PRESET_DECKS[k].name;
+        document.getElementById('deck-name-input').value = this.tempName;
+        this.render();
       },
 
       clearDeck() { this.tempDeck = []; this.render(); },
 
       addCard(id) {
-        const c = CARD_MAP[id]; if (!c || this.tempDeck.length >= 60) return;
-        if (!c.isBasicEnergy && this.tempDeck.filter(x => CARD_MAP[x].name === c.name).length >= 4) { ui.toast('同名カードは4枚までです'); return; }
+        const c = CARD_MAP[id]; if (!c || this.tempDeck.length >= 20) { if (this.tempDeck.length >= 20) ui.toast('本家ポケポケルール：デッキは20枚までです'); return; }
+        if (this.tempDeck.filter(x => CARD_MAP[x].name === c.name).length >= 2) { ui.toast('本家ポケポケルール：同名カードは2枚までです'); return; }
         const owned = accountMgr.data.collection[id] || 0;
-        if (!c.isBasicEnergy && this.tempDeck.filter(x => x === id).length >= owned) { ui.toast(`所持枚数(${owned}枚)を超えています`); return; }
+        if (this.tempDeck.filter(x => x === id).length >= owned) { ui.toast(`所持枚数(${owned}枚)を超えています`); return; }
         this.tempDeck.push(id); sound.draw(); this.render();
       },
 
@@ -1558,47 +1692,55 @@
 
       craftCard(id) {
         const c = CARD_MAP[id];
-        const cost = { C: 20, U: 35, R: 60, RR: 100, SR: 150, SAR: 250, UR: 300 }[c.rarity] || 50;
-        if ((accountMgr.data.packPoints || 0) < cost) { ui.toast(`PTが足りません (必要:${cost})`); return; }
+        const cost = { C: 35, U: 70, R: 150, RR: 250, SR: 400, SAR: 600, UR: 800 }[c.rarity] || 100;
+        if ((accountMgr.data.packPoints || 0) < cost) { ui.toast(`パック開封PTが足りません (必要:${cost})`); return; }
         accountMgr.data.packPoints -= cost;
         accountMgr.data.collection[id] = (accountMgr.data.collection[id] || 0) + 1;
         accountMgr.saveCurrent(); sound.energy();
-        ui.toast(`「${c.name}」を生成しました！`); this.render();
+        ui.toast(`「${c.name}」を交換しました！`); this.render();
       },
 
       saveDeck() {
-        if (this.tempDeck.length !== 60) { ui.toast(`現在${this.tempDeck.length}枚です。ちょうど60枚にして保存してください！`); return; }
+        if (this.tempDeck.length !== 20) { ui.toast(`現在${this.tempDeck.length}枚です。ちょうど20枚にして保存してください！`); return; }
+        if (!this.tempDeck.some(id => CARD_MAP[id].category === 'Pokemon' && CARD_MAP[id].stage === 'Basic')) {
+          ui.toast('たねポケモンを1枚以上入れてください！'); return;
+        }
         const name = document.getElementById('deck-name-input').value.trim() || this.tempName;
-        accountMgr.data.decks[this.currentSlot] = { name, cards: [...this.tempDeck] };
+        accountMgr.data.decks[this.currentSlot] = { name, energies: [...this.tempEnergies], cards: [...this.tempDeck] };
         accountMgr.data.activeDeckSlot = this.currentSlot;
         accountMgr.saveCurrent(); this.loadSlot();
-        ui.toast(`デッキ「${name}」を保存しました！`);
+        ui.toast(`20枚デッキ「${name}」を保存しました！`);
       },
 
       render() {
+        document.getElementById('deck-selected-energies').innerHTML = this.tempEnergies.map(t => renderTypeBadgeSvg(t, 18)).join('');
+        document.getElementById('energy-type-toggles').innerHTML = ENERGY_TYPES.map(t => {
+          const active = this.tempEnergies.includes(t);
+          return `<button onclick="deckBuilder.toggleEnergyType('${t}')" class="px-2.5 py-1 rounded-full text-xs font-black flex items-center gap-1 border ${active ? 'bg-slate-900 text-white border-slate-900 shadow-xs' : 'bg-white text-slate-700 border-slate-300'}">${renderTypeBadgeSvg(t, 14)}${TYPE_META[t].code}</button>`;
+        }).join('');
+
         const q = (document.getElementById('deck-search')?.value || '').trim().toLowerCase();
         const filtered = CARDS.filter(c => (this.filter === 'ALL' || c.category === this.filter) && (!q || `${c.name} ${c.text || ''} ${c.ability?.name || ''}`.toLowerCase().includes(q)));
-        const costMap = { C: 20, U: 35, R: 60, RR: 100, SR: 150, SAR: 250, UR: 300 };
+        const costMap = { C: 35, U: 70, R: 150, RR: 250, SR: 400, SAR: 600, UR: 800 };
 
         document.getElementById('pool-grid').innerHTML = filtered.map(c => {
           const owned = accountMgr.data.collection[c.id] || 0;
           const inD = this.tempDeck.filter(x => x === c.id).length;
           if (this.viewMode === 'dex') {
-            return `<div class="flex flex-col items-center bg-white/85 p-2 rounded-2xl border border-slate-200">${ui.renderMiniCard(c.id, { unowned: owned === 0, onClick: `ui.openCardModal(CARD_MAP['${c.id}'])` })}<div class="flex justify-between w-full mt-1.5 px-1"><span class="text-[10px] font-bold">所持:${owned}</span><button onclick="deckBuilder.craftCard('${c.id}')" class="px-2 py-0.5 rounded bg-fuchsia-600 text-white text-[10px] font-black">生成 PT${costMap[c.rarity]}</button></div></div>`;
+            return `<div class="flex flex-col items-center bg-white/85 p-2 rounded-2xl border border-slate-200">${ui.renderMiniCard(c.id, { unowned: owned === 0, onClick: `ui.openCardModal(CARD_MAP['${c.id}'])` })}<div class="flex justify-between w-full mt-1.5 px-1"><span class="text-[10px] font-bold">所持:${owned}</span><button onclick="deckBuilder.craftCard('${c.id}')" class="px-2 py-0.5 rounded bg-fuchsia-600 text-white text-[10px] font-black">交換 PT${costMap[c.rarity]}</button></div></div>`;
           }
-          return `<div class="flex flex-col items-center bg-white/85 p-2 rounded-2xl border border-slate-200">${ui.renderMiniCard(c.id, { unowned: owned === 0, onClick: `ui.openCardModal(CARD_MAP['${c.id}'])` })}<div class="flex justify-between w-full mt-1.5 px-1"><span class="text-[10px] font-bold">${inD}/${c.isBasicEnergy ? '∞' : owned}</span><div class="flex gap-1"><button onclick="deckBuilder.removeCard('${c.id}')" class="w-6 h-6 rounded bg-slate-200 font-black">-</button><button onclick="deckBuilder.addCard('${c.id}')" class="w-6 h-6 rounded bg-emerald-500 text-white font-black">+</button></div></div></div>`;
+          return `<div class="flex flex-col items-center bg-white/85 p-2 rounded-2xl border border-slate-200">${ui.renderMiniCard(c.id, { unowned: owned === 0, onClick: `ui.openCardModal(CARD_MAP['${c.id}'])` })}<div class="flex justify-between w-full mt-1.5 px-1"><span class="text-[10px] font-bold">${inD}/2 (所持:${owned})</span><div class="flex gap-1"><button onclick="deckBuilder.removeCard('${c.id}')" class="w-6 h-6 rounded bg-slate-200 font-black">-</button><button onclick="deckBuilder.addCard('${c.id}')" class="w-6 h-6 rounded bg-emerald-500 text-white font-black">+</button></div></div></div>`;
         }).join('');
 
-        const counts = {}; let pC = 0, tC = 0, eC = 0;
-        this.tempDeck.forEach(id => { counts[id] = (counts[id] || 0) + 1; const cat = CARD_MAP[id].category; if (cat === 'Pokemon') pC++; else if (cat === 'Trainer') tC++; else eC++; });
+        const counts = {}; let pC = 0, tC = 0;
+        this.tempDeck.forEach(id => { counts[id] = (counts[id] || 0) + 1; if (CARD_MAP[id].category === 'Pokemon') pC++; else tC++; });
         const badge = document.getElementById('deck-count-badge');
-        badge.textContent = `${this.tempDeck.length} / 60枚`;
-        badge.className = this.tempDeck.length === 60 ? 'px-3 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800 font-black' : 'px-3 py-1 rounded-full text-xs bg-amber-100 text-amber-800 font-black';
-        document.getElementById('deck-breakdown').textContent = `ポケ:${pC} / トレ:${tC} / エネ:${eC}`;
+        badge.textContent = `${this.tempDeck.length} / 20枚`;
+        badge.className = this.tempDeck.length === 20 ? 'px-3 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800 font-black' : 'px-3 py-1 rounded-full text-xs bg-amber-100 text-amber-800 font-black';
+        document.getElementById('deck-breakdown').textContent = `ポケモン:${pC} / トレーナーズ:${tC}`;
         const tot = Math.max(1, this.tempDeck.length);
         document.getElementById('bar-poke').style.width = `${(pC / tot) * 100}%`;
         document.getElementById('bar-train').style.width = `${(tC / tot) * 100}%`;
-        document.getElementById('bar-ene').style.width = `${(eC / tot) * 100}%`;
 
         document.getElementById('current-deck-list').innerHTML = Object.entries(counts).map(([id, cnt]) => {
           const c = CARD_MAP[id];
@@ -1624,8 +1766,8 @@
       triggerAttackVfx(side, type, heavy = false) {
         this.init(); if (!this.canvas) return;
         const w = this.canvas.width, h = this.canvas.height;
-        const sx = w * 0.65, sy = side === 'player' ? h * 0.56 : h * 0.24;
-        const ex = w * 0.65, ey = side === 'player' ? h * 0.24 : h * 0.56;
+        const sx = side === 'player' ? w * 0.28 : w * 0.72, sy = side === 'player' ? h * 0.54 : h * 0.22;
+        const ex = side === 'player' ? w * 0.72 : w * 0.28, ey = side === 'player' ? h * 0.22 : h * 0.54;
         const m = TYPE_META[type] || TYPE_META.Colorless;
         this.beams.push({ x1: sx, y1: sy, x2: ex, y2: ey, c1: m.c1, life: 1, width: heavy ? 24 : 14 });
         for (let i = 0; i < (heavy ? 50 : 28); i++) {
@@ -1636,7 +1778,7 @@
       triggerBurst(side, c1 = '#38bdf8', c2 = '#fde047') {
         this.init(); if (!this.canvas) return;
         const w = this.canvas.width, h = this.canvas.height;
-        const cx = side === 'player' ? w * 0.35 : w * 0.65, cy = side === 'player' ? h * 0.55 : h * 0.24;
+        const cx = side === 'player' ? w * 0.3 : w * 0.7, cy = side === 'player' ? h * 0.54 : h * 0.22;
         for (let i = 0; i < 24; i++) {
           const ang = (Math.PI * 2 * i) / 24, spd = 2 + Math.random() * 4.5;
           this.particles.push({ x: cx, y: cy, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd - 1, size: 3.5, color: i % 2 === 0 ? c1 : c2, life: 1, decay: 0.03 });
@@ -1665,9 +1807,10 @@
       }
     };
 
-    /* ==================== 12. 60枚TCGバトルエンジン（レート＆P2P同期対応） ==================== */
+    /* ==================== 12. 本家ポケポケ完全準拠バトルエンジン ==================== */
     const battle = {
-      turn: 1, currentSide: 'player', stadium: null, over: false,
+      phase: 'setup', // 'setup'（初期伏せ配置） -> 'play'（本戦）
+      turn: 1, currentSide: 'player', isFirstTurnPlayer: true, over: false,
       mode: 'cpu', isOnlineP2P: false, oppRating: 1000,
       p: null, o: null, logs: [],
 
@@ -1679,55 +1822,97 @@
 
       createInst(cardId, turnPlayed = 0) {
         const b = CARD_MAP[cardId];
-        return { cardId, hp: b.hp, maxHp: b.hp, energies: [], turnPlayed, abilityUsed: false, status: null };
+        return { cardId, hp: b.hp, maxHp: b.hp, energies: [], turnPlayed, abilityUsed: false };
       },
 
-      initSide(deckIds, name) {
+      pickRandomEnergy(types) {
+        const list = types && types.length > 0 ? types : ['Fire'];
+        return list[Math.floor(Math.random() * list.length)];
+      },
+
+      initSide(deckIds, energyTypes, name, autoPlace = false) {
         let deck = this.shuffle(deckIds), hand = [], tries = 0;
-        while (tries++ < 30) {
-          deck = this.shuffle(deckIds); hand = deck.slice(0, 7);
+        while (tries++ < 40) {
+          deck = this.shuffle(deckIds);
+          hand = deck.slice(0, 5);
           if (hand.some(id => CARD_MAP[id].category === 'Pokemon' && CARD_MAP[id].stage === 'Basic')) break;
         }
-        deck = deck.slice(7);
-        const prizes = deck.slice(0, 6); deck = deck.slice(6);
-        const bIdx = hand.findIndex(id => CARD_MAP[id].category === 'Pokemon' && CARD_MAP[id].stage === 'Basic');
-        const active = this.createInst(hand.splice(bIdx, 1)[0], 0);
+        deck = deck.slice(5);
+        let active = null;
         const bench = [];
-        for (let i = hand.length - 1; i >= 0 && bench.length < 3; i--) {
-          if (CARD_MAP[hand[i]].category === 'Pokemon' && CARD_MAP[hand[i]].stage === 'Basic') bench.push(this.createInst(hand.splice(i, 1)[0], 0));
+        if (autoPlace) {
+          const bIdx = hand.findIndex(id => CARD_MAP[id].category === 'Pokemon' && CARD_MAP[id].stage === 'Basic');
+          if (bIdx !== -1) active = this.createInst(hand.splice(bIdx, 1)[0], 0);
+          for (let i = hand.length - 1; i >= 0 && bench.length < 2; i--) {
+            if (CARD_MAP[hand[i]].category === 'Pokemon' && CARD_MAP[hand[i]].stage === 'Basic') {
+              bench.push(this.createInst(hand.splice(i, 1)[0], 0));
+            }
+          }
         }
-        return { name, deck, hand, prizes, discard: [], active, bench, energyAttached: false, supporterUsed: false, retreated: false, vstarUsed: false };
+        return {
+          name, deck, hand, discard: [], active, bench,
+          points: 0,
+          energyTypes: [...(energyTypes || ['Fire'])],
+          currentEnergy: null,
+          nextEnergy: this.pickRandomEnergy(energyTypes),
+          supporterUsed: false, retreated: false,
+          retreatDiscount: 0, dmgBonus: 0
+        };
       },
 
       startBattle(cfg) {
         this.mode = cfg.mode || 'cpu';
         this.isOnlineP2P = !!cfg.isOnlineP2P;
         this.oppRating = cfg.oppRating || 1000;
-        this.turn = 1; this.stadium = null; this.over = false; this.logs = [];
+        this.phase = 'setup';
+        this.turn = 1;
+        this.over = false;
+        this.logs = [];
 
         const pd = accountMgr.getActiveDeck();
-        const oppCards = cfg.oppCustomDeck || (PRESET_DECKS[cfg.oppDeckKey] || PRESET_DECKS.pikachu).cards;
-        this.p = this.initSide(pd.cards, accountMgr.data.name || 'あなた');
-        this.o = this.initSide(oppCards, cfg.oppName || '対戦相手');
+        const presetOpp = PRESET_DECKS[cfg.oppDeckKey] || PRESET_DECKS.pikachu;
+        const oppCards = cfg.oppCustomDeck || presetOpp.cards;
+        const oppEnergies = cfg.oppEnergies || presetOpp.energies;
+
+        // プレイヤーは初期5枚から自分で伏せ配置、CPU側は自動伏せ配置
+        this.p = this.initSide(pd.cards, pd.energies, accountMgr.data.name || 'あなた', false);
+        this.o = this.initSide(oppCards, oppEnergies, cfg.oppName || '対戦相手', true);
+
+        // 先攻・後攻決定
+        this.isFirstTurnPlayer = (this.isOnlineP2P && cfg.isFirstPlayer === false) ? false : true;
 
         const mb = document.getElementById('battle-mode-badge');
         if (this.mode === 'ranked') { mb.textContent = 'オンラインレート戦'; mb.className = 'px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-black shrink-0'; }
         else if (this.mode === 'friend') { mb.textContent = '友達とバトル (P2P)'; mb.className = 'px-2.5 py-0.5 rounded-full bg-emerald-600 text-white font-black shrink-0'; }
-        else { mb.textContent = 'CPU対戦'; mb.className = 'px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black shrink-0'; }
+        else { mb.textContent = 'ひとりであそぶ (CPU)'; mb.className = 'px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black shrink-0'; }
 
         document.getElementById('opp-name').textContent = this.o.name;
-        this.log('バトル開始！サイド6枚先取で勝利！');
+        this.log('初期手札5枚！たねポケモンをバトル場・ベンチに置いて「バトル開始！」を押そう！');
 
-        const firstSide = (this.isOnlineP2P && cfg.isFirstPlayer === false) ? 'opp' : 'player';
         app.switchScreen('battle');
         battleVfx.init();
-        if (firstSide === 'player') {
+        this.render();
+      },
+
+      // 初期配置完了 -> 本家ポケポケ「バトル開始！」一斉オープン
+      confirmSetup() {
+        if (this.phase !== 'setup') return;
+        if (!this.p.active) {
+          ui.toast('バトル場に「たねポケモン」を1匹配置してください！');
+          return;
+        }
+        this.phase = 'play';
+        sound.rarePull();
+        this.showCutin('BATTLE START!', 'ポケモンオープン！バトル開始！');
+        if (this.isOnlineP2P) this.syncToPeer(false);
+
+        if (this.isFirstTurnPlayer) {
           this.startTurn('player');
-          if (this.isOnlineP2P) this.syncToPeer(false);
         } else {
           this.currentSide = 'opp';
           this.log('相手（先攻）のターンです...');
           this.render();
+          if (!this.isOnlineP2P) setTimeout(() => this.runCpuTurn(), 850);
         }
       },
 
@@ -1735,13 +1920,13 @@
         if (!this.isOnlineP2P || !onlineLobby.conn) return;
         try {
           onlineLobby.conn.send({
-            type: 'SYNC_STATE', passTurn, turn: this.turn, stadium: this.stadium,
+            type: 'SYNC_STATE', passTurn, turn: this.turn, phase: this.phase,
             senderBoard: {
-              handCount: this.p.hand.length, deckCount: this.p.deck.length, prizesCount: this.p.prizes.length,
+              handCount: this.p.hand.length, deckCount: this.p.deck.length, points: this.p.points,
               discard: this.p.discard, active: this.p.active, bench: this.p.bench
             },
             receiverBoard: {
-              prizesCount: this.o.prizes.length, active: this.o.active, bench: this.o.bench
+              points: this.o.points, active: this.o.active, bench: this.o.bench
             },
             lastLog: this.logs[0] || ''
           });
@@ -1751,20 +1936,23 @@
       receiveRemoteState(msg) {
         if (this.over) return;
         if (msg.turn) this.turn = msg.turn;
-        if (msg.stadium !== undefined) this.stadium = msg.stadium;
         if (msg.senderBoard) {
           this.o.active = msg.senderBoard.active;
           this.o.bench = msg.senderBoard.bench || [];
           this.o.discard = msg.senderBoard.discard || [];
+          this.o.points = msg.senderBoard.points || 0;
           while (this.o.hand.length > msg.senderBoard.handCount) this.o.hand.pop();
-          while (this.o.hand.length < msg.senderBoard.handCount) this.o.hand.push('e_fire');
-          while (this.o.prizes.length > msg.senderBoard.prizesCount) this.o.prizes.pop();
+          while (this.o.hand.length < msg.senderBoard.handCount) this.o.hand.push('t_potion');
+          if (this.o.points >= 3) { this.endMatch('opp', '相手が3ポイント先取しました！'); return; }
         }
         if (msg.receiverBoard) {
           this.p.active = msg.receiverBoard.active;
           this.p.bench = msg.receiverBoard.bench || [];
-          if (!this.p.active && this.p.bench.length === 0) { this.endMatch('opp', 'バトル場のポケモンがいなくなりました。'); return; }
-          if (!this.p.active && this.p.bench.length > 0) this.promote('player', 0);
+          this.p.points = msg.receiverBoard.points || 0;
+          if (!this.p.active && this.p.bench.length === 0 && this.phase === 'play') {
+            this.endMatch('opp', '場のポケモンがいなくなりました。'); return;
+          }
+          if (!this.p.active && this.p.bench.length > 0 && this.phase === 'play') this.promote('player', 0);
         }
         if (msg.lastLog) this.log(msg.lastLog);
         if (msg.passTurn) {
@@ -1804,7 +1992,9 @@
 
       drawCards(side, cnt) {
         const s = side === 'player' ? this.p : this.o;
-        for (let i = 0; i < cnt && s.deck.length > 0; i++) s.hand.push(s.deck.shift());
+        for (let i = 0; i < cnt && s.deck.length > 0 && s.hand.length < 10; i++) {
+          s.hand.push(s.deck.shift());
+        }
         if (side === 'player' && cnt > 0) sound.draw();
       },
 
@@ -1812,13 +2002,31 @@
         if (this.over) return;
         this.currentSide = side;
         const s = side === 'player' ? this.p : this.o;
-        s.energyAttached = false; s.supporterUsed = false; s.retreated = false;
+        s.supporterUsed = false;
+        s.retreated = false;
+        s.retreatDiscount = 0;
+        s.dmgBonus = 0;
         if (s.active) s.active.abilityUsed = false;
         s.bench.forEach(b => { b.abilityUsed = false; });
-        if (s.deck.length === 0) { this.endMatch(side === 'player' ? 'opp' : 'player', '山札切れにより決着！'); return; }
+
+        // 1. 山札から1枚ドロー（本家ポケポケでは山札切れ敗北はなくドローなし）
         this.drawCards(side, 1);
+
+        // 2. エネルギーゾーンからエネルギー生成（先攻1ターン目は発生しない本家仕様）
+        const isVeryFirstTurn = (this.turn === 1 && ((side === 'player' && this.isFirstTurnPlayer) || (side === 'opp' && !this.isFirstTurnPlayer)));
+        if (isVeryFirstTurn) {
+          s.currentEnergy = null;
+        } else {
+          s.currentEnergy = s.nextEnergy;
+          s.nextEnergy = this.pickRandomEnergy(s.energyTypes);
+        }
+
         if (side === 'player') {
-          this.log('あなたのターン！緑枠のカードを使うか、バトル場をタップして攻撃しよう！');
+          if (isVeryFirstTurn) {
+            this.log('あなたの先攻1ターン目！（先攻1ターン目はエネルギー発生＆ワザ不可）');
+          } else {
+            this.log('右下のエネルギー玉をドラッグorタップでつけて、ワザを選ぼう！');
+          }
           this.render();
         } else {
           this.log('相手のターン...');
@@ -1828,11 +2036,7 @@
       },
 
       endTurn() {
-        if (this.over || this.currentSide !== 'player') return;
-        if (this.p.active?.status === 'poisoned') {
-          this.p.active.hp -= 10; this.showDmg('player-active', 10);
-          if (this.checkKO('player', 'active', 0)) return;
-        }
+        if (this.over || this.phase !== 'play' || this.currentSide !== 'player') return;
         if (this.isOnlineP2P) {
           this.currentSide = 'opp';
           this.log('相手のターンを待っています...');
@@ -1844,34 +2048,95 @@
         }
       },
 
+      // エネルギーゾーンの玉をタップした場合
+      clickEnergyOrb() {
+        if (this.over || this.phase !== 'play' || this.currentSide !== 'player' || !this.p.currentEnergy) {
+          if (this.turn === 1 && this.isFirstTurnPlayer) ui.toast('先攻1ターン目はエネルギーが発生しません');
+          return;
+        }
+        const targets = [{ z: 'active', i: 0, inst: this.p.active }, ...this.p.bench.map((b, i) => ({ z: 'bench', i, inst: b }))].filter(t => t.inst);
+        const eType = this.p.currentEnergy;
+        ui.openSelectModal(`${TYPE_META[eType].code}エネルギーをつけるポケモンを選択`, targets.map(t => `<div onclick="battle.assignZoneEnergy('${t.z}',${t.i});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-sky-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(t.inst.cardId)}<span class="text-xs font-black text-sky-700 mt-1">${CARD_MAP[t.inst.cardId].name}</span></div>`).join(''));
+      },
+
+      // エネルギーゾーンの玉をポケモンへ付与
+      assignZoneEnergy(z, i) {
+        if (this.over || this.phase !== 'play' || this.currentSide !== 'player' || !this.p.currentEnergy) return;
+        const eType = this.p.currentEnergy;
+        this.p.currentEnergy = null;
+        const t = z === 'active' ? this.p.active : this.p.bench[i];
+        if (!t) return;
+        t.energies.push(eType);
+        sound.energy();
+        battleVfx.triggerBurst('player', TYPE_META[eType].c1, '#fde047');
+
+        // ダークライexの特性「ナイトメアオーラ」発動チェック
+        if (CARD_MAP[t.cardId].id === 'c_darkrai_vstar' && eType === 'Darkness' && this.o.active) {
+          this.o.active.hp -= 20;
+          this.showDmg('opp-active', 20);
+          this.log('ダークライexの特性「ナイトメアオーラ」！相手に20ダメージ！');
+          if (this.checkKO('opp', 'active', 0)) return;
+        } else {
+          this.log(`${CARD_MAP[t.cardId].name}に${TYPE_META[eType].code}エネルギーをつけた！`);
+        }
+        this.render();
+        if (this.isOnlineP2P) this.syncToPeer(false);
+      },
+
       isPlayable(id) {
-        if (this.over || this.currentSide !== 'player') return false;
+        if (this.over) return false;
         const c = CARD_MAP[id]; if (!c) return false;
-        if (c.category === 'Energy') return !this.p.energyAttached;
+        if (this.phase === 'setup') {
+          return c.category === 'Pokemon' && c.stage === 'Basic' && (!this.p.active || this.p.bench.length < 3);
+        }
+        if (this.currentSide !== 'player') return false;
         if (c.category === 'Pokemon') {
-          if (c.stage === 'Basic') return this.p.bench.length < 5;
+          if (c.stage === 'Basic') return this.p.bench.length < 3;
           return [this.p.active, ...this.p.bench].filter(Boolean).some(p => CARD_MAP[p.cardId].name === c.evolvesFrom && p.turnPlayed < this.turn);
         }
-        if (c.category === 'Trainer') return c.subType === 'Supporter' ? (!this.p.supporterUsed && this.turn > 1) : true;
+        if (c.category === 'Trainer') {
+          return c.subType === 'Supporter' ? (!this.p.supporterUsed && this.turn > 1) : true;
+        }
         return false;
       },
 
       playHandCard(idx) {
-        if (this.over || this.currentSide !== 'player') return;
+        if (this.over) return;
         const id = this.p.hand[idx], c = CARD_MAP[id]; if (!c) return;
 
-        if (c.category === 'Energy') {
-          if (this.p.energyAttached) { ui.toast('エネルギーは1ターンに1枚までです'); return; }
-          const targets = [{ z: 'active', i: 0, inst: this.p.active }, ...this.p.bench.map((b, i) => ({ z: 'bench', i, inst: b }))].filter(t => t.inst);
-          ui.openSelectModal(`${c.name} をつけるポケモンを選択`, targets.map(t => `<div onclick="battle.attachEnergy(${idx},'${t.z}',${t.i});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-sky-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(t.inst.cardId)}<span class="text-xs font-black text-sky-700 mt-1">${CARD_MAP[t.inst.cardId].name}</span></div>`).join(''));
+        // 開始前の初期伏せ配置フェーズ
+        if (this.phase === 'setup') {
+          if (c.category !== 'Pokemon' || c.stage !== 'Basic') {
+            ui.toast('バトル開始前は「たねポケモン」のみ配置できます！');
+            return;
+          }
+          if (!this.p.active) {
+            this.p.hand.splice(idx, 1);
+            this.p.active = this.createInst(id, 0);
+            sound.draw();
+            this.log(`バトル場に「${c.name}」を伏せて配置しました！`);
+          } else if (this.p.bench.length < 3) {
+            this.p.hand.splice(idx, 1);
+            this.p.bench.push(this.createInst(id, 0));
+            sound.draw();
+            this.log(`ベンチに「${c.name}」を伏せて配置しました！`);
+          } else {
+            ui.toast('ベンチは最大3枠までです');
+          }
+          this.render();
           return;
         }
+
+        if (this.currentSide !== 'player') return;
+
         if (c.category === 'Pokemon') {
           if (c.stage === 'Basic') {
-            if (this.p.bench.length >= 5) { ui.toast('ベンチはいっぱいです'); return; }
-            this.p.hand.splice(idx, 1); this.p.bench.push(this.createInst(id, this.turn));
+            if (this.p.bench.length >= 3) { ui.toast('本家ポケポケルール：ベンチは最大3枠までです'); return; }
+            this.p.hand.splice(idx, 1);
+            this.p.bench.push(this.createInst(id, this.turn));
             sound.draw(); battleVfx.triggerBurst('player');
-            this.log(`${c.name}をベンチに出した！`); this.render();
+            this.log(`${c.name}をベンチに出した！`);
+            this.render();
             if (this.isOnlineP2P) this.syncToPeer(false);
           } else {
             const cands = [{ z: 'active', i: 0, inst: this.p.active }, ...this.p.bench.map((b, i) => ({ z: 'bench', i, inst: b }))].filter(t => t.inst && CARD_MAP[t.inst.cardId].name === c.evolvesFrom && t.inst.turnPlayed < this.turn);
@@ -1880,26 +2145,18 @@
           }
           return;
         }
+
         if (c.category === 'Trainer') {
-          if (c.subType === 'Supporter' && (this.turn === 1 || this.p.supporterUsed)) { ui.toast('現在サポートは使えません'); return; }
+          if (c.subType === 'Supporter' && (this.turn === 1 || this.p.supporterUsed)) { ui.toast('サポートは1ターンに1枚（先攻1ターン目不可）です'); return; }
           this.execTrainer('player', idx);
         }
-      },
-
-      attachEnergy(hIdx, z, i) {
-        const id = this.p.hand.splice(hIdx, 1)[0];
-        const t = z === 'active' ? this.p.active : this.p.bench[i];
-        t.energies.push(id); this.p.energyAttached = true;
-        sound.energy(); battleVfx.triggerBurst('player', '#facc15', '#38bdf8');
-        this.log(`${CARD_MAP[t.cardId].name}に${CARD_MAP[id].name}をつけた！`); this.render();
-        if (this.isOnlineP2P) this.syncToPeer(false);
       },
 
       evolve(hIdx, z, i) {
         const evoId = this.p.hand.splice(hIdx, 1)[0], evoC = CARD_MAP[evoId];
         const t = z === 'active' ? this.p.active : this.p.bench[i];
         const dmg = t.maxHp - t.hp;
-        t.cardId = evoId; t.maxHp = evoC.hp; t.hp = Math.max(10, evoC.hp - dmg); t.turnPlayed = this.turn; t.abilityUsed = false; t.status = null;
+        t.cardId = evoId; t.maxHp = evoC.hp; t.hp = Math.max(10, evoC.hp - dmg); t.turnPlayed = this.turn; t.abilityUsed = false;
         sound.rarePull(); battleVfx.triggerBurst('player', '#0ea5e9', '#a855f7');
         this.showCutin('EVOLUTION!', `${evoC.name} に進化！`);
         this.log(`${evoC.name}に進化した！`); this.render();
@@ -1908,38 +2165,52 @@
 
       execTrainer(side, hIdx) {
         const s = side === 'player' ? this.p : this.o, opp = side === 'player' ? this.o : this.p;
-        const id = s.hand[hIdx], c = CARD_MAP[id];
-        if (c.subType === 'Stadium') {
-          s.hand.splice(hIdx, 1);
-          if (this.stadium) (this.stadium.owner === 'player' ? this.p : this.o).discard.push(this.stadium.cardId);
-          this.stadium = { cardId: id, owner: side };
-          this.log(`スタジアム「${c.name}」を出した！`); this.render();
-          if (this.isOnlineP2P && side === 'player') this.syncToPeer(false);
-          return;
-        }
-        s.hand.splice(hIdx, 1); s.discard.push(id);
+        const id = s.hand.splice(hIdx, 1)[0], c = CARD_MAP[id];
+        s.discard.push(id);
         if (c.subType === 'Supporter') s.supporterUsed = true;
         sound.draw();
 
-        if (c.id === 't_prof_research') { s.discard.push(...s.hand); s.hand = []; this.drawCards(side, 7); this.log('博士の研究で7枚引いた！'); }
-        else if (c.id === 't_iono') {
-          const pc = s.prizes.length, oc = opp.prizes.length;
-          s.deck.push(...this.shuffle(s.hand)); s.hand = []; opp.deck.push(...this.shuffle(opp.hand)); opp.hand = [];
-          this.drawCards(side, pc); this.drawCards(side === 'player' ? 'opp' : 'player', oc);
-          this.log('ナンジャモでお互いサイド枚数ぶん引き直した！');
-        } else if (c.id === 't_cynthia') {
-          this.drawCards(side, Math.max(0, 6 - s.hand.length)); this.log('シロナの覇気で6枚になるように引いた！');
-        } else if (c.id === 't_arven') {
-          const items = s.deck.filter(x => CARD_MAP[x].subType === 'Item').slice(0, 2);
-          items.forEach(x => { s.deck.splice(s.deck.indexOf(x), 1); s.hand.push(x); });
-          this.log(`ペパーでグッズを${items.length}枚加えた！`);
-        } else if (c.id === 't_nest_ball' && s.bench.length < 5) {
+        if (c.id === 't_prof_research') {
+          this.drawCards(side, 2);
+          this.log('博士の研究で山札を2枚引いた！');
+        } else if (c.id === 't_pokeball') {
           const idx = s.deck.findIndex(x => CARD_MAP[x].category === 'Pokemon' && CARD_MAP[x].stage === 'Basic');
-          if (idx !== -1) { const f = s.deck.splice(idx, 1)[0]; s.bench.push(this.createInst(f, this.turn)); this.log(`ネストボールで${CARD_MAP[f].name}をベンチへ！`); }
-        } else if (c.id === 't_ultra_ball') {
-          s.discard.push(...s.hand.splice(0, Math.min(2, s.hand.length)));
-          const idx = s.deck.findIndex(x => CARD_MAP[x].category === 'Pokemon');
-          if (idx !== -1) { const f = s.deck.splice(idx, 1)[0]; s.hand.push(f); this.log(`ハイパーボールで${CARD_MAP[f].name}を加えた！`); }
+          if (idx !== -1) {
+            const f = s.deck.splice(idx, 1)[0];
+            s.hand.push(f);
+            this.log(`モンスターボールで${CARD_MAP[f].name}を手札に加えた！`);
+          } else this.log('モンスターボールを使ったが対象がいなかった。');
+        } else if (c.id === 't_potion' && s.active) {
+          s.active.hp = Math.min(s.active.maxHp, s.active.hp + 20);
+          battleVfx.triggerBurst(side, '#10b981', '#fff');
+          this.log('きずぐすりでHPを20回復した！');
+        } else if (c.id === 't_x_speed') {
+          s.retreatDiscount += 1;
+          this.log('スピーダーを使った！にげるエネルギーが1個少なくなる！');
+        } else if (c.id === 't_giovanni') {
+          s.dmgBonus += 10;
+          this.log('サカキを使った！この番のワザのダメージ+10！');
+        } else if (c.id === 't_erika' && s.active) {
+          s.active.hp = Math.min(s.active.maxHp, s.active.hp + 50);
+          battleVfx.triggerBurst(side, '#22c55e', '#fff');
+          this.log('エリカでHPを50回復した！');
+        } else if (c.id === 't_misty') {
+          const wTargets = [s.active, ...s.bench].filter(p => p && CARD_MAP[p.cardId].type === 'Water');
+          if (wTargets.length > 0) {
+            const add = Math.random() < 0.55 ? 2 : 1;
+            for (let k = 0; k < add; k++) wTargets[0].energies.push('Water');
+            battleVfx.triggerBurst(side, '#38bdf8', '#fff');
+            this.log(`カスミのコイントス成功！${CARD_MAP[wTargets[0].cardId].name}に水エネルギーを${add}個つけた！`);
+          }
+        } else if (c.id === 't_red_card') {
+          opp.deck.push(...this.shuffle(opp.hand));
+          opp.hand = [];
+          this.drawCards(side === 'player' ? 'opp' : 'player', 3);
+          this.log('レッドカード！相手は手札を山札に戻して3枚引き直した！');
+        } else if (c.id === 't_sabrina' && opp.bench.length > 0) {
+          if (side === 'player') {
+            ui.openSelectModal('ナツメ：呼び出す相手ベンチを選択', opp.bench.map((b, i) => `<div onclick="battle.swapActive('opp',${i});ui.closeSelectModal();battle.render();" class="p-3 rounded-2xl bg-slate-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(b.cardId)}<span class="text-xs font-black text-rose-600 mt-1">バトル場へ</span></div>`).join(''), false);
+          } else this.swapActive('player', 0);
         } else if (c.id === 't_rare_candy') {
           const s2Idx = s.hand.findIndex(x => CARD_MAP[x].stage === 'Stage2');
           if (s2Idx !== -1) {
@@ -1952,23 +2223,6 @@
               this.log(`ふしぎなアメで${s2.name}に進化！`);
             }
           }
-        } else if (c.id === 't_boss_orders' && opp.bench.length > 0) {
-          if (side === 'player') {
-            ui.openSelectModal('ボスの指令：呼び出す相手ベンチを選択', opp.bench.map((b, i) => `<div onclick="battle.swapActive('opp',${i});ui.closeSelectModal();battle.render();" class="p-3 rounded-2xl bg-slate-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(b.cardId)}<span class="text-xs font-black text-rose-600 mt-1">呼び出す</span></div>`).join(''), false);
-          } else this.swapActive('player', 0);
-        } else if (c.id === 't_switch' && s.bench.length > 0) {
-          if (side === 'player') {
-            ui.openSelectModal('ポケモンいれかえ：出すベンチを選択', s.bench.map((b, i) => `<div onclick="battle.swapActive('player',${i});ui.closeSelectModal();battle.render();" class="p-3 rounded-2xl bg-slate-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(b.cardId)}<span class="text-xs font-black text-sky-700 mt-1">バトル場へ</span></div>`).join(''), false);
-          } else this.swapActive('opp', 0);
-        } else if (c.id === 't_potion_max' && s.active) {
-          s.active.hp = Math.min(s.active.maxHp, s.active.hp + 120);
-          battleVfx.triggerBurst(side, '#10b981', '#fff');
-          this.log('すごいキズぐすりでHP120回復！');
-        } else if (c.id === 't_earthen_vessel') {
-          if (s.hand.length > 0) s.discard.push(s.hand.shift());
-          const enes = s.deck.filter(x => CARD_MAP[x].isBasicEnergy).slice(0, 2);
-          enes.forEach(x => { s.deck.splice(s.deck.indexOf(x), 1); s.hand.push(x); });
-          this.log(`大地の器でエネルギーを${enes.length}枚加えた！`);
         }
         this.render();
         if (this.isOnlineP2P && side === 'player') this.syncToPeer(false);
@@ -1976,23 +2230,25 @@
 
       swapActive(side, bIdx) {
         const s = side === 'player' ? this.p : this.o;
-        const old = s.active; if (old) old.status = null;
+        const old = s.active;
         s.active = s.bench[bIdx]; s.bench[bIdx] = old;
         this.log(`${CARD_MAP[s.active.cardId].name}がバトル場に出た！`);
         if (this.isOnlineP2P) this.syncToPeer(false);
       },
 
       initiateRetreat() {
-        if (this.over || this.currentSide !== 'player' || this.p.retreated || this.p.bench.length === 0) return;
-        const cost = CARD_MAP[this.p.active.cardId].retreat || 0;
-        if (this.getTotalEne(this.p.active) < cost) { ui.toast(`にげるエネルギー不足 (必要:${cost})`); return; }
+        if (this.over || this.phase !== 'play' || this.currentSide !== 'player' || this.p.retreated || this.p.bench.length === 0) return;
+        const cost = Math.max(0, (CARD_MAP[this.p.active.cardId].retreat || 0) - this.p.retreatDiscount);
+        if (this.p.active.energies.length < cost) { ui.toast(`にげるエネルギー不足 (必要:${cost}個)`); return; }
         ui.openSelectModal('にげる：交代するベンチを選択', this.p.bench.map((b, i) => `<div onclick="battle.execRetreat(${i});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(b.cardId)}<span class="text-xs font-black text-sky-700 mt-1">交代</span></div>`).join(''));
       },
 
       execRetreat(bIdx) {
-        const cost = CARD_MAP[this.p.active.cardId].retreat || 0;
-        for (let i = 0; i < cost && this.p.active.energies.length > 0; i++) this.p.discard.push(this.p.active.energies.pop());
-        this.p.retreated = true; this.swapActive('player', bIdx); this.render();
+        const cost = Math.max(0, (CARD_MAP[this.p.active.cardId].retreat || 0) - this.p.retreatDiscount);
+        for (let i = 0; i < cost && this.p.active.energies.length > 0; i++) this.p.active.energies.pop();
+        this.p.retreated = true;
+        this.swapActive('player', bIdx);
+        this.render();
       },
 
       useAbility(zone, idx) {
@@ -2001,75 +2257,85 @@
         inst.abilityUsed = true; sound.energy(); battleVfx.triggerBurst('player', '#a855f7', '#38bdf8');
         this.showCutin('ABILITY!', `${c.name} の「${c.ability.name}」！`);
 
-        if (c.id === 'c_charizard_ex' || c.id === 'c_dark_charizard_ex') {
-          const fs = this.p.deck.filter(x => x === 'e_fire').slice(0, 2);
-          fs.forEach(x => { this.p.deck.splice(this.p.deck.indexOf(x), 1); inst.energies.push(x); });
-          this.log(`れんごくしはい！炎エネルギーを${fs.length}枚加速！`);
+        if (c.id === 'c_gardevoir_ex' && this.p.active) {
+          this.p.active.energies.push('Psychic');
+          this.log('トランスシェイド！バトル場に超エネルギーを1個つけた！');
+        } else if (c.id === 'c_moltres_ex' && this.p.bench.length > 0) {
+          this.p.bench[0].energies.push('Fire');
+          this.log(`れっかのまい！${CARD_MAP[this.p.bench[0].cardId].name}に炎エネルギーを1個つけた！`);
+        } else if (c.id === 'c_dark_charizard_ex') {
+          inst.energies.push('Fire', 'Fire');
+          this.log('れんごくしはい！炎エネルギーを2個つけた！');
+        } else if (c.id === 'c_ogerpon_ex') {
+          inst.energies.push('Grass'); this.drawCards('player', 1);
+          this.log('みどりのまい！草エネルギーをつけて1枚引いた！');
+        } else if (c.id === 'c_giratina_vstar') {
+          inst.energies.push('Psychic');
+          this.log('はくうのさけび！超エネルギーを1個つけた！');
         } else if (c.id === 'c_bibarel') {
-          this.drawCards('player', Math.max(0, 5 - this.p.hand.length));
-          this.log('はたらくまえばで手札5枚までドロー！');
-        } else if (c.id === 'c_arceus_ex') {
-          this.drawCards('player', 2); this.log('しんわのかがやきで2枚ドロー！');
-        } else if (c.id === 'c_gardevoir_ex') {
-          const i = this.p.discard.indexOf('e_psychic');
-          if (i !== -1) { this.p.discard.splice(i, 1); inst.energies.push('e_psychic'); this.log('サイコエンブレイスで超エネ加速！'); }
-        } else if (c.id === 'c_miraidon_ex' && this.p.bench.length < 5) {
+          this.drawCards('player', Math.max(0, 4 - this.p.hand.length));
+          this.log('はたらくまえばで手札4枚までドロー！');
+        } else if (c.id === 'c_miraidon_ex' && this.p.bench.length < 3) {
           const i = this.p.deck.findIndex(x => CARD_MAP[x].stage === 'Basic' && CARD_MAP[x].type === 'Lightning');
           if (i !== -1) { const f = this.p.deck.splice(i, 1)[0]; this.p.bench.push(this.createInst(f, this.turn)); this.log(`タンデムユニットで${CARD_MAP[f].name}をベンチへ！`); }
         } else if (c.id === 'c_umbreon_vmax' && this.o.bench.length > 0) {
-          this.swapActive('opp', 0); this.log('ダークシグナルで相手ベンチを呼び出した！');
+          this.swapActive('opp', 0);
+          this.log('ダークシグナルで相手ベンチを呼び出した！');
+        } else if ((c.id === 'c_greninja_ex' || c.id === 'c_radiant_greninja') && this.o.active) {
+          this.o.active.hp -= 20; this.showDmg('opp-active', 20);
+          this.log('みずしゅりけん！相手に20ダメージ！');
+          if (this.checkKO('opp', 'active', 0)) return;
         } else {
-          this.drawCards('player', 1); this.log(`${c.ability.name}を発動！`);
+          this.drawCards('player', 1);
+          this.log(`${c.ability.name}で1枚引いた！`);
         }
         this.render();
         if (this.isOnlineP2P) this.syncToPeer(false);
       },
 
-      useVstarPower() {
-        if (this.p.vstarUsed) return;
-        const c = CARD_MAP[this.p.active.cardId]; if (!c.vstarPower) return;
-        this.p.vstarUsed = true; sound.superEffective();
-        battleVfx.triggerAttackVfx('player', c.type, true);
-        this.showCutin('VSTAR POWER!', `${c.vstarPower.name}！！`);
-        if (c.id === 'c_dialga_ex') { this.drawCards('player', 2); this.o.active.hp -= 200; this.showDmg('opp-active', 200); this.checkKO('opp', 'active', 0); }
-        else if (c.id === 'c_palkia_ex') {
-          const ws = this.p.discard.filter(x => x === 'e_water').slice(0, 3);
-          ws.forEach(x => { this.p.discard.splice(this.p.discard.indexOf(x), 1); this.p.active.energies.push(x); });
-        } else if (c.id === 'c_giratina_vstar') { this.o.active.hp = 0; this.showDmg('opp-active', 999); this.checkKO('opp', 'active', 0); }
-        this.render();
-        if (this.isOnlineP2P) this.syncToPeer(false);
-      },
-
-      getTotalEne(inst) { return inst.energies.reduce((s, id) => s + (CARD_MAP[id].energyAmount || 1), 0); },
-
       canPayCost(inst, cost) {
-        const pool = [];
-        inst.energies.forEach(id => { const c = CARD_MAP[id]; for (let i = 0; i < (c.energyAmount || 1); i++) pool.push(c.energyType); });
-        for (const r of cost) { if (r !== 'Colorless') { const i = pool.indexOf(r); if (i === -1) return false; pool.splice(i, 1); } }
+        const pool = [...inst.energies];
+        for (const r of cost) {
+          if (r !== 'Colorless') {
+            const i = pool.indexOf(r);
+            if (i === -1) return false;
+            pool.splice(i, 1);
+          }
+        }
         return pool.length >= cost.filter(r => r === 'Colorless').length;
       },
 
+      // 本家ポケポケのダメージ計算（弱点は+20ダメージ、抵抗力なし）
       previewDamage(side, atk) {
         const s = side === 'player' ? this.p : this.o, opp = side === 'player' ? this.o : this.p;
         if (!s.active || !opp.active) return { final: atk.damage, isWeak: false };
         const ac = CARD_MAP[s.active.cardId], dc = CARD_MAP[opp.active.cardId];
-        let dmg = atk.damage;
-        if (atk.name === 'バーニングダーク') dmg += (6 - opp.prizes.length) * 30;
-        else if (['バーニングロンド', 'ライトニングロンド', 'あくうのうねり'].includes(atk.name)) dmg += (s.bench.length + opp.bench.length) * 20;
-        else if (['フォトンキネシス', 'ダイガイスト'].includes(atk.name)) dmg += [s.active, ...s.bench].filter(Boolean).reduce((sum, p) => sum + p.energies.filter(e => e === 'e_psychic').length, 0) * 30;
-        else if (atk.name === 'あくのはどう') dmg += [s.active, ...s.bench].filter(Boolean).reduce((sum, p) => sum + p.energies.filter(e => e === 'e_darkness').length, 0) * 30;
-        else if (atk.name === 'メタルブラスト') dmg += s.active.energies.filter(e => e === 'e_metal').length * 40;
-        else if (atk.name === 'パワフルブルーム') dmg = this.getTotalEne(s.active) * 50;
-        else if (atk.name === 'まんようしぐれ') dmg += (this.getTotalEne(s.active) + this.getTotalEne(opp.active)) * 30;
-        else if (atk.name === 'カラミティストーム' && this.stadium) dmg += 80;
+        let dmg = atk.damage + (s.dmgBonus || 0);
+
+        if (atk.name === 'エレキサークル') dmg = s.bench.filter(b => CARD_MAP[b.cardId].type === 'Lightning').length * 30 + (s.dmgBonus || 0);
+        else if (atk.name === 'パワフルブルーム') dmg = s.active.energies.length * 50 + (s.dmgBonus || 0);
+        else if (atk.name === 'ハイドロバズーカ' && s.active.energies.filter(e => e === 'Water').length >= 5) dmg += 60;
+        else if (atk.name === 'バーニングダーク') dmg += opp.points * 30;
+        else if (['バーニングロンド', 'ライトニングロンド'].includes(atk.name)) dmg += (s.bench.length + opp.bench.length) * 20;
+        else if (atk.name === 'アルティメットフォース') dmg += s.bench.length * 20;
+        else if (atk.name === 'ダイガイスト') dmg += [s.active, ...s.bench].filter(Boolean).reduce((sum, p) => sum + p.energies.filter(e => e === 'Psychic').length, 0) * 30;
+        else if (atk.name === 'まんようしぐれ') dmg += (s.active.energies.length + opp.active.energies.length) * 20;
 
         let isWeak = false;
-        if (dc.weakness && dc.weakness === ac.type) { dmg *= 2; isWeak = true; }
+        if (dmg > 0 && dc.weakness && dc.weakness === ac.type) {
+          dmg += 20; // 本家ポケポケ仕様：弱点 +20ダメージ
+          isWeak = true;
+        }
         return { final: dmg, isWeak };
       },
 
       executeAttack(side, aIdx) {
-        if (this.over || this.currentSide !== side) return;
+        if (this.over || this.phase !== 'play' || this.currentSide !== side) return;
+        // 先攻1ターン目はワザを使えない本家ポケポケルール
+        if (this.turn === 1 && ((side === 'player' && this.isFirstTurnPlayer) || (side === 'opp' && !this.isFirstTurnPlayer))) {
+          ui.toast('先攻1ターン目はワザを使えません！');
+          return;
+        }
         const s = side === 'player' ? this.p : this.o, opp = side === 'player' ? this.o : this.p;
         const defSide = side === 'player' ? 'opp' : 'player';
         const ac = CARD_MAP[s.active.cardId], dc = CARD_MAP[opp.active.cardId], atk = ac.attacks[aIdx];
@@ -2078,17 +2344,16 @@
         ui.closeCardModal();
         const { final: dmg, isWeak } = this.previewDamage(side, atk);
 
-        if (atk.name === 'トパーズボルト') { for (let i = 0; i < 2 && s.active.energies.length > 0; i++) s.discard.push(s.active.energies.pop()); }
-        else if (atk.name === 'トリニティノヴァ') {
-          const es = s.deck.filter(x => CARD_MAP[x].isBasicEnergy).slice(0, 2);
-          es.forEach(x => { s.deck.splice(s.deck.indexOf(x), 1); (s.bench[0] || s.active).energies.push(x); });
+        if (['ぐれんのあらし', 'サイコドライブ'].includes(atk.name)) {
+          for (let i = 0; i < 2 && s.active.energies.length > 0; i++) s.active.energies.pop();
+        } else if (atk.name === 'メタルターボ' && s.bench.length > 0) {
+          s.bench[0].energies.push('Metal', 'Metal');
         } else if (atk.name === 'ジャイアントブルーム') {
           s.active.hp = Math.min(s.active.maxHp, s.active.hp + 30);
-          opp.active.status = 'poisoned';
         }
 
-        const heavy = dmg >= 150 || isWeak;
-        if (heavy) { sound.superEffective(); this.showCutin(isWeak ? 'WEAKNESS ×2!' : 'SUPER IMPACT!', `${ac.name} の ${atk.name}！`); }
+        const heavy = dmg >= 100 || isWeak;
+        if (heavy) { sound.superEffective(); this.showCutin(isWeak ? 'WEAKNESS +20!' : 'BIG HIT!', `${ac.name} の ${atk.name}！`); }
         else sound.attack();
         battleVfx.triggerAttackVfx(side, ac.type, heavy);
 
@@ -2097,13 +2362,12 @@
 
         setTimeout(() => {
           if (dEl) { dEl.classList.add('anim-shake'); setTimeout(() => dEl.classList.remove('anim-shake'), 480); }
-          if (dc.id === 'c_pikachu_ex' && opp.active.hp === opp.active.maxHp && dmg >= opp.active.hp) {
-            opp.active.hp = 10; this.showDmg(`${defSide}-active`, dmg - 10); this.log('ピカチュウexのがんばりハート！HP10で耐えた！');
-          } else {
-            opp.active.hp -= dmg; this.showDmg(`${defSide}-active`, dmg, isWeak);
-            this.log(`${ac.name}の「${atk.name}」！${dc.name}に${dmg}ダメージ！${isWeak ? '(弱点×2!)' : ''}`);
-          }
-          if (['ハリケーンサンダー', 'ぶんしんれんだ', 'はどうだん'].includes(atk.name) && opp.bench.length > 0) opp.bench[0].hp -= 50;
+          opp.active.hp -= dmg;
+          this.showDmg(`${defSide}-active`, dmg, isWeak);
+          this.log(`${ac.name}の「${atk.name}」！${dc.name}に${dmg}ダメージ！${isWeak ? '(弱点+20!)' : ''}`);
+
+          if (atk.name === 'ディメンションストーム') opp.bench.forEach(b => { b.hp -= 20; });
+          if (atk.name === 'はどうだん' && opp.bench.length > 0) opp.bench[0].hp -= 30;
 
           if (this.checkKO(defSide, 'active', 0)) return;
           for (let i = opp.bench.length - 1; i >= 0; i--) if (opp.bench[i].hp <= 0 && this.checkKO(defSide, 'bench', i)) return;
@@ -2121,27 +2385,147 @@
         c.appendChild(p); setTimeout(() => p.remove(), 1150);
       },
 
+      // 本家ポケポケ仕様：きぜつでポイント獲得（通常1pt、ex2pt）→ 3ポイント先取で勝利！
       checkKO(defSide, zone, idx) {
         const ds = defSide === 'player' ? this.p : this.o, as = defSide === 'player' ? this.o : this.p;
         const t = zone === 'active' ? ds.active : ds.bench[idx]; if (!t || t.hp > 0) return false;
-        const kc = CARD_MAP[t.cardId], pv = kc.prizeValue || 1;
-        ds.discard.push(t.cardId, ...t.energies);
-        this.log(`${kc.name}きぜつ！サイドを${pv}枚獲得！`);
-        for (let i = 0; i < pv && as.prizes.length > 0; i++) as.hand.push(as.prizes.shift());
-        if (as.prizes.length === 0) { this.endMatch(defSide === 'player' ? 'opp' : 'player', 'サイドを6枚取り切りました！'); return true; }
+        const kc = CARD_MAP[t.cardId], pts = kc.pointValue || 1;
+        ds.discard.push(t.cardId);
+        as.points = Math.min(3, as.points + pts);
+        this.log(`${kc.name}きぜつ！+${pts}ポイント獲得！（現在 ${as.points}/3 ポイント）`);
+
+        if (as.points >= 3) {
+          this.render();
+          this.endMatch(defSide === 'player' ? 'opp' : 'player', '3ポイント先取しました！');
+          return true;
+        }
         if (zone === 'active') {
           ds.active = null;
-          if (ds.bench.length === 0) { this.endMatch(defSide === 'player' ? 'opp' : 'player', '相手の場がいなくなりました！'); return true; }
+          if (ds.bench.length === 0) {
+            this.render();
+            this.endMatch(defSide === 'player' ? 'opp' : 'player', '相手の場のポケモンがいなくなりました！');
+            return true;
+          }
           if (defSide === 'player') {
             ui.openSelectModal('バトル場に出すポケモンを選択', ds.bench.map((b, bi) => `<div onclick="battle.promote('player',${bi});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(b.cardId)}<span class="text-xs font-black text-sky-700 mt-1">バトル場へ</span></div>`).join(''), false);
-          } else this.promote('opp', 0);
-        } else ds.bench.splice(idx, 1);
+          } else {
+            this.promote('opp', 0);
+            if (this.currentSide === 'player') setTimeout(() => this.endTurn(), 650);
+          }
+        } else {
+          ds.bench.splice(idx, 1);
+        }
         return false;
       },
 
       promote(side, bi) {
         const s = side === 'player' ? this.p : this.o;
-        s.active = s.bench.splice(bi, 1)[0]; this.render();
+        s.active = s.bench.splice(bi, 1)[0];
+        this.log(`${CARD_MAP[s.active.cardId].name}をバトル場に出した！`);
+        this.render();
+        if (this.isOnlineP2P) this.syncToPeer(false);
+        else if (side === 'player' && this.currentSide === 'opp') setTimeout(() => { this.turn++; this.startTurn('player'); }, 650);
+      },
+
+      runCpuTurn() {
+        if (this.over || this.currentSide !== 'opp' || this.isOnlineP2P) return;
+        const diff = document.getElementById('cpu-difficulty')?.value || 'normal';
+
+        // 1. たねポケモン展開（最大ベンチ3枠）
+        for (let i = this.o.hand.length - 1; i >= 0; i--) {
+          const c = CARD_MAP[this.o.hand[i]];
+          if (c.category === 'Pokemon' && c.stage === 'Basic' && this.o.bench.length < 3) {
+            this.o.hand.splice(i, 1);
+            this.o.bench.push(this.createInst(c.id, this.turn));
+          }
+        }
+
+        // 2. 進化（中級以上）
+        if (diff !== 'easy') {
+          for (let i = this.o.hand.length - 1; i >= 0; i--) {
+            const c = CARD_MAP[this.o.hand[i]];
+            if (c.category === 'Pokemon' && c.stage !== 'Basic') {
+              const t = [this.o.active, ...this.o.bench].filter(Boolean).find(p => CARD_MAP[p.cardId].name === c.evolvesFrom && p.turnPlayed < this.turn);
+              if (t) {
+                this.o.hand.splice(i, 1);
+                t.cardId = c.id; t.maxHp = c.hp; t.hp = c.hp; t.turnPlayed = this.turn;
+                this.log(`相手が${c.name}に進化！`);
+              }
+            }
+          }
+        }
+
+        // 3. トレーナーズ使用
+        for (let i = this.o.hand.length - 1; i >= 0; i--) {
+          const c = CARD_MAP[this.o.hand[i]];
+          if (c.category === 'Trainer' && (c.subType === 'Item' || (!this.o.supporterUsed && this.turn > 1))) {
+            this.execTrainer('opp', i);
+          }
+        }
+
+        // 4. エネルギーゾーンのエネルギーを付与
+        if (this.o.currentEnergy && this.o.active) {
+          const e = this.o.currentEnergy;
+          this.o.currentEnergy = null;
+          this.o.active.energies.push(e);
+          this.log(`相手は${CARD_MAP[this.o.active.cardId].name}に${TYPE_META[e].code}エネルギーをつけた！`);
+        }
+
+        // 5. 特性発動
+        [this.o.active, ...this.o.bench].filter(Boolean).forEach(p => {
+          const c = CARD_MAP[p.cardId];
+          if (c.ability && !p.abilityUsed) {
+            p.abilityUsed = true;
+            if (c.id === 'c_gardevoir_ex' && this.o.active) this.o.active.energies.push('Psychic');
+            else if (c.id === 'c_dark_charizard_ex') p.energies.push('Fire', 'Fire');
+            else if (c.id === 'c_ogerpon_ex') { p.energies.push('Grass'); this.drawCards('opp', 1); }
+            else this.drawCards('opp', 1);
+          }
+        });
+
+        this.render();
+
+        // 6. ワザ使用判定（先攻1ターン目以外）
+        const isFirstOppTurn = (this.turn === 1 && !this.isFirstTurnPlayer);
+        if (!isFirstOppTurn && this.o.active) {
+          const ac = CARD_MAP[this.o.active.cardId];
+          for (let a = ac.attacks.length - 1; a >= 0; a--) {
+            if (this.canPayCost(this.o.active, ac.attacks[a].cost)) {
+              setTimeout(() => this.executeAttack('opp', a), 550);
+              return;
+            }
+          }
+        }
+        setTimeout(() => { this.turn++; this.startTurn('player'); }, 550);
+      },
+
+      inspectFieldPokemon(side, zone, idx) {
+        if (this.phase === 'setup') return;
+        const s = side === 'player' ? this.p : this.o;
+        const inst = zone === 'active' ? s.active : s.bench[idx]; if (!inst) return;
+        const c = CARD_MAP[inst.cardId];
+        const prev = (side === 'player' && zone === 'active') ? c.attacks.map(a => this.previewDamage('player', a)) : null;
+
+        let acts = '';
+        if (side === 'player' && this.currentSide === 'player' && !this.over) {
+          if (c.ability && !inst.abilityUsed) {
+            acts += `<button onclick="battle.useAbility('${zone}',${idx});ui.closeCardModal();" class="px-3.5 py-2 rounded-xl bg-indigo-600 text-white text-xs font-black">特性: ${c.ability.name}</button>`;
+          }
+          const isFirstTurnAtkBlocked = (this.turn === 1 && this.isFirstTurnPlayer);
+          if (zone === 'active' && !isFirstTurnAtkBlocked) {
+            c.attacks.forEach((atk, ai) => {
+              const ok = this.canPayCost(inst, atk.cost);
+              const dm = prev ? prev[ai].final : atk.damage;
+              acts += `<button ${ok ? `onclick="battle.executeAttack('player',${ai})"` : 'disabled'} class="px-3.5 py-2 rounded-xl text-xs font-black ${ok ? 'bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-md animate-pulse' : 'bg-slate-200 text-slate-400'}">${atk.name} (${dm})</button>`;
+            });
+          }
+        }
+        ui.openCardModal(c, acts, prev);
+      },
+
+      inspectDiscard(side) {
+        const s = side === 'player' ? this.p : this.o;
+        ui.openSelectModal(`${side === 'player' ? 'あなた' : '相手'}のトラッシュ (${s.discard.length}枚)`, s.discard.map(id => `<div class="flex justify-center">${ui.renderMiniCard(id, { onClick: `ui.openCardModal(CARD_MAP['${id}'])` })}</div>`).join('') || '<p class="col-span-full text-center text-xs text-slate-400 py-6">トラッシュは空です</p>');
       },
 
       surrender() {
@@ -2151,155 +2535,155 @@
         this.endMatch('opp', '降参しました。');
       },
 
-      endMatch(winSide, reason) {
-        if (this.over) return; this.over = true;
-        if (this.isOnlineP2P) {
-          this.syncToPeer(false);
-          onlineLobby.cancelNetwork();
+      endMatch(winner, reason) {
+        if (this.over) return;
+        this.over = true;
+        ui.closeCardModal(); ui.closeSelectModal();
+        onlineLobby.cancelNetwork();
+        const win = winner === 'player';
+        if (win) sound.win();
+
+        let rpDelta = 0;
+        if (this.mode === 'ranked') {
+          rpDelta = win ? 28 : -16;
+          accountMgr.data.rating = Math.max(500, (accountMgr.data.rating || 1000) + rpDelta);
         }
-        const win = winSide === 'player';
-        let rewardText = '';
+
         if (win) {
-          sound.win();
-          accountMgr.data.hourglass += 24;
-          accountMgr.data.gold += 100;
           accountMgr.data.wins = (accountMgr.data.wins || 0) + 1;
           accountMgr.data.streak = (accountMgr.data.streak || 0) + 1;
-          accountMgr.data.maxStreak = Math.max(accountMgr.data.maxStreak || 0, accountMgr.data.streak);
-          if (this.mode === 'ranked') {
-            const gain = 32;
-            accountMgr.data.rating = (accountMgr.data.rating || 1000) + gain;
-            rewardText = `レート変動: +${gain} RP (現在 ${accountMgr.data.rating} RP) / 砂時計 +24`;
-          } else {
-            rewardText = '勝利報酬: 砂時計 +24 / GOLD +100';
-          }
+          accountMgr.data.hourglass += this.mode === 'ranked' ? 36 : 24;
+          accountMgr.data.gold += 150;
+          document.getElementById('result-badge').textContent = 'WIN';
+          document.getElementById('result-title').textContent = 'VICTORY!';
+          document.getElementById('result-title').className = 'text-3xl font-black text-amber-500';
+          document.getElementById('result-reward-box').textContent = this.mode === 'ranked'
+            ? `レート +${rpDelta} RP（現在 ${accountMgr.data.rating} RP） / 砂時計+36 / GOLD+150`
+            : '報酬: 砂時計+24 / GOLD+150！';
         } else {
           accountMgr.data.losses = (accountMgr.data.losses || 0) + 1;
           accountMgr.data.streak = 0;
-          if (this.mode === 'ranked') {
-            const drop = 18;
-            accountMgr.data.rating = Math.max(800, (accountMgr.data.rating || 1000) - drop);
-            rewardText = `レート変動: -${drop} RP (現在 ${accountMgr.data.rating} RP)`;
-          } else {
-            rewardText = '参加完了！デッキを調整して再挑戦しよう！';
-          }
+          document.getElementById('result-badge').textContent = 'LOSE';
+          document.getElementById('result-title').textContent = 'DEFEAT...';
+          document.getElementById('result-title').className = 'text-3xl font-black text-slate-500';
+          document.getElementById('result-reward-box').textContent = this.mode === 'ranked'
+            ? `レート ${rpDelta} RP（現在 ${accountMgr.data.rating} RP）`
+            : '次は20枚デッキを見直してリベンジしよう！';
         }
         accountMgr.saveCurrent();
-        document.getElementById('result-badge').textContent = win ? 'WIN' : 'LOSE';
-        document.getElementById('result-title').textContent = win ? 'VICTORY!' : 'DEFEAT...';
         document.getElementById('result-reason').textContent = reason;
-        document.getElementById('result-reward-box').textContent = rewardText;
         document.getElementById('modal-result').classList.remove('hidden');
       },
 
-      async runCpuTurn() {
-        if (this.over || this.currentSide !== 'opp' || this.isOnlineP2P) return;
-        const w = ms => new Promise(r => setTimeout(r, ms));
-        await w(450);
-        for (let i = this.o.hand.length - 1; i >= 0; i--) {
-          const c = CARD_MAP[this.o.hand[i]];
-          if (c.category === 'Pokemon' && c.stage === 'Basic' && this.o.bench.length < 5) {
-            this.o.bench.push(this.createInst(this.o.hand.splice(i, 1)[0], this.turn)); this.render(); await w(300);
-          }
-        }
-        for (let i = this.o.hand.length - 1; i >= 0; i--) {
-          const c = CARD_MAP[this.o.hand[i]];
-          if (c.category === 'Pokemon' && c.stage !== 'Basic') {
-            const t = [this.o.active, ...this.o.bench].filter(Boolean).find(p => CARD_MAP[p.cardId].name === c.evolvesFrom && p.turnPlayed < this.turn);
-            if (t) { const eid = this.o.hand.splice(i, 1)[0]; t.cardId = eid; t.maxHp = CARD_MAP[eid].hp; t.hp = CARD_MAP[eid].hp; t.turnPlayed = this.turn; this.render(); await w(350); }
-          }
-        }
-        const supIdx = this.o.hand.findIndex(id => CARD_MAP[id].subType === 'Supporter');
-        if (supIdx !== -1 && this.turn > 1 && !this.o.supporterUsed) { this.execTrainer('opp', supIdx); await w(450); }
-        const eneIdx = this.o.hand.findIndex(id => CARD_MAP[id].category === 'Energy');
-        if (eneIdx !== -1 && !this.o.energyAttached && this.o.active) {
-          this.o.active.energies.push(this.o.hand.splice(eneIdx, 1)[0]); this.o.energyAttached = true; this.render(); await w(350);
-        }
-        if (this.o.active) {
-          const ac = CARD_MAP[this.o.active.cardId];
-          for (let a = ac.attacks.length - 1; a >= 0; a--) {
-            if (this.canPayCost(this.o.active, ac.attacks[a].cost)) { this.executeAttack('opp', a); return; }
-          }
-        }
-        this.turn++; this.startTurn('player');
+      renderPointDots(elId, pts, colorClass) {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        el.innerHTML = [1, 2, 3].map(n => {
+          const filled = n <= pts;
+          return `<span class="w-4 h-4 rounded-full border-2 ${filled ? `${colorClass} border-white shadow` : 'bg-slate-200 border-slate-300'} inline-block transition-all"></span>`;
+        }).join('');
       },
 
-      inspectFieldPokemon(side, zone, idx) {
-        const s = side === 'player' ? this.p : this.o;
-        const inst = zone === 'active' ? s.active : s.bench[idx]; if (!inst) return;
-        const c = CARD_MAP[inst.cardId];
-        let act = '';
-        const dmgPrev = (side === 'player' && zone === 'active') ? c.attacks.map(atk => this.previewDamage('player', atk)) : null;
-        if (side === 'player' && this.currentSide === 'player' && !this.over) {
-          if (c.ability && !inst.abilityUsed) act += `<button onclick="ui.closeCardModal();battle.useAbility('${zone}',${idx});" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-xs font-black">特性: ${c.ability.name}</button>`;
-          if (zone === 'active' && c.vstarPower && !this.p.vstarUsed) act += `<button onclick="ui.closeCardModal();battle.useVstarPower();" class="px-3 py-2 rounded-xl bg-amber-400 text-slate-950 text-xs font-black">VSTAR: ${c.vstarPower.name}</button>`;
-          if (zone === 'active') {
-            c.attacks.forEach((atk, aIdx) => {
-              const ok = this.canPayCost(inst, atk.cost), p = dmgPrev[aIdx];
-              act += `<button ${ok ? `onclick="battle.executeAttack('player',${aIdx})"` : 'disabled'} class="px-3.5 py-2 rounded-xl text-xs font-black ${ok ? 'bg-rose-600 text-white shadow' : 'bg-slate-200 text-slate-400'}">${atk.name} (${p.final}${p.isWeak ? '!' : ''})</button>`;
-            });
-          }
+      renderSlot(inst, side, zone, idx, label, isBench = false) {
+        const dropAttrs = (side === 'player' && this.phase === 'play' && this.currentSide === 'player' && this.p.currentEnergy)
+          ? `ondragover="event.preventDefault();this.classList.add('drop-target-glow');" ondragleave="this.classList.remove('drop-target-glow');" ondrop="event.preventDefault();this.classList.remove('drop-target-glow');battle.assignZoneEnergy('${zone}',${idx});"`
+          : '';
+
+        if (!inst) {
+          return `<div ${dropAttrs} class="${isBench ? 'w-20 sm:w-24 h-28 sm:h-32' : 'w-24 sm:w-28 h-32 sm:h-36'} rounded-2xl border-2 border-dashed border-sky-400/70 bg-white/55 flex items-center justify-center text-[10px] font-black text-sky-800/80">${label}</div>`;
         }
-        ui.openCardModal(c, act, dmgPrev);
-      },
 
-      inspectDiscard(side) {
-        const d = (side === 'player' ? this.p : this.o).discard;
-        ui.openSelectModal(`トラッシュ (${d.length}枚)`, d.map(id => ui.renderMiniCard(id, { onClick: `ui.openCardModal(CARD_MAP['${id}'])` })).join('') || '<p class="text-xs text-slate-400 col-span-full text-center py-6">トラッシュは空です</p>');
-      },
-      inspectStadium() { if (this.stadium) ui.openCardModal(CARD_MAP[this.stadium.cardId]); },
+        // セットアップ中は相手のポケモンを裏向き（伏せ状態）で表示する本家ポケポケ演出！
+        if (side === 'opp' && this.phase === 'setup') {
+          return `<div class="pocket-card-back ${isBench ? 'w-20 sm:w-24 h-28 sm:h-32' : 'w-24 sm:w-28 h-32 sm:h-36'} rounded-2xl flex flex-col items-center justify-center text-white font-black text-[10px] shadow-md"><span>READY</span></div>`;
+        }
 
-      renderFieldCard(inst, side, zone, idx) {
-        if (!inst) return `<div class="w-24 h-32 rounded-2xl border-2 border-dashed border-slate-300/80 bg-white/40 flex items-center justify-center text-[10px] text-slate-400 font-bold">空き</div>`;
         const c = CARD_MAP[inst.cardId], pct = Math.max(0, Math.min(100, (inst.hp / inst.maxHp) * 100));
-        const hpCol = pct > 50 ? 'bg-emerald-500' : pct > 25 ? 'bg-amber-400' : 'bg-rose-500';
-        const isAct = zone === 'active', canAtk = side === 'player' && isAct && this.currentSide === 'player' && !this.over && c.attacks.some(a => this.canPayCost(inst, a.cost));
-        const badges = inst.energies.map(eid => renderTypeBadgeSvg(CARD_MAP[eid].energyType, 13)).join('');
+        const canAtk = side === 'player' && zone === 'active' && this.phase === 'play' && this.currentSide === 'player' && !(this.turn === 1 && this.isFirstTurnPlayer) && c.attacks.some(a => this.canPayCost(inst, a.cost));
         return `
-          <div onclick="battle.inspectFieldPokemon('${side}','${zone}',${idx})" class="pk-card border-${c.rarity} card-bg-${c.type} ${canAtk ? 'playable-glow' : ''} ${isAct ? 'w-32 sm:w-36 h-44 sm:h-48' : 'w-22 sm:w-25 h-30 sm:h-34'} p-1.5 flex flex-col justify-between cursor-pointer shrink-0">
-            <div class="flex justify-between items-center text-[9px] font-black leading-none z-10 ${c.type==='Darkness'?'text-white':'text-slate-900'}">
-              <span class="truncate max-w-[65%]">${c.name}</span>
-              <span class="${c.type==='Darkness'?'text-amber-300':'text-rose-700'}">${inst.hp}/${inst.maxHp}</span>
+          <div ${dropAttrs} onclick="battle.inspectFieldPokemon('${side}','${zone}',${idx})" class="pk-card border-${c.rarity} card-bg-${c.type} ${isBench ? 'w-20 sm:w-24 h-28 sm:h-32' : 'w-24 sm:w-28 h-32 sm:h-36'} p-1.5 flex flex-col justify-between cursor-pointer ${canAtk ? 'ring-4 ring-rose-500 shadow-lg' : ''}">
+            <div class="flex justify-between items-center text-[8px] font-black bg-white/90 text-slate-900 px-1 rounded">
+              <span class="truncate max-w-[44px]">${c.name}</span>
+              <span class="text-rose-600 font-black">${inst.hp}</span>
             </div>
-            <div class="w-full h-1.5 bg-slate-900/20 rounded-full overflow-hidden my-0.5 z-10"><div class="${hpCol} h-full transition-all" style="width:${pct}%"></div></div>
-            <div class="flex-1 rounded-lg bg-white/70 border border-white/80 flex items-center justify-center relative overflow-hidden">
+            <div class="flex-1 my-0.5 rounded bg-white/45 flex items-center justify-center relative overflow-hidden">
               ${generateCardArtworkSvg(c)}
-              ${inst.status === 'poisoned' ? '<span class="absolute top-0.5 left-0.5 px-1 rounded bg-purple-600 text-white text-[8px] font-black">どく</span>' : ''}
+              ${c.ability ? `<span class="absolute top-0.5 left-0.5 px-1 rounded bg-rose-600 text-white text-[7px] font-black">特性</span>` : ''}
             </div>
-            <div class="flex flex-wrap gap-0.5 pt-0.5 min-h-[15px] bg-white/85 rounded px-1 items-center z-10">${badges || '<span class="text-[8px] text-slate-400 font-bold">エネ0</span>'}</div>
+            <div class="space-y-0.5">
+              <div class="w-full h-1.5 bg-slate-900/30 rounded-full overflow-hidden">
+                <div class="h-full ${pct > 50 ? 'bg-emerald-500' : 'bg-rose-500'}" style="width:${pct}%"></div>
+              </div>
+              <div class="flex flex-wrap gap-0.5 min-h-[12px] bg-white/85 rounded px-1 py-0.5">
+                ${inst.energies.map(e => renderTypeBadgeSvg(e, 11)).join('') || '<span class="text-[7px] text-slate-400">エネ0</span>'}
+              </div>
+            </div>
           </div>
         `;
       },
 
       render() {
-        document.getElementById('battle-turn-badge').textContent = `ターン ${this.turn} (${this.currentSide === 'player' ? 'あなた' : '相手'})`;
-        document.getElementById('battle-stadium-badge').textContent = `スタジアム: ${this.stadium ? CARD_MAP[this.stadium.cardId].name : 'なし'}`;
-        document.getElementById('opp-hand-count').textContent = this.o.hand.length;
+        document.getElementById('battle-turn-badge').textContent = this.phase === 'setup'
+          ? '準備フェーズ（伏せ配置）'
+          : `ターン ${this.turn} (${this.currentSide === 'player' ? 'あなた' : '相手'})`;
+
+        // セットアップボタンとクイックワザボタンの表示切替
+        document.getElementById('btn-setup-ready').classList.toggle('hidden', this.phase !== 'setup');
+
+        this.renderPointDots('opp-points-dots', this.o.points, 'bg-rose-500');
+        this.renderPointDots('player-points-dots', this.p.points, 'bg-sky-500');
+
         document.getElementById('opp-deck-count').textContent = this.o.deck.length;
+        document.getElementById('opp-hand-count').textContent = this.o.hand.length;
+        document.getElementById('opp-discard-count').textContent = this.o.discard.length;
         document.getElementById('player-deck-count').textContent = this.p.deck.length;
         document.getElementById('player-discard-count').textContent = this.p.discard.length;
         document.getElementById('player-hand-count').textContent = this.p.hand.length;
 
-        document.getElementById('flag-vstar').textContent = `VSTAR: ${this.p.vstarUsed ? '済' : '可'}`;
-        document.getElementById('flag-energy').textContent = `エネ: ${this.p.energyAttached ? '済' : '可'}`;
-        document.getElementById('flag-supporter').textContent = `サポート: ${this.p.supporterUsed || this.turn === 1 ? '不可' : '可'}`;
+        document.getElementById('opp-active').innerHTML = this.renderSlot(this.o.active, 'opp', 'active', 0, 'バトル場');
+        document.getElementById('opp-bench').innerHTML = [0, 1, 2].map(i => this.renderSlot(this.o.bench[i], 'opp', 'bench', i, 'ベンチ', true)).join('');
+        document.getElementById('player-active').innerHTML = this.renderSlot(this.p.active, 'player', 'active', 0, 'たね配置');
+        document.getElementById('player-bench').innerHTML = [0, 1, 2].map(i => this.renderSlot(this.p.bench[i], 'player', 'bench', i, 'ベンチ', true)).join('');
 
-        document.getElementById('opp-prizes').innerHTML = this.o.prizes.map(() => `<div class="w-3.5 h-5 rounded bg-gradient-to-br from-rose-500 to-amber-500 border border-white shadow-xs"></div>`).join('');
-        document.getElementById('player-prizes').innerHTML = this.p.prizes.map(() => `<div class="w-3.5 h-5 rounded bg-gradient-to-br from-sky-400 to-indigo-600 border border-white shadow-xs"></div>`).join('');
+        // 右下の本家ポケポケ「エネルギーゾーン」更新
+        const curOrb = document.getElementById('current-energy-orb');
+        const nextOrb = document.getElementById('next-energy-orb');
+        const zoneFlag = document.getElementById('flag-energy-zone');
+        if (this.phase === 'play' && this.currentSide === 'player' && this.p.currentEnergy) {
+          const m = TYPE_META[this.p.currentEnergy];
+          curOrb.style.background = `radial-gradient(circle at 30% 30%, ${m.glow}, ${m.c1}, ${m.c2})`;
+          curOrb.innerHTML = `<span class="text-sm font-black drop-shadow">${m.code}</span>`;
+          curOrb.classList.add('energy-orb-ready');
+          curOrb.ondragstart = e => { e.dataTransfer.setData('text/plain', 'energy'); };
+          zoneFlag.textContent = `エネ発生: ${m.code} (ドラッグorタップで付与!)`;
+          zoneFlag.className = 'px-2.5 py-0.5 rounded-full bg-amber-300 text-slate-950 border border-amber-500 font-black animate-pulse';
+        } else {
+          curOrb.style.background = '#334155';
+          curOrb.innerHTML = '--';
+          curOrb.classList.remove('energy-orb-ready');
+          zoneFlag.textContent = 'エネ発生: 付与済 / 待機';
+          zoneFlag.className = 'px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200 font-bold';
+        }
 
-        document.getElementById('opp-active').innerHTML = this.renderFieldCard(this.o.active, 'opp', 'active', 0);
-        document.getElementById('opp-bench').innerHTML = Array(5).fill(0).map((_, i) => this.renderFieldCard(this.o.bench[i], 'opp', 'bench', i)).join('');
-        document.getElementById('player-active').innerHTML = this.renderFieldCard(this.p.active, 'player', 'active', 0);
-        document.getElementById('player-bench').innerHTML = Array(5).fill(0).map((_, i) => this.renderFieldCard(this.p.bench[i], 'player', 'bench', i)).join('');
+        if (this.p.nextEnergy) {
+          const nm = TYPE_META[this.p.nextEnergy];
+          nextOrb.style.background = nm.c1;
+          nextOrb.textContent = nm.code;
+        }
+
+        const sup = document.getElementById('flag-supporter');
+        sup.textContent = this.p.supporterUsed ? 'サポート: 済' : 'サポート: 可';
 
         const qBtn = document.getElementById('quick-attack-btn');
-        const readyAtk = this.currentSide === 'player' && !this.over && this.p.active && CARD_MAP[this.p.active.cardId].attacks.some(a => this.canPayCost(this.p.active, a.cost));
-        qBtn.classList.toggle('hidden', !readyAtk);
+        if (this.phase === 'play' && this.currentSide === 'player' && this.p.active && !(this.turn === 1 && this.isFirstTurnPlayer) && CARD_MAP[this.p.active.cardId].attacks.some(a => this.canPayCost(this.p.active, a.cost))) {
+          qBtn.classList.remove('hidden');
+        } else {
+          qBtn.classList.add('hidden');
+        }
 
         document.getElementById('player-hand').innerHTML = this.p.hand.map((id, idx) => {
-          const ok = this.isPlayable(id), c = CARD_MAP[id];
-          const evo = ok && c.category === 'Pokemon' && c.stage !== 'Basic';
-          return ui.renderMiniCard(id, { playable: ok && !evo, evolvable: evo, onClick: `battle.playHandCard(${idx})` });
+          const c = CARD_MAP[id], p = this.isPlayable(id);
+          return ui.renderMiniCard(id, { playable: p && c.stage === 'Basic', evolvable: p && c.stage !== 'Basic', onClick: `battle.playHandCard(${idx})` });
         }).join('');
       }
     };
@@ -2308,17 +2692,19 @@
     const app = {
       init() {
         accountMgr.init();
-        const cpuSel = document.getElementById('cpu-opp-deck');
-        if (cpuSel) Object.entries(PRESET_DECKS).forEach(([k, v]) => { const o = document.createElement('option'); o.value = k; o.textContent = v.name; cpuSel.appendChild(o); });
+        const cs = document.getElementById('cpu-opp-deck');
+        if (cs) Object.entries(PRESET_DECKS).forEach(([k, v]) => {
+          const o = document.createElement('option'); o.value = k; o.textContent = v.name; cs.appendChild(o);
+        });
         packSystem.renderPackShop();
         deckBuilder.init();
       },
-      switchScreen(name) {
-        ['home', 'lobby', 'pack', 'deck', 'battle'].forEach(s => document.getElementById(`screen-${s}`).classList.add('hidden'));
-        document.getElementById(`screen-${name}`).classList.remove('hidden');
-        if (name === 'pack') { packSystem.resetStage(); packSystem.renderPackShop(); }
-        if (name === 'deck') deckBuilder.init();
-        if (name === 'home') accountMgr.refreshUI();
+      switchScreen(n) {
+        if (n !== 'lobby') onlineLobby.cancelNetwork();
+        ['home', 'lobby', 'pack', 'deck', 'battle'].forEach(s => document.getElementById(`screen-${s}`).classList.toggle('hidden', s !== n));
+        if (n === 'deck') deckBuilder.init();
+        if (n === 'pack') packSystem.resetStage();
+        if (n === 'home') accountMgr.refreshUI();
       },
       finishBattleResult() {
         document.getElementById('modal-result').classList.add('hidden');
