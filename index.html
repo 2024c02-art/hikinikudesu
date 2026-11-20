@@ -274,7 +274,7 @@
           <div id="ranked-status-text" class="text-sm font-black text-slate-800">世界中のライバルを検索中...</div>
           <div class="flex justify-center gap-2">
             <button onclick="onlineLobby.cancelNetwork()" class="px-4 py-2 rounded-xl bg-slate-200 text-xs font-extrabold text-slate-700">キャンセル</button>
-            <button onclick="onlineLobby.matchRankedShadowNow()" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-black">今すぐ同ランク相手と開始</button>
+            <button onclick="onlineLobby.matchRankedShadowNow()" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-black">CPUライバルで練習開始</button>
           </div>
         </div>
       </div>
@@ -709,6 +709,12 @@
     };
     const RARITY_STARS = { C: '◆', U: '◆◆', R: '◆◆◆', RR: '◆◆◆◆', SR: '★', SAR: '★★', UR: '★★★' };
 
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>\"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;'
+      })[ch]);
+    }
+
     function renderTypeBadgeSvg(type, size = 15) {
       const m = TYPE_META[type] || TYPE_META.Colorless;
       return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" class="inline-block shrink-0"><circle cx="12" cy="12" r="10.5" fill="${m.c1}" stroke="#fff" stroke-width="1.8"/><text x="12" y="15.5" text-anchor="middle" font-size="9.5" font-weight="900" fill="${['Lightning','Colorless','Metal'].includes(type)?'#0f172a':'#fff'}">${m.code}</text></svg>`;
@@ -991,12 +997,32 @@
         this.currentId = accId; this.saveIndex();
         let loaded = null;
         try { const r = localStorage.getItem(this.DATA_PREFIX + accId); if (r) loaded = JSON.parse(r); } catch (e) {}
-        if (!loaded) {
-          const m = this.index.find(a => a.id === accId) || { name: 'トレーナー', avatar: 'TR' };
-          loaded = this.createDefault(accId, m.name, m.avatar, '');
+        const meta = this.index.find(a => a.id === accId) || { name: 'トレーナー', avatar: 'TR' };
+        if (!loaded || typeof loaded !== 'object' || Array.isArray(loaded)) {
+          loaded = this.createDefault(accId, meta.name, meta.avatar, '');
+        } else {
+          const defaults = this.createDefault(accId, loaded.name || meta.name, loaded.avatar || meta.avatar, loaded.password || '');
+          loaded = { ...defaults, ...loaded, id: accId };
+          const savedCollection = loaded.collection && typeof loaded.collection === 'object' && !Array.isArray(loaded.collection)
+            ? loaded.collection : {};
+          loaded.collection = { ...defaults.collection, ...savedCollection };
+          const savedDecks = Array.isArray(loaded.decks) ? loaded.decks : defaults.decks;
+          loaded.decks = savedDecks
+            .filter(d => d && typeof d === 'object' && Array.isArray(d.cards))
+            .map(d => ({
+              name: typeof d.name === 'string' && d.name.trim() ? d.name.slice(0, 50) : 'マイデッキ',
+              energies: Array.isArray(d.energies) ? [...new Set(d.energies.filter(t => ENERGY_TYPES.includes(t)))].slice(0, 3) : [],
+              cards: d.cards.filter(id => typeof id === 'string' && !!CARD_MAP[id])
+            }))
+            .slice(0, 8);
+          if (loaded.decks.length === 0) loaded.decks = defaults.decks;
+          loaded.decks.forEach(d => { if (d.energies.length === 0) d.energies = ['Fire']; });
         }
-        if (loaded.rating === undefined) loaded.rating = 1000;
+        if (!loaded.collection || typeof loaded.collection !== 'object' || Array.isArray(loaded.collection)) loaded.collection = {};
         CARDS.forEach(c => { if (loaded.collection[c.id] === undefined) loaded.collection[c.id] = 2; });
+        loaded.rating = Number.isFinite(Number(loaded.rating)) ? Number(loaded.rating) : 1000;
+        const slot = Number(loaded.activeDeckSlot);
+        loaded.activeDeckSlot = Number.isInteger(slot) ? Math.max(0, Math.min(slot, loaded.decks.length - 1)) : 0;
         this.data = loaded; this.saveCurrent();
       },
 
@@ -1030,7 +1056,7 @@
         document.getElementById('home-record-badge').textContent = `${this.data.rating} RP • ${this.data.wins || 0}勝 / ${this.data.streak || 0}連勝`;
 
         const sel = document.getElementById('home-deck-selector');
-        if (sel) sel.innerHTML = (this.data.decks || []).map((d, i) => `<option value="${i}" ${i === this.data.activeDeckSlot ? 'selected' : ''}>${d.name} (${d.cards.length}枚)</option>`).join('');
+        if (sel) sel.innerHTML = (this.data.decks || []).map((d, i) => `<option value="${i}" ${i === this.data.activeDeckSlot ? 'selected' : ''}>${escapeHtml(d.name)} (${d.cards.length}枚)</option>`).join('');
         const ad = this.getActiveDeck();
         const ok = ad.cards.length === 20;
         const vEl = document.getElementById('home-deck-valid');
@@ -1061,10 +1087,10 @@
           return `
             <div class="flex items-center justify-between p-2.5 rounded-xl border ${cur ? 'bg-sky-50 border-sky-400' : 'bg-white border-slate-200'}">
               <div class="flex items-center gap-2">
-                <span class="w-7 h-7 rounded-full bg-sky-600 text-white text-[10px] font-black flex items-center justify-center">${acc.avatar || 'TR'}</span>
+                <span class="w-7 h-7 rounded-full bg-sky-600 text-white text-[10px] font-black flex items-center justify-center">${escapeHtml(acc.avatar || 'TR')}</span>
                 <div>
-                  <div class="text-xs font-black text-slate-800">${acc.name} ${acc.hasPass ? '[LOCK]' : ''} ${cur ? '<span class="text-[10px] text-emerald-600 ml-1">(使用中)</span>' : ''}</div>
-                  <div class="text-[10px] text-slate-400 font-mono">${acc.id}</div>
+                  <div class="text-xs font-black text-slate-800">${escapeHtml(acc.name)} ${acc.hasPass ? '[LOCK]' : ''} ${cur ? '<span class="text-[10px] text-emerald-600 ml-1">(使用中)</span>' : ''}</div>
+                  <div class="text-[10px] text-slate-400 font-mono">${escapeHtml(acc.id)}</div>
                 </div>
               </div>
               <div class="flex gap-1.5 items-center">
@@ -1128,13 +1154,21 @@
       },
 
       importJson(e) {
-        const file = e.target.files?.[0]; if (!file) return;
+        const input = e.target;
+        const file = input.files?.[0];
+        if (!file) return;
+        // Clear immediately so selecting the same file again fires change.
+        input.value = '';
         const r = new FileReader();
         r.onload = ev => {
           try {
             const imp = JSON.parse(ev.target.result);
-            if (!imp.collection || !imp.decks) throw new Error();
-            imp.id = this.currentId; this.data = imp; this.saveCurrent(); this.openModal();
+            if (!imp || typeof imp !== 'object' || Array.isArray(imp) ||
+                !imp.collection || typeof imp.collection !== 'object' || Array.isArray(imp.collection) ||
+                !Array.isArray(imp.decks)) throw new Error();
+            imp.id = this.currentId;
+            localStorage.setItem(this.DATA_PREFIX + this.currentId, JSON.stringify(imp));
+            this.loadAccount(this.currentId); this.openModal();
             ui.toast('セーブデータを復元しました！');
           } catch (err) { ui.toast('無効なJSONファイルです'); }
         };
@@ -1237,8 +1271,9 @@
         const deckKeys = Object.keys(PRESET_DECKS);
         const pickKey = deckKeys[Math.floor(Math.random() * deckKeys.length)];
         const rivalName = `${names[Math.floor(Math.random() * names.length)]} (${rivalRp}RP)`;
-        ui.toast(`マッチング成立！ ${rivalName} と対戦開始！`);
-        battle.startBattle({ mode: 'ranked', oppDeckKey: pickKey, oppName: rivalName, oppRating: rivalRp, isOnlineP2P: false });
+        ui.toast(`オンライン対戦相手が見つからなかったため、CPUライバル「${rivalName}」との練習対戦を開始します。レートは変動しません。`);
+        // CPUフォールバックをオンラインレート戦として扱うと、偽の対人戦でRPが増減してしまう。
+        battle.startBattle({ mode: 'cpu', oppDeckKey: pickKey, oppName: `CPUライバル ${rivalName}`, oppRating: rivalRp, isOnlineP2P: false });
       },
 
       createFriendRoom() {
@@ -1305,12 +1340,18 @@
               mode: modeType, oppName: `${msg.name} (${msg.rating}RP)`, oppRating: msg.rating,
               oppCustomDeck: msg.deck, oppEnergies: msg.energies, isOnlineP2P: true, isFirstPlayer: false
             });
+          } else if (msg.type === 'SETUP_READY') {
+            battle.receiveSetupReady(msg);
           } else if (msg.type === 'SYNC_STATE') {
             battle.receiveRemoteState(msg);
+          } else if (msg.type === 'REMOTE_EFFECT') {
+            battle.receiveRemoteEffect(msg);
+          } else if (msg.type === 'MATCH_END') {
+            battle.endMatch(msg.winner || 'opp', msg.reason || '相手が勝利しました。', false);
           } else if (msg.type === 'EMOTE') {
             battle.showEmoteBubble(`相手: ${msg.text}`);
           } else if (msg.type === 'SURRENDER') {
-            battle.endMatch('player', '相手が降参しました！');
+            battle.endMatch('player', '相手が降参しました！', false);
           }
         });
         conn.on('close', () => {
@@ -1323,7 +1364,8 @@
       launchCpu() {
         if (!this.ensure20Deck()) return;
         const k = document.getElementById('cpu-opp-deck').value;
-        battle.startBattle({ mode: 'cpu', oppDeckKey: k, oppName: `CPU (${PRESET_DECKS[k].name})`, isOnlineP2P: false });
+        const difficulty = document.getElementById('cpu-difficulty')?.value || 'normal';
+        battle.startBattle({ mode: 'cpu', oppDeckKey: k, oppName: `CPU (${PRESET_DECKS[k].name})`, isOnlineP2P: false, cpuDifficulty: difficulty });
       }
     };
 
@@ -1360,7 +1402,7 @@
         const contextAttr = options.onInspect ? `oncontextmenu="event.preventDefault(); ${options.onInspect}"` : '';
 
         return `
-          <div onclick="${options.onClick || ''}" ${contextAttr} class="pk-card border-${c.rarity} ${glow} ${unowned} card-bg-${c.type} w-24 sm:w-28 h-34 sm:h-40 p-1.5 flex flex-col justify-between cursor-pointer shrink-0">
+          <div onclick="${options.onClick || ''}" ${contextAttr} class="pk-card border-${c.rarity} ${glow} ${unowned} card-bg-${c.type} w-24 sm:w-28 h-36 sm:h-40 p-1.5 flex flex-col justify-between cursor-pointer shrink-0">
             ${isHolo ? '<div class="holo-foil"></div>' : ''}
             ${inspectBtn}
             <div class="flex items-center justify-between gap-0.5 leading-none z-10 pr-4">
@@ -1392,7 +1434,7 @@
 
         document.getElementById('modal-card-body').innerHTML = `
           ${fieldStatusHtml}
-          <div id="tilt-target" class="tilt-card pk-card border-${card.rarity} card-bg-${card.type} w-68 sm:w-76 mx-auto p-3 flex flex-col gap-2 shadow-2xl">
+          <div id="tilt-target" class="tilt-card pk-card border-${card.rarity} card-bg-${card.type} w-[17rem] sm:w-[19rem] mx-auto p-3 flex flex-col gap-2 shadow-2xl">
             ${isHolo ? '<div class="holo-foil"></div>' : ''}
             <div class="flex items-center justify-between z-10">
               <span class="text-base font-black ${textMain}">${card.name}</span>
@@ -1450,6 +1492,7 @@
     /* ==================== 9. パック開封システム (全30パック対応) ==================== */
     const packSystem = {
       seriesFilter: 'ALL', pendingPackId: null, lastPulled: [],
+      openingTimer: null, opening: false, executingOpen: false,
 
       renderPackShop() {
         const list = PACKS.filter(p => this.seriesFilter === 'ALL' || p.series === this.seriesFilter);
@@ -1488,7 +1531,10 @@
       },
 
       preparePackSwipe(packId) {
+        if (this.opening || this.executingOpen) return;
+        if (!PACKS.some(p => p.id === packId)) { ui.toast('パックが見つかりませんでした'); return; }
         if (accountMgr.data.hourglass < 12) { ui.toast('パック砂時計が足りません！ヘッダーの「+」で補充できます。'); return; }
+        if (this.openingTimer !== null) { clearTimeout(this.openingTimer); this.openingTimer = null; }
         this.pendingPackId = packId;
         const p = PACKS.find(x => x.id === packId) || PACKS[0];
         const cover = CARD_MAP[p.artCard] || { id: p.id, type: p.type };
@@ -1506,9 +1552,18 @@
 
         let sx = 0;
         const openNow = () => {
+          // タップ後に合成 click が発生する端末でも、1回だけ開封する。
+          if (this.opening || this.executingOpen || this.pendingPackId !== packId) return;
+          this.opening = true;
           sound.packRip();
           document.getElementById('pack-top-tear').style.transform = 'translateX(260px) rotate(18deg)';
-          setTimeout(() => this.executeOpen(this.pendingPackId, 1), 280);
+          this.openingTimer = setTimeout(() => {
+            this.openingTimer = null;
+            const selectedPackId = this.pendingPackId;
+            this.pendingPackId = null;
+            this.executeOpen(selectedPackId, 1);
+            this.opening = false;
+          }, 280);
         };
         box.onclick = openNow;
         box.ontouchstart = e => { sx = e.touches[0].clientX; };
@@ -1516,8 +1571,12 @@
       },
 
       openTenPacks(packId) {
+        if (this.opening || this.executingOpen) return;
+        if (!PACKS.some(p => p.id === packId)) { ui.toast('パックが見つかりませんでした'); return; }
         if (accountMgr.data.hourglass < 120) { ui.toast('10連開封には砂時計120個が必要です！ヘッダーの「+」で補充できます。'); return; }
-        const p = PACKS.find(x => x.id === packId) || PACKS[0];
+        this.opening = true;
+        this.pendingPackId = packId;
+        const p = PACKS.find(x => x.id === packId);
         document.getElementById('pack-stage').classList.add('hidden');
         document.getElementById('pack-results').classList.add('hidden');
         document.getElementById('pack-swipe-stage').classList.add('hidden');
@@ -1535,11 +1594,29 @@
           </div>
         `).join('');
         sound.packRip();
-        setTimeout(() => this.executeOpen(packId, 10), 820);
+        this.openingTimer = setTimeout(() => {
+          this.openingTimer = null;
+          const selectedPackId = this.pendingPackId;
+          this.pendingPackId = null;
+          this.executeOpen(selectedPackId, 10);
+          this.opening = false;
+        }, 820);
       },
 
       executeOpen(packId, count) {
-        accountMgr.data.hourglass -= count * 12;
+        if (this.executingOpen) return;
+        if (![1, 10].includes(count) || !PACKS.some(p => p.id === packId)) {
+          ui.toast('開封処理を開始できませんでした');
+          return;
+        }
+        const cost = count * 12;
+        if (accountMgr.data.hourglass < cost) {
+          ui.toast(`砂時計が足りません（必要:${cost}）`);
+          this.resetStage();
+          return;
+        }
+        this.executingOpen = true;
+        accountMgr.data.hourglass -= cost;
         accountMgr.data.packPoints = (accountMgr.data.packPoints || 0) + count * 15;
         const packMeta = PACKS.find(p => p.id === packId);
         const featuredCard = packMeta && CARD_MAP[packMeta.artCard];
@@ -1548,6 +1625,8 @@
 
         const allCom = CARDS.filter(c => ['C', 'U'].includes(c.rarity));
         const allRare = CARDS.filter(c => ['R', 'RR', 'SR', 'SAR', 'UR'].includes(c.rarity));
+        const allSrPlus = CARDS.filter(c => ['SR', 'SAR', 'UR'].includes(c.rarity));
+        const themeSrPlus = theme.filter(c => ['SR', 'SAR', 'UR'].includes(c.rarity));
         const comPool = theme.filter(c => ['C', 'U'].includes(c.rarity)).length >= 2 ? theme.filter(c => ['C', 'U'].includes(c.rarity)) : allCom;
         const rarePool = theme.filter(c => ['R', 'RR', 'SR', 'SAR', 'UR'].includes(c.rarity)).length >= 1 ? theme.filter(c => ['R', 'RR', 'SR', 'SAR', 'UR'].includes(c.rarity)) : allRare;
 
@@ -1562,9 +1641,12 @@
           const roll = Math.random();
           const forceSr = (count === 10 && p === 9);
           let pool = rarePool;
-          if (featuredCard && roll < 0.35) pool = [featuredCard];
-          else if (roll < 0.55 || (forceSr && roll < 0.7)) pool = rarePool.filter(c => ['UR', 'SAR'].includes(c.rarity));
-          else if (roll < 0.85 || forceSr) pool = rarePool.filter(c => ['SR', 'RR'].includes(c.rarity));
+          if (forceSr) {
+            // 10連の50枚目は、対象パックにSR以上がなければ全カードから選び、必ずSR以上にする。
+            pool = themeSrPlus.length ? themeSrPlus : allSrPlus;
+          } else if (featuredCard && roll < 0.35) pool = [featuredCard];
+          else if (roll < 0.55) pool = rarePool.filter(c => ['UR', 'SAR'].includes(c.rarity));
+          else if (roll < 0.85) pool = rarePool.filter(c => ['SR', 'RR'].includes(c.rarity));
           if (pool.length === 0) pool = allRare;
           const rc = pool[Math.floor(Math.random() * pool.length)];
           const isNew = (accountMgr.data.collection[rc.id] || 0) === 0;
@@ -1582,6 +1664,7 @@
         document.getElementById('pack-ten-stage').classList.add('hidden');
         document.getElementById('pack-results').classList.remove('hidden');
         this.renderPulled(pulled);
+        this.executingOpen = false;
       },
 
       sortResults(mode) {
@@ -1595,6 +1678,12 @@
       },
 
       resetStage() {
+        // 演出中に一覧へ戻った場合、予約済みタイマーを破棄して課金・開封を防ぐ。
+        if (this.openingTimer !== null) clearTimeout(this.openingTimer);
+        this.openingTimer = null;
+        this.pendingPackId = null;
+        this.opening = false;
+        this.executingOpen = false;
         document.getElementById('pack-stage').classList.remove('hidden');
         ['pack-swipe-stage', 'pack-ten-stage', 'pack-results'].forEach(id => document.getElementById(id).classList.add('hidden'));
       }
@@ -1621,7 +1710,7 @@
         this.tempDeck = [...d.cards];
         this.tempEnergies = [...(d.energies || ['Fire'])];
         this.tempName = d.name;
-        document.getElementById('deck-slot-select').innerHTML = decks.map((dk, i) => `<option value="${i}" ${i === this.currentSlot ? 'selected' : ''}>スロット${i + 1}: ${dk.name}</option>`).join('');
+        document.getElementById('deck-slot-select').innerHTML = decks.map((dk, i) => `<option value="${i}" ${i === this.currentSlot ? 'selected' : ''}>スロット${i + 1}: ${escapeHtml(dk.name)}</option>`).join('');
         document.getElementById('deck-name-input').value = this.tempName;
       },
 
@@ -1661,9 +1750,25 @@
         this.render();
       },
 
+      getOwnershipIssues(cards) {
+        const needed = {};
+        (cards || []).forEach(id => { needed[id] = (needed[id] || 0) + 1; });
+        return Object.entries(needed).filter(([id, count]) =>
+          !CARD_MAP[id] || count > Number(accountMgr.data?.collection?.[id] || 0)
+        ).map(([id, count]) => ({ id, count, owned: Number(accountMgr.data?.collection?.[id] || 0) }));
+      },
+
       loadPreset(k) {
         if (!k || !PRESET_DECKS[k]) return;
-        this.tempDeck = [...PRESET_DECKS[k].cards];
+        const cards = [...PRESET_DECKS[k].cards];
+        const issues = this.getOwnershipIssues(cards);
+        if (issues.length) {
+          const first = issues[0];
+          ui.toast(`スターターを読み込めません：${CARD_MAP[first.id]?.name || first.id} は所持${first.owned}枚 / 必要${first.count}枚です`);
+          document.getElementById('preset-deck-select').value = '';
+          return;
+        }
+        this.tempDeck = cards;
         this.tempEnergies = [...PRESET_DECKS[k].energies];
         this.tempName = PRESET_DECKS[k].name;
         document.getElementById('deck-name-input').value = this.tempName;
@@ -1694,6 +1799,13 @@
 
       saveDeck() {
         if (this.tempDeck.length !== 20) { ui.toast(`現在${this.tempDeck.length}枚です。ちょうど20枚にして保存してください！`); return; }
+        if (this.tempDeck.some(id => !CARD_MAP[id])) { ui.toast('デッキに不明なカードが含まれています'); return; }
+        const ownershipIssues = this.getOwnershipIssues(this.tempDeck);
+        if (ownershipIssues.length) {
+          const first = ownershipIssues[0];
+          ui.toast(`所持枚数不足：${CARD_MAP[first.id]?.name || first.id}（所持${first.owned}枚 / 必要${first.count}枚）`);
+          return;
+        }
         if (!this.tempDeck.some(id => CARD_MAP[id].category === 'Pokemon' && CARD_MAP[id].stage === 'Basic')) {
           ui.toast('たねポケモンを1枚以上入れてください！'); return;
         }
@@ -1743,11 +1855,14 @@
 
     /* ==================== 11. 豪華Canvas VFXエンジン ==================== */
     const battleVfx = {
-      canvas: null, ctx: null, particles: [], beams: [], running: false,
+      canvas: null, ctx: null, particles: [], beams: [], running: false, resizeHandler: null,
       init() {
         this.canvas = document.getElementById('battle-vfx-canvas'); if (!this.canvas) return;
         this.ctx = this.canvas.getContext('2d'); this.resize();
-        window.addEventListener('resize', () => this.resize());
+        if (!this.resizeHandler) {
+          this.resizeHandler = () => this.resize();
+          window.addEventListener('resize', this.resizeHandler);
+        }
         if (!this.running) { this.running = true; this.loop(); }
       },
       resize() {
@@ -1802,8 +1917,10 @@
     /* ==================== 12. バトルエンジン ==================== */
     const battle = {
       phase: 'setup', turn: 1, currentSide: 'player', isFirstTurnPlayer: true, over: false,
-      mode: 'cpu', isOnlineP2P: false, oppRating: 1000,
+      mode: 'cpu', isOnlineP2P: false, oppRating: 1000, cpuDifficulty: 'normal',
       p: null, o: null, logs: [], draggingEnergy: false, ghostEl: null,
+      actionLocked: false, localSetupReady: false, remoteSetupReady: false,
+      setupStarted: false, promotionModalOpen: false, pendingSelfKO: false,
 
       shuffle(arr) {
         const a = [...arr];
@@ -1817,7 +1934,7 @@
         orb.dataset.dragReady = '1';
 
         const startDrag = (clientX, clientY) => {
-          if (this.over || this.phase !== 'play' || this.currentSide !== 'player' || !this.p.currentEnergy) return;
+          if (this.over || this.actionLocked || this.phase !== 'play' || this.currentSide !== 'player' || !this.p.currentEnergy) return;
           this.draggingEnergy = true;
           const m = TYPE_META[this.p.currentEnergy];
           const g = document.createElement('div');
@@ -1924,10 +2041,17 @@
         this.mode = cfg.mode || 'cpu';
         this.isOnlineP2P = !!cfg.isOnlineP2P;
         this.oppRating = cfg.oppRating || 1000;
+        this.cpuDifficulty = ['easy', 'normal', 'hard'].includes(cfg.cpuDifficulty) ? cfg.cpuDifficulty : 'normal';
         this.phase = 'setup';
         this.turn = 1;
         this.over = false;
         this.logs = [];
+        this.actionLocked = false;
+        this.localSetupReady = false;
+        this.remoteSetupReady = false;
+        this.setupStarted = false;
+        this.promotionModalOpen = false;
+        this.pendingSelfKO = false;
 
         const pd = accountMgr.getActiveDeck();
         const presetOpp = PRESET_DECKS[cfg.oppDeckKey] || PRESET_DECKS.pikachu;
@@ -1935,7 +2059,8 @@
         const oppEnergies = cfg.oppEnergies || presetOpp.energies;
 
         this.p = this.initSide(pd.cards, pd.energies, accountMgr.data.name || 'あなた', false);
-        this.o = this.initSide(oppCards, oppEnergies, cfg.oppName || '対戦相手', true);
+        // Online opponent field stays empty until their real setup is received; CPU can auto-place for practice.
+        this.o = this.initSide(oppCards, oppEnergies, cfg.oppName || '対戦相手', !this.isOnlineP2P);
         this.isFirstTurnPlayer = (this.isOnlineP2P && cfg.isFirstPlayer === false) ? false : true;
 
         const mb = document.getElementById('battle-mode-badge');
@@ -1952,71 +2077,151 @@
         this.render();
       },
 
+      getLocalBoardSnapshot() {
+        return {
+          handCount: this.p.hand.length,
+          deckCount: this.p.deck.length,
+          points: this.p.points,
+          discard: [...this.p.discard],
+          active: this.p.active ? JSON.parse(JSON.stringify(this.p.active)) : null,
+          bench: JSON.parse(JSON.stringify(this.p.bench))
+        };
+      },
+
+      getRemoteShadowSnapshot() {
+        return {
+          points: this.o.points,
+          discard: [...this.o.discard],
+          active: this.o.active ? JSON.parse(JSON.stringify(this.o.active)) : null,
+          bench: JSON.parse(JSON.stringify(this.o.bench))
+        };
+      },
+
+      applyRemoteSenderBoard(board) {
+        if (!board || !this.o) return;
+        this.o.active = board.active || null;
+        this.o.bench = Array.isArray(board.bench) ? board.bench : [];
+        this.o.discard = Array.isArray(board.discard) ? board.discard : [];
+        this.o.points = Number(board.points) || 0;
+        const handCount = Math.max(0, Math.min(10, Number(board.handCount) || 0));
+        const deckCount = Math.max(0, Number(board.deckCount) || 0);
+        this.o.hand = Array(handCount).fill(null); // only the count is public
+        this.o.deck = Array(deckCount).fill(null); // track count without exposing card identities
+      },
+
+      applyRemoteReceiverBoard(board) {
+        if (!board || !this.p) return;
+        // The remote player's view of our board carries effects applied to our active/bench.
+        this.p.active = board.active || null;
+        this.p.bench = Array.isArray(board.bench) ? board.bench : [];
+        this.p.discard = Array.isArray(board.discard) ? board.discard : this.p.discard;
+        this.p.points = Number(board.points) || 0;
+      },
+
       confirmSetup() {
-        if (this.phase !== 'setup') return;
+        if (this.phase !== 'setup' || this.localSetupReady || this.actionLocked) return;
         if (!this.p.active) {
           ui.toast('バトル場に「たねポケモン」を1匹配置してください！');
           return;
         }
+        if (this.isOnlineP2P) {
+          if (!onlineLobby.conn || onlineLobby.conn.open === false) {
+            ui.toast('対戦相手との通信が確立していません');
+            return;
+          }
+          this.localSetupReady = true;
+          const btn = document.getElementById('btn-setup-ready');
+          btn.disabled = true;
+          btn.textContent = '相手の初期配置を待っています...';
+          try {
+            onlineLobby.conn?.send({ type: 'SETUP_READY', turn: this.turn, senderBoard: this.getLocalBoardSnapshot() });
+          } catch (e) { ui.toast('初期配置を相手に送信できませんでした'); }
+          this.log('初期配置を送信しました。相手の「バトル開始！」を待っています...');
+          if (this.remoteSetupReady) this.beginBattleAfterSetup();
+          this.render();
+          return;
+        }
+        this.localSetupReady = true;
+        this.beginBattleAfterSetup();
+      },
+
+      receiveSetupReady(msg) {
+        if (!this.isOnlineP2P || this.over || this.phase !== 'setup' || !msg?.senderBoard) return;
+        this.applyRemoteSenderBoard(msg.senderBoard);
+        this.remoteSetupReady = true;
+        this.log('相手の初期配置が完了しました。');
+        if (this.localSetupReady) this.beginBattleAfterSetup();
+        else this.render();
+      },
+
+      beginBattleAfterSetup() {
+        if (this.setupStarted || !this.localSetupReady || (this.isOnlineP2P && !this.remoteSetupReady)) return;
+        this.setupStarted = true;
         this.phase = 'play';
         sound.rarePull();
         this.showCutin('BATTLE START!', 'ポケモンオープン！バトル開始！');
-        if (this.isOnlineP2P) this.syncToPeer(false);
-
         if (this.isFirstTurnPlayer) {
           this.startTurn('player');
         } else {
+          // Guest waits for the host's first turn; do not create a phantom local turn.
           this.currentSide = 'opp';
           this.log('相手（先攻）のターンです...');
           this.render();
-          if (!this.isOnlineP2P) setTimeout(() => this.runCpuTurn(), 850);
         }
       },
 
       syncToPeer(passTurn = false) {
-        if (!this.isOnlineP2P || !onlineLobby.conn) return;
+        if (!this.isOnlineP2P || !onlineLobby.conn || this.phase !== 'play') return;
         try {
           onlineLobby.conn.send({
             type: 'SYNC_STATE', passTurn, turn: this.turn, phase: this.phase,
-            senderBoard: { handCount: this.p.hand.length, deckCount: this.p.deck.length, points: this.p.points, discard: this.p.discard, active: this.p.active, bench: this.p.bench },
-            receiverBoard: { points: this.o.points, active: this.o.active, bench: this.o.bench },
+            senderBoard: this.getLocalBoardSnapshot(),
+            receiverBoard: this.getRemoteShadowSnapshot(),
             lastLog: this.logs[0] || ''
           });
-        } catch (e) {}
+        } catch (e) { ui.toast('対戦相手への状態同期に失敗しました'); }
+      },
+
+      receiveRemoteEffect(msg) {
+        if (!this.isOnlineP2P || this.over || !msg) return;
+        if (msg.effect === 'red_card') {
+          this.p.deck = this.shuffle([...this.p.deck, ...this.p.hand]);
+          this.p.hand = [];
+          this.drawCards('player', 3);
+          this.log('相手のレッドカード！手札を山札に戻して3枚引きました。');
+          this.render();
+          this.syncToPeer(false);
+        }
       },
 
       receiveRemoteState(msg) {
         if (this.over) return;
-        if (msg.turn) this.turn = msg.turn;
+        if (Number.isFinite(Number(msg.turn))) this.turn = Number(msg.turn);
         if (msg.senderBoard) {
-          this.o.active = msg.senderBoard.active;
-          this.o.bench = msg.senderBoard.bench || [];
-          this.o.discard = msg.senderBoard.discard || [];
-          this.o.points = msg.senderBoard.points || 0;
-          while (this.o.hand.length > msg.senderBoard.handCount) this.o.hand.pop();
-          while (this.o.hand.length < msg.senderBoard.handCount) this.o.hand.push('t_potion');
+          this.applyRemoteSenderBoard(msg.senderBoard);
           if (this.o.points >= 3) { this.endMatch('opp', '相手が3ポイント先取しました！'); return; }
         }
         if (msg.receiverBoard) {
-          this.p.active = msg.receiverBoard.active;
-          this.p.bench = msg.receiverBoard.bench || [];
-          this.p.points = msg.receiverBoard.points || 0;
+          this.applyRemoteReceiverBoard(msg.receiverBoard);
           if (!this.p.active && this.p.bench.length === 0 && this.phase === 'play') {
             this.endMatch('opp', '場のポケモンがいなくなりました。'); return;
-          }
-          if (!this.p.active && this.p.bench.length > 0 && this.phase === 'play') {
-            this.render();
-            ui.openSelectModal('バトル場に出すポケモンを選択', this.p.bench.map((b, bi) => `<div onclick="battle.promote('player',${bi});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-sky-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(b.cardId)}<span class="text-xs font-black text-sky-700 mt-1">バトル場へ</span></div>`).join(''), false);
-            return;
           }
         }
         if (msg.lastLog) this.log(msg.lastLog);
         if (msg.passTurn) {
-          this.turn++;
+          this.turn = Math.max(this.turn, Number(msg.turn) || 0) + 1;
           this.startTurn('player');
         } else {
           this.render();
         }
+        if (this.phase === 'play' && !this.p.active && this.p.bench.length > 0) this.openPromotionSelector();
+      },
+
+      openPromotionSelector() {
+        if (this.promotionModalOpen || this.p.active || this.p.bench.length === 0 || this.over) return;
+        this.promotionModalOpen = true;
+        const html = this.p.bench.map((b, bi) => `<div onclick="battle.promote('player',${bi});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-sky-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(b.cardId)}<span class="text-xs font-black text-sky-700 mt-1">バトル場へ</span></div>`).join('');
+        ui.openSelectModal('きぜつ！バトル場に出すポケモンを選択（必須）', html, false);
       },
 
       sendEmote(text) {
@@ -2041,7 +2246,7 @@
 
       log(msg) {
         this.logs.unshift(`[T${this.turn}] ${msg}`);
-        document.getElementById('battle-log-content').innerHTML = this.logs.map(l => `<div class="border-b border-slate-200 pb-1">${l}</div>`).join('');
+        document.getElementById('battle-log-content').innerHTML = this.logs.map(l => `<div class="border-b border-slate-200 pb-1">${escapeHtml(l)}</div>`).join('');
         document.getElementById('battle-banner').textContent = msg;
       },
       toggleLog() { document.getElementById('battle-log-drawer').classList.toggle('hidden'); },
@@ -2076,6 +2281,7 @@
           if (isVeryFirstTurn) this.log('あなたの先攻1ターン目！（先攻1ターン目はエネルギー発生＆ワザ不可）');
           else this.log('右下のエネルギー玉をドラッグorタップでつけて、ワザを選ぼう！');
           this.render();
+          if (this.isOnlineP2P) this.syncToPeer(false);
         } else {
           this.log('相手のターン...');
           this.render();
@@ -2084,7 +2290,7 @@
       },
 
       endTurn() {
-        if (this.over || this.phase !== 'play' || this.currentSide !== 'player') return;
+        if (this.over || this.actionLocked || this.phase !== 'play' || this.currentSide !== 'player') return;
         if (this.isOnlineP2P) {
           this.currentSide = 'opp';
           this.log('相手のターンを待っています...');
@@ -2097,7 +2303,7 @@
       },
 
       clickEnergyOrb() {
-        if (this.over || this.phase !== 'play' || this.currentSide !== 'player' || !this.p.currentEnergy) {
+        if (this.over || this.actionLocked || this.phase !== 'play' || this.currentSide !== 'player' || !this.p.currentEnergy) {
           if (this.turn === 1 && this.isFirstTurnPlayer) ui.toast('先攻1ターン目はエネルギーが発生しません');
           return;
         }
@@ -2107,7 +2313,7 @@
       },
 
       assignZoneEnergy(z, i) {
-        if (this.over || this.phase !== 'play' || this.currentSide !== 'player' || !this.p.currentEnergy) return;
+        if (this.over || this.actionLocked || this.phase !== 'play' || this.currentSide !== 'player' || !this.p.currentEnergy) return;
         const eType = this.p.currentEnergy;
         this.p.currentEnergy = null;
         const t = z === 'active' ? this.p.active : this.p.bench[i];
@@ -2120,7 +2326,12 @@
           this.o.active.hp -= 20;
           this.showDmg('opp-active', 20);
           this.log('ダークライexの特性「ナイトメアオーラ」！相手に20ダメージ！');
-          if (this.checkKO('opp', 'active', 0)) return;
+          const wasKO = this.checkKO('opp', 'active', 0);
+          if (wasKO) {
+            this.render();
+            if (this.isOnlineP2P) this.syncToPeer(false);
+            return;
+          }
         } else {
           this.log(`${CARD_MAP[t.cardId].name}に${TYPE_META[eType].code}エネルギーをつけた！`);
         }
@@ -2129,7 +2340,7 @@
       },
 
       isPlayable(id) {
-        if (this.over) return false;
+        if (this.over || this.actionLocked || (this.phase === 'setup' && this.localSetupReady)) return false;
         const c = CARD_MAP[id]; if (!c) return false;
         if (this.phase === 'setup') return c.category === 'Pokemon' && c.stage === 'Basic' && (!this.p.active || this.p.bench.length < 3);
         if (this.currentSide !== 'player') return false;
@@ -2142,10 +2353,11 @@
       },
 
       playHandCard(idx) {
-        if (this.over) return;
+        if (this.over || this.actionLocked) return;
         const id = this.p.hand[idx], c = CARD_MAP[id]; if (!c) return;
 
         if (this.phase === 'setup') {
+          if (this.localSetupReady) { ui.toast('初期配置は送信済みです。相手の準備を待ってください'); return; }
           if (c.category !== 'Pokemon' || c.stage !== 'Basic') { ui.toast('バトル開始前は「たねポケモン」のみ配置できます！'); return; }
           if (!this.p.active) {
             this.p.hand.splice(idx, 1); this.p.active = this.createInst(id, 0); sound.draw();
@@ -2180,27 +2392,121 @@
         }
       },
 
-      evolve(hIdx, z, i) {
-        const evoId = this.p.hand.splice(hIdx, 1)[0], evoC = CARD_MAP[evoId];
-        const t = z === 'active' ? this.p.active : this.p.bench[i];
+      evolve(hIdx, z, i) { return this.evolveCard('player', hIdx, z, i); },
+
+      evolveCard(side, hIdx, z, i) {
+        const board = side === 'player' ? this.p : this.o;
+        const evoId = board.hand[hIdx], evoC = CARD_MAP[evoId];
+        const t = z === 'active' ? board.active : board.bench[i];
+        if (!evoC || !t) return false;
+        board.hand.splice(hIdx, 1);
         const dmg = t.maxHp - t.hp;
         t.cardId = evoId; t.maxHp = evoC.hp; t.hp = Math.max(10, evoC.hp - dmg); t.turnPlayed = this.turn; t.abilityUsed = false;
-        sound.rarePull(); battleVfx.triggerBurst('player', '#0ea5e9', '#a855f7');
+        sound.rarePull(); battleVfx.triggerBurst(side, '#0ea5e9', '#a855f7');
         this.showCutin('EVOLUTION!', `${evoC.name} に進化！`);
         this.log(`${evoC.name}に進化した！`); this.render();
-        if (this.isOnlineP2P) this.syncToPeer(false);
+        if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
+        return true;
+      },
+
+      getRareCandyOptions(side) {
+        const board = side === 'player' ? this.p : this.o;
+        const field = [{ z: 'active', i: 0, inst: board.active }, ...board.bench.map((inst, i) => ({ z: 'bench', i, inst }))]
+          .filter(t => t.inst && CARD_MAP[t.inst.cardId]?.stage === 'Basic' && t.inst.turnPlayed < this.turn);
+        const stage2 = board.hand.map((id, hIdx) => ({ id, hIdx, card: CARD_MAP[id] }))
+          .filter(x => x.card?.category === 'Pokemon' && x.card.stage === 'Stage2');
+        const result = [];
+        for (const evo of stage2) {
+          for (const base of field) {
+            const baseName = CARD_MAP[base.inst.cardId].name;
+            const hasMatchingStage1 = CARDS.some(c => c.category === 'Pokemon' && c.stage === 'Stage1' &&
+              c.evolvesFrom === baseName && evo.card.evolvesFrom === c.name);
+            if (hasMatchingStage1) result.push({ hIdx: evo.hIdx, z: base.z, i: base.i, cardId: evo.id, baseId: base.inst.cardId });
+          }
+        }
+        return result;
+      },
+
+      resolveRareCandy(side, hIdx, z, i) {
+        const board = side === 'player' ? this.p : this.o;
+        const options = this.getRareCandyOptions(side);
+        const valid = options.some(x => x.hIdx === hIdx && x.z === z && x.i === i);
+        if (!valid) { ui.toast('その進化先・進化元の組み合わせでは使えません'); return false; }
+        return this.evolveCard(side, hIdx, z, i);
+      },
+
+      async resolveMisty(side, z, i) {
+        const board = side === 'player' ? this.p : this.o;
+        const target = z === 'active' ? board.active : board.bench[i];
+        if (!target || CARD_MAP[target.cardId]?.type !== 'Water') return;
+        const results = [];
+        while (results.length < 6) {
+          const heads = Math.random() < 0.5;
+          results.push(heads);
+          if (!heads) break;
+        }
+        const heads = results.filter(Boolean).length;
+        if (side === 'player') {
+          if (this.actionLocked) return;
+          this.actionLocked = true;
+          this.render();
+          try {
+            await this.playCoinTossSequence('カスミのコイントス！', 'ウラが出るまで投げ続ける！', results);
+          } finally {
+            this.actionLocked = false;
+          }
+          if (this.over) return;
+        }
+        for (let n = 0; n < heads; n++) target.energies.push('Water');
+        if (heads) sound.energy();
+        this.log(`カスミのコイントス！オモテ${heads}回で${CARD_MAP[target.cardId].name}に水エネルギーを${heads}個つけた！`);
+        this.render();
+        if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
+      },
+
+      resolveErika(side, z, i) {
+        const board = side === 'player' ? this.p : this.o;
+        const target = z === 'active' ? board.active : board.bench[i];
+        if (!target || CARD_MAP[target.cardId]?.type !== 'Grass') return;
+        target.hp = Math.min(target.maxHp, target.hp + 50);
+        this.log(`エリカの効果で${CARD_MAP[target.cardId].name}のHPを50回復！`);
+        this.render();
+        if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
       },
 
       execTrainer(side, hIdx) {
+        if (this.over || this.actionLocked) return;
         const s = side === 'player' ? this.p : this.o, opp = side === 'player' ? this.o : this.p;
-        const id = s.hand.splice(hIdx, 1)[0], c = CARD_MAP[id];
-        s.discard.push(id);
+        const id = s.hand[hIdx], c = CARD_MAP[id];
+        if (!c) return;
+
+        // Rare Candy is validated before consuming it; Stage 2 must match the Basic's full evolution line.
+        if (c.id === 't_rare_candy') {
+          const opts = this.getRareCandyOptions(side);
+          if (!opts.length) {
+            if (side === 'player') ui.toast('ふしぎなアメを使える進化先がありません');
+            return;
+          }
+          s.hand.splice(hIdx, 1); s.discard.push(id); sound.draw();
+          const validOptions = this.getRareCandyOptions(side); // indices changed when the Item left the hand
+          if (side === 'player') {
+            const html = validOptions.map(o => `<div onclick="battle.resolveRareCandy('player',${o.hIdx},'${o.z}',${o.i});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-sky-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(o.cardId)}<span class="text-xs font-black text-emerald-700 mt-1">${CARD_MAP[o.baseId].name}から進化</span></div>`).join('');
+            ui.openSelectModal('ふしぎなアメ：進化させるポケモンを選択', html, false);
+          } else {
+            const o = validOptions[0]; if (o) this.resolveRareCandy('opp', o.hIdx, o.z, o.i);
+          }
+          this.render();
+          if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
+          return;
+        }
+
+        s.hand.splice(hIdx, 1); s.discard.push(id);
         if (c.subType === 'Supporter') s.supporterUsed = true;
         sound.draw();
 
         if (c.id === 't_prof_research') { this.drawCards(side, 2); this.log('博士の研究で山札を2枚引いた！'); }
         else if (c.id === 't_pokeball') {
-          const bIdx = s.deck.findIndex(x => CARD_MAP[x].category === 'Pokemon' && CARD_MAP[x].stage === 'Basic');
+          const bIdx = s.deck.findIndex(x => CARD_MAP[x]?.category === 'Pokemon' && CARD_MAP[x]?.stage === 'Basic');
           if (bIdx !== -1 && s.hand.length < 10) {
             const fId = s.deck.splice(bIdx, 1)[0]; s.hand.push(fId);
             s.deck = this.shuffle(s.deck);
@@ -2208,16 +2514,18 @@
           } else this.log('モンスターボールを使ったが対象がいなかった');
         }
         else if (c.id === 't_potion') {
-          const targets = [s.active, ...s.bench].filter(Boolean);
+          const targets = [{ z: 'active', i: 0, inst: s.active }, ...s.bench.map((inst, i) => ({ z: 'bench', i, inst }))]
+            .filter(t => t.inst && t.inst.hp < t.inst.maxHp);
           if (side === 'player') {
-            ui.openSelectModal('きずぐすり（HP20回復）を使うポケモンを選択', targets.map((t, ti) => {
-              const z = ti === 0 && s.active ? 'active' : 'bench';
-              const bi = s.active ? ti - 1 : ti;
-              return `<div onclick="battle.healTarget('player','${z}',${bi},20);ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(t.cardId)}<span class="text-xs font-black text-emerald-700 mt-1">HP ${t.hp}/${t.maxHp}</span></div>`;
-            }).join(''));
-            return;
-          } else if (s.active) {
-            s.active.hp = Math.min(s.active.maxHp, s.active.hp + 20);
+            if (!targets.length) { this.log('きずぐすりを使ったが回復できるポケモンがいなかった'); }
+            else {
+              const html = targets.map(t => `<div onclick="battle.healTarget('player','${t.z}',${t.i},20);ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(t.inst.cardId)}<span class="text-xs font-black text-emerald-700 mt-1">HP ${t.inst.hp}/${t.inst.maxHp}</span></div>`).join('');
+              ui.openSelectModal('きずぐすり（HP20回復）を使うポケモンを選択', html, false);
+              return;
+            }
+          } else if (targets.length) {
+            const t = targets.sort((a,b) => (b.inst.maxHp-b.inst.hp) - (a.inst.maxHp-a.inst.hp))[0];
+            t.inst.hp = Math.min(t.inst.maxHp, t.inst.hp + 20);
             this.log('相手はきずぐすりでHPを20回復した！');
           }
         }
@@ -2231,63 +2539,45 @@
           } else this.log('ナツメを使ったが相手ベンチがいなかった');
         }
         else if (c.id === 't_misty') {
-          const waterTargets = [s.active, ...s.bench].filter(t => t && CARD_MAP[t.cardId].type === 'Water');
-          if (waterTargets.length === 0) {
-            this.log('カスミを使ったが水ポケモンがいなかった');
+          const targets = [{ z: 'active', i: 0, inst: s.active }, ...s.bench.map((inst, i) => ({ z: 'bench', i, inst }))]
+            .filter(t => t.inst && CARD_MAP[t.inst.cardId].type === 'Water');
+          if (!targets.length) this.log('カスミを使ったが水ポケモンがいなかった');
+          else if (side === 'player') {
+            const html = targets.map(t => `<div onclick="battle.resolveMisty('player','${t.z}',${t.i});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-sky-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(t.inst.cardId)}<span class="text-xs font-black text-sky-700 mt-1">水エネルギーをつける</span></div>`).join('');
+            ui.openSelectModal('カスミ：水エネルギーをつけるポケモンを選択', html, false);
+            return;
           } else {
-            const results = [];
-            while (results.length < 6) {
-              const h = Math.random() < 0.5;
-              results.push(h);
-              if (!h) break;
-            }
-            const heads = results.filter(Boolean).length;
-            const target = waterTargets[0];
-            if (side === 'player') {
-              this.playCoinTossSequence('カスミのコイントス！', 'ウラが出るまで投げ続ける！', results).then(() => {
-                for (let k = 0; k < heads; k++) target.energies.push('Water');
-                sound.energy();
-                this.log(`カスミのコイントス！オモテ${heads}回で${CARD_MAP[target.cardId].name}に水エネルギーを${heads}個つけた！`);
-                this.render();
-                if (this.isOnlineP2P) this.syncToPeer(false);
-              });
-              return;
-            } else {
-              for (let k = 0; k < heads; k++) target.energies.push('Water');
-              this.log(`相手のカスミ！オモテ${heads}回で水エネルギーを${heads}個つけた！`);
-            }
+            const t = targets[0]; this.resolveMisty(side, t.z, t.i);
           }
         }
         else if (c.id === 't_erika') {
-          const grassTargets = [s.active, ...s.bench].filter(t => t && CARD_MAP[t.cardId].type === 'Grass');
-          if (grassTargets.length > 0) {
-            grassTargets[0].hp = Math.min(grassTargets[0].maxHp, grassTargets[0].hp + 50);
-            this.log(`エリカの効果で${CARD_MAP[grassTargets[0].cardId].name}のHPを50回復！`);
-          } else this.log('エリカを使ったが草ポケモンがいなかった');
+          const targets = [{ z: 'active', i: 0, inst: s.active }, ...s.bench.map((inst, i) => ({ z: 'bench', i, inst }))]
+            .filter(t => t.inst && CARD_MAP[t.inst.cardId].type === 'Grass');
+          if (!targets.length) this.log('エリカを使ったが回復できる草ポケモンがいなかった');
+          else if (side === 'player') {
+            const html = targets.map(t => `<div onclick="battle.resolveErika('player','${t.z}',${t.i});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(t.inst.cardId)}<span class="text-xs font-black text-emerald-700 mt-1">HP ${t.inst.hp}/${t.inst.maxHp}</span></div>`).join('');
+            ui.openSelectModal('エリカ：HPを50回復する草ポケモンを選択', html, false);
+            return;
+          } else {
+            const t = targets.sort((a,b) => (b.inst.maxHp-b.inst.hp) - (a.inst.maxHp-a.inst.hp))[0];
+            this.resolveErika(side, t.z, t.i);
+          }
         }
         else if (c.id === 't_red_card') {
-          opp.deck = this.shuffle([...opp.deck, ...opp.hand]);
-          opp.hand = [];
-          this.drawCards(side === 'player' ? 'opp' : 'player', 3);
-          this.log('レッドカード！相手の手札を山札に戻して3枚引かせた！');
-        }
-        else if (c.id === 't_rare_candy') {
-          if (side === 'player') {
-            const stage2Hand = s.hand.map((hid, hi) => ({ hid, hi, c: CARD_MAP[hid] })).filter(x => x.c.category === 'Pokemon' && x.c.stage === 'Stage2');
-            const basicsField = [{ z: 'active', i: 0, inst: s.active }, ...s.bench.map((b, i) => ({ z: 'bench', i, inst: b }))].filter(t => t.inst && CARD_MAP[t.inst.cardId].stage === 'Basic' && t.inst.turnPlayed < this.turn);
-            if (stage2Hand.length > 0 && basicsField.length > 0) {
-              const evo = stage2Hand[0];
-              this.evolve(evo.hi, basicsField[0].z, basicsField[0].i);
-              return;
-            }
+          if (this.isOnlineP2P && side === 'player') {
+            try { onlineLobby.conn?.send({ type: 'REMOTE_EFFECT', effect: 'red_card' }); } catch (e) { ui.toast('レッドカードの効果送信に失敗しました'); }
+            this.log('レッドカード！相手の手札を山札に戻して3枚引かせた！');
+          } else {
+            opp.deck = this.shuffle([...opp.deck, ...opp.hand]);
+            opp.hand = [];
+            this.drawCards(side === 'player' ? 'opp' : 'player', 3);
+            this.log('レッドカード！相手の手札を山札に戻して3枚引かせた！');
           }
-          this.log('ふしぎなアメを使った！');
         }
 
         this.render();
         if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
       },
-
       healTarget(side, z, i, amount) {
         const s = side === 'player' ? this.p : this.o;
         const t = z === 'active' ? s.active : s.bench[i];
@@ -2328,24 +2618,103 @@
         return { final: dmg, isWeak };
       },
 
+      resolveMoltresAbility(side, sourceZ, sourceI, benchIndex) {
+        const board = side === 'player' ? this.p : this.o;
+        const source = sourceZ === 'active' ? board.active : board.bench[sourceI];
+        const target = board.bench[benchIndex];
+        if (!source || source.cardId !== 'c_moltres_ex' || source.abilityUsed || !target || CARD_MAP[target.cardId]?.type !== 'Fire') return;
+        source.abilityUsed = true;
+        target.energies.push('Fire');
+        sound.energy();
+        this.log(`ファイヤーexの「れっかのまい」！${CARD_MAP[target.cardId].name}に炎エネルギー+1！`);
+        this.render();
+        if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
+      },
+
+      resolveMiraidonAbility(side, sourceZ, sourceI, deckIndex) {
+        const board = side === 'player' ? this.p : this.o;
+        const source = sourceZ === 'active' ? board.active : board.bench[sourceI];
+        const cardId = board.deck[deckIndex];
+        if (!source || source.cardId !== 'c_miraidon_ex' || source.abilityUsed || board.bench.length >= 3 || !CARD_MAP[cardId] ||
+            CARD_MAP[cardId].category !== 'Pokemon' || CARD_MAP[cardId].stage !== 'Basic' || CARD_MAP[cardId].type !== 'Lightning') return;
+        source.abilityUsed = true;
+        board.deck.splice(deckIndex, 1);
+        board.deck = this.shuffle(board.deck);
+        board.bench.push(this.createInst(cardId, this.turn));
+        this.log(`ミライドンexの「タンデムユニット」！${CARD_MAP[cardId].name}をベンチに出した！`);
+        this.render();
+        if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
+      },
+
+      resolveDarkSignal(side, sourceZ, sourceI, benchIndex) {
+        const board = side === 'player' ? this.p : this.o;
+        const opp = side === 'player' ? this.o : this.p;
+        const source = sourceZ === 'active' ? board.active : board.bench[sourceI];
+        const target = opp.bench[benchIndex];
+        if (!source || source.cardId !== 'c_umbreon_vmax' || source.abilityUsed || !opp.active || !target) return;
+        source.abilityUsed = true;
+        const old = opp.active;
+        opp.active = target;
+        opp.bench[benchIndex] = old;
+        this.log(`ブラッキーexの「ダークシグナル」！${CARD_MAP[target.cardId].name}をバトル場に呼び出した！`);
+        this.render();
+        if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
+      },
+
       useAbility(side, z, i) {
-        if (this.over || this.phase !== 'play' || (side === 'player' && this.currentSide !== 'player')) return;
-        const s = side === 'player' ? this.p : this.o, opp = side === 'player' ? this.o : this.p;
-        const inst = z === 'active' ? s.active : s.bench[i];
+        if (this.over || this.actionLocked || this.phase !== 'play' || (side === 'player' && this.currentSide !== 'player')) return;
+        const board = side === 'player' ? this.p : this.o, opp = side === 'player' ? this.o : this.p;
+        const inst = z === 'active' ? board.active : board.bench[i];
         if (!inst || inst.abilityUsed) return;
-        const c = CARD_MAP[inst.cardId]; if (!c.ability) return;
+        const c = CARD_MAP[inst.cardId]; if (!c?.ability) return;
+
+        if (c.id === 'c_moltres_ex') {
+          const fireTargets = board.bench.map((b, bi) => ({ b, bi })).filter(x => CARD_MAP[x.b.cardId].type === 'Fire');
+          if (!fireTargets.length) { if (side === 'player') ui.toast('炎タイプのベンチポケモンがいません'); return; }
+          if (side === 'player') {
+            const html = fireTargets.map(x => `<div onclick="battle.resolveMoltresAbility('player','${z}',${i},${x.bi});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-orange-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(x.b.cardId)}<span class="text-xs font-black text-orange-700 mt-1">炎エネルギーをつける</span></div>`).join('');
+            ui.openSelectModal('ファイヤーex：炎エネルギーをつけるベンチを選択', html);
+            return;
+          }
+          this.resolveMoltresAbility(side, z, i, fireTargets[0].bi);
+          return;
+        }
+
+        if (c.id === 'c_miraidon_ex') {
+          if (board.bench.length >= 3) { if (side === 'player') ui.toast('ベンチに空きがありません'); return; }
+          const candidates = board.deck.map((id, di) => ({ id, di })).filter(x => CARD_MAP[x.id]?.category === 'Pokemon' && CARD_MAP[x.id].stage === 'Basic' && CARD_MAP[x.id].type === 'Lightning');
+          if (!candidates.length) { if (side === 'player') ui.toast('山札に雷タイプのたねポケモンがいません'); return; }
+          if (side === 'player') {
+            const html = candidates.map(x => `<div onclick="battle.resolveMiraidonAbility('player','${z}',${i},${x.di});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-sky-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(x.id)}<span class="text-xs font-black text-sky-700 mt-1">ベンチに出す</span></div>`).join('');
+            ui.openSelectModal('ミライドンex：山札から雷たねポケモンを選択', html);
+            return;
+          }
+          this.resolveMiraidonAbility(side, z, i, candidates[0].di);
+          return;
+        }
+
+        if (c.id === 'c_umbreon_vmax') {
+          if (!opp.active || !opp.bench.length) { if (side === 'player') ui.toast('相手のベンチにポケモンがいません'); return; }
+          if (side === 'player') {
+            const html = opp.bench.map((b, bi) => `<div onclick="battle.resolveDarkSignal('player','${z}',${i},${bi});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(b.cardId)}<span class="text-xs font-black text-slate-700 mt-1">バトル場に呼び出す</span></div>`).join('');
+            ui.openSelectModal('ブラッキーex：相手のベンチを選択', html);
+            return;
+          }
+          this.resolveDarkSignal(side, z, i, 0);
+          return;
+        }
 
         inst.abilityUsed = true; sound.energy(); battleVfx.triggerBurst(side);
-        if (c.id === 'c_gardevoir_ex' && s.active && CARD_MAP[s.active.cardId].type === 'Psychic') {
-          s.active.energies.push('Psychic');
+        if (c.id === 'c_gardevoir_ex' && board.active && CARD_MAP[board.active.cardId].type === 'Psychic') {
+          board.active.energies.push('Psychic');
           this.log('サーナイトの「トランスシェイド」！バトル場に超エネルギー+1！');
-        } else if (c.id === 'c_moltres_ex') {
-          const fb = s.bench.find(b => CARD_MAP[b.cardId].type === 'Fire');
-          if (fb) { fb.energies.push('Fire'); this.log(`ファイヤーexの「れっかのまい」！${CARD_MAP[fb.cardId].name}に炎エネ+1！`); }
         } else if (c.id === 'c_greninja_ex' && opp.active) {
           opp.active.hp -= 20; this.showDmg(side === 'player' ? 'opp-active' : 'player-active', 20);
           this.log('ゲッコウガexの「みずしゅりけん」！相手に20ダメージ！');
-          if (this.checkKO(side === 'player' ? 'opp' : 'player', 'active', 0)) return;
+          const wasKO = this.checkKO(side === 'player' ? 'opp' : 'player', 'active', 0);
+          this.render();
+          if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
+          if (wasKO) return;
         } else if (c.id === 'c_shiny_charizard') {
           inst.energies.push('Fire', 'Fire');
           this.log('色違いリザードンexの「れんごくしはい」！炎エネルギーを2個つけた！');
@@ -2353,7 +2722,7 @@
           inst.energies.push('Psychic');
           this.log('ギラティナexの「はくうのさけび」！超エネルギーを1個つけた！');
         } else if (c.id === 'c_bibarel') {
-          const need = Math.max(0, 4 - s.hand.length);
+          const need = Math.max(0, 4 - board.hand.length);
           this.drawCards(side, need);
           this.log(`ビーダルの「はたらくまえば」で${need}枚引いた！`);
         } else {
@@ -2363,9 +2732,8 @@
         this.render();
         if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
       },
-
       attack(side, atkIdx) {
-        if (this.over || this.phase !== 'play') return;
+        if (this.over || this.actionLocked || this.phase !== 'play') return;
         if (side === 'player' && this.currentSide !== 'player') return;
         if (this.turn === 1 && ((side === 'player' && this.isFirstTurnPlayer) || (side === 'opp' && !this.isFirstTurnPlayer))) {
           if (side === 'player') ui.toast('先攻1ターン目はワザを使えません！');
@@ -2389,7 +2757,8 @@
         }
         if (atk.name === 'ジャイアントブルーム') s.active.hp = Math.min(s.active.maxHp, s.active.hp + 30);
         if (atk.name === 'オーロラゲイン' || atk.name === 'コットンガード') s.active.hp = Math.min(s.active.maxHp, s.active.hp + 20);
-        if (atk.name === 'クリムゾンダイブ') s.active.hp = Math.max(10, s.active.hp - 30);
+        const selfDamageAttack = atk.name === 'クリムゾンダイブ';
+        if (selfDamageAttack) s.active.hp -= 30;
 
         const attEl = document.getElementById(side === 'player' ? 'player-active' : 'opp-active');
         const defEl = document.getElementById(side === 'player' ? 'opp-active' : 'player-active');
@@ -2410,18 +2779,18 @@
           if (opp.bench[bi].hp <= 0) this.checkKO(side === 'player' ? 'opp' : 'player', 'bench', bi, true);
         }
 
-        const ko = this.checkKO(side === 'player' ? 'opp' : 'player', 'active', 0);
+        this.checkKO(side === 'player' ? 'opp' : 'player', 'active', 0);
+        if (this.over) return;
+        if (selfDamageAttack) this.checkKO(side, 'active', 0);
         if (this.over) return;
         this.render();
 
-        if (!ko) {
-          if (side === 'player') {
-            if (this.isOnlineP2P) {
-              this.currentSide = 'opp'; this.log('相手のターンを待っています...'); this.render(); this.syncToPeer(true);
-            } else setTimeout(() => { this.turn++; this.startTurn('opp'); }, 750);
-          }
-        } else if (side === 'player' && this.isOnlineP2P) {
-          this.currentSide = 'opp'; this.render(); this.syncToPeer(true);
+        // A KO caused by an ability or self-damage never advances the turn by itself.
+        // The attack action is what ends the turn, regardless of whether either active was KO'd.
+        if (side === 'player') {
+          if (this.isOnlineP2P) {
+            this.currentSide = 'opp'; this.log('相手のターンを待っています...'); this.render(); this.syncToPeer(true);
+          } else setTimeout(() => { if (!this.over) { this.turn++; this.startTurn('opp'); } }, 750);
         }
       },
 
@@ -2434,7 +2803,8 @@
       },
 
       checkKO(defSide, z, i, isBench = false) {
-        const def = defSide === 'player' ? this.p : this.o, att = defSide === 'player' ? this.o : this.p;
+        const def = defSide === 'player' ? this.p : this.o;
+        const att = defSide === 'player' ? this.o : this.p;
         const inst = z === 'active' ? def.active : def.bench[i];
         if (!inst || inst.hp > 0) return false;
 
@@ -2446,39 +2816,44 @@
 
         if (isBench) {
           def.bench.splice(i, 1);
-          if (att.points >= 3) { this.endMatch(defSide === 'player' ? 'opp' : 'player', '3ポイント先取しました！'); return true; }
+          if (att.points >= 3) this.endMatch(defSide === 'player' ? 'opp' : 'player', '3ポイント先取しました！');
           return true;
         }
 
         def.active = null;
-        if (att.points >= 3) { this.endMatch(defSide === 'player' ? 'opp' : 'player', '3ポイント先取しました！'); return true; }
-        if (def.bench.length === 0) { this.endMatch(defSide === 'player' ? 'opp' : 'player', '相手の場にポケモンがいなくなりました！'); return true; }
+        if (att.points >= 3) {
+          this.endMatch(defSide === 'player' ? 'opp' : 'player', '3ポイント先取しました！');
+          return true;
+        }
+        if (def.bench.length === 0) {
+          this.endMatch(defSide === 'player' ? 'opp' : 'player', '相手の場にポケモンがいなくなりました！');
+          return true;
+        }
 
         if (defSide === 'player') {
+          this.pendingSelfKO = true;
           this.render();
-          ui.openSelectModal('きぜつ！バトル場に出す次のポケモンを選択（必須）', def.bench.map((b, bi) => `<div onclick="battle.promote('player',${bi});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-sky-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(b.cardId)}<span class="text-xs font-black text-sky-700 mt-1">バトル場へ</span></div>`).join(''), false);
-        } else {
+          this.openPromotionSelector();
+        } else if (!this.isOnlineP2P) {
+          // CPU's board is controlled locally; select its replacement automatically.
           def.active = def.bench.shift();
           this.log(`相手は${CARD_MAP[def.active.cardId].name}をバトル場に出した！`);
-          if (att === this.p) {
-            if (this.isOnlineP2P) { this.currentSide = 'opp'; this.render(); this.syncToPeer(true); }
-            else setTimeout(() => { this.turn++; this.startTurn('opp'); }, 750);
-          }
         }
+        // In P2P the defender's client chooses its own replacement after receiving receiverBoard.active=null.
         return true;
       },
-
       promote(side, bi) {
         const s = side === 'player' ? this.p : this.o;
+        if (!s || !s.bench[bi]) return;
         s.active = s.bench.splice(bi, 1)[0];
+        if (side === 'player') { this.promotionModalOpen = false; this.pendingSelfKO = false; }
         this.log(`${CARD_MAP[s.active.cardId].name}をバトル場に出した！`);
         this.render();
         if (this.isOnlineP2P) this.syncToPeer(false);
-        else if (this.currentSide === 'opp') setTimeout(() => { this.turn++; this.startTurn('player'); }, 600);
       },
 
       initiateRetreat() {
-        if (this.over || this.phase !== 'play' || this.currentSide !== 'player' || this.p.retreated || !this.p.active || this.p.bench.length === 0) {
+        if (this.over || this.actionLocked || this.phase !== 'play' || this.currentSide !== 'player' || this.p.retreated || !this.p.active || this.p.bench.length === 0) {
           ui.toast('今はにげられません'); return;
         }
         const cost = Math.max(0, (CARD_MAP[this.p.active.cardId].retreat || 0) - this.p.retreatDiscount);
@@ -2487,6 +2862,7 @@
       },
 
       execRetreat(bi, cost) {
+        if (this.over || this.actionLocked || this.currentSide !== 'player') return;
         this.p.active.energies.splice(0, cost);
         const old = this.p.active; this.p.active = this.p.bench.splice(bi, 1)[0]; this.p.bench.push(old);
         this.p.retreated = true; sound.draw();
@@ -2498,45 +2874,71 @@
       runCpuTurn() {
         if (this.over || this.currentSide !== 'opp' || this.isOnlineP2P) return;
         const o = this.o;
+        const difficulty = this.cpuDifficulty || 'normal';
+
+        // Basics first, then one legal evolution per individual Pokemon this turn.
         for (let i = o.hand.length - 1; i >= 0; i--) {
           const c = CARD_MAP[o.hand[i]];
-          if (c.category === 'Pokemon' && c.stage === 'Basic' && o.bench.length < 3) o.bench.push(this.createInst(o.hand.splice(i, 1)[0], this.turn));
-        }
-        for (let i = o.hand.length - 1; i >= 0; i--) {
-          const c = CARD_MAP[o.hand[i]];
-          if (c.category === 'Pokemon' && c.stage !== 'Basic') {
-            const t = [o.active, ...o.bench].find(p => p && CARD_MAP[p.cardId].name === c.evolvesFrom && p.turnPlayed < this.turn);
-            if (t) { o.hand.splice(i, 1); const d = t.maxHp - t.hp; t.cardId = c.id; t.maxHp = c.hp; t.hp = Math.max(10, c.hp - d); t.turnPlayed = this.turn; this.log(`相手は${c.name}に進化！`); }
+          if (c?.category === 'Pokemon' && c.stage === 'Basic' && o.bench.length < 3) {
+            o.bench.push(this.createInst(o.hand.splice(i, 1)[0], this.turn));
           }
         }
+        const boardSlots = () => [{ z: 'active', i: 0, inst: o.active }, ...o.bench.map((inst, i) => ({ z: 'bench', i, inst }))];
+        for (const slot of boardSlots()) {
+          if (!slot.inst || slot.inst.turnPlayed >= this.turn) continue;
+          const evolutions = o.hand.map((id, hIdx) => ({ id, hIdx, c: CARD_MAP[id] }))
+            .filter(x => x.c?.category === 'Pokemon' && x.c.stage !== 'Basic' && x.c.evolvesFrom === CARD_MAP[slot.inst.cardId].name)
+            .sort((a,b) => (a.c.stage === 'Stage1' ? 0 : 1) - (b.c.stage === 'Stage1' ? 0 : 1));
+          const evo = evolutions[0];
+          if (evo) this.evolveCard('opp', evo.hIdx, slot.z, slot.i);
+        }
+
         if (o.currentEnergy && o.active) {
           o.active.energies.push(o.currentEnergy);
           o.currentEnergy = null;
         }
-        const supIdx = o.hand.findIndex(id => CARD_MAP[id].subType === 'Supporter');
-        if (supIdx !== -1 && !o.supporterUsed && this.turn > 1) this.execTrainer('opp', supIdx);
 
-        [o.active, ...o.bench].filter(Boolean).forEach((inst, idx) => {
-          if (CARD_MAP[inst.cardId].ability && !inst.abilityUsed) this.useAbility('opp', idx === 0 ? 'active' : 'bench', idx === 0 ? 0 : idx - 1);
-        });
+        // Intermediate and hard CPUs use useful Items; the easy CPU deliberately skips them.
+        if (difficulty !== 'easy') {
+          for (let i = o.hand.length - 1; i >= 0; i--) {
+            const c = CARD_MAP[o.hand[i]];
+            if (c?.category !== 'Trainer' || c.subType !== 'Item') continue;
+            if (c.id === 't_potion' && ![o.active, ...o.bench].some(x => x && x.hp < x.maxHp)) continue;
+            if (c.id === 't_rare_candy' && !this.getRareCandyOptions('opp').length) continue;
+            this.execTrainer('opp', i);
+          }
+        }
+
+        const supIdx = o.hand.findIndex(id => CARD_MAP[id]?.subType === 'Supporter');
+        if (difficulty !== 'easy' && supIdx !== -1 && !o.supporterUsed && this.turn > 1) this.execTrainer('opp', supIdx);
+
+        if (difficulty !== 'easy') {
+          [o.active, ...o.bench].filter(Boolean).forEach((inst, idx) => {
+            if (CARD_MAP[inst.cardId]?.ability && !inst.abilityUsed) this.useAbility('opp', idx === 0 ? 'active' : 'bench', idx === 0 ? 0 : idx - 1);
+          });
+        }
 
         this.render();
         setTimeout(() => {
           if (this.over) return;
-          if (o.active) {
-            const atks = CARD_MAP[o.active.cardId].attacks;
-            for (let ai = atks.length - 1; ai >= 0; ai--) {
-              if (this.canPay(o.active, atks[ai].cost)) {
-                this.attack('opp', ai);
-                if (!this.over && this.p.active) setTimeout(() => { this.turn++; this.startTurn('player'); }, 750);
-                return;
-              }
+          if (o.active && this.p.active) {
+            const atks = CARD_MAP[o.active.cardId].attacks || [];
+            const ready = atks.map((atk, ai) => ({ atk, ai, damage: this.calcDamagePreview(o.active, atk, this.p.active, 'opp').final }))
+              .filter(x => this.canPay(o.active, x.atk.cost));
+            if (ready.length) {
+              const choice = difficulty === 'easy'
+                ? ready[0]
+                : difficulty === 'hard'
+                  ? ready.reduce((best, x) => x.damage > best.damage ? x : best, ready[0])
+                  : ready[0];
+              this.attack('opp', choice.ai);
+              if (!this.over) setTimeout(() => { if (!this.over) { this.turn++; this.startTurn('player'); } }, 750);
+              return;
             }
           }
           if (!this.over) { this.turn++; this.startTurn('player'); }
-        }, 650);
+        }, difficulty === 'hard' ? 500 : 650);
       },
-
       inspectFieldPokemon(side, z, i) {
         if (this.phase === 'setup' && side === 'opp') {
           ui.toast('バトル開始前は相手の伏せカードを確認できません！');
@@ -2564,7 +2966,7 @@
           </div>
         `;
 
-        if (side === 'player' && this.phase === 'play' && this.currentSide === 'player') {
+        if (side === 'player' && !this.actionLocked && this.phase === 'play' && this.currentSide === 'player') {
           if (this.p.currentEnergy) {
             act += `<button onclick="battle.assignZoneEnergy('${z}',${i});ui.closeCardModal();" class="px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black">エネをつける(${TYPE_META[this.p.currentEnergy].code})</button>`;
           }
@@ -2591,12 +2993,15 @@
       surrender() {
         if (this.over) return;
         if (this.isOnlineP2P && onlineLobby.conn) { try { onlineLobby.conn.send({ type: 'SURRENDER' }); } catch (e) {} }
-        this.endMatch('opp', '降参しました。');
+        this.endMatch('opp', '降参しました。', false);
       },
 
-      endMatch(winner, reason) {
+      endMatch(winner, reason, notifyPeer = true) {
         if (this.over) return;
         this.over = true;
+        if (this.isOnlineP2P && notifyPeer && onlineLobby.conn) {
+          try { onlineLobby.conn.send({ type: 'MATCH_END', winner: winner === 'player' ? 'opp' : 'player', reason }); } catch (e) {}
+        }
         const win = winner === 'player';
         let rpDelta = 0;
 
@@ -2640,23 +3045,23 @@
 
       renderFieldSlot(inst, side, z, i, isActive = false) {
         const dropAttr = side === 'player' ? `data-drop-side="player" data-drop-zone="${z}" data-drop-idx="${i}"` : '';
-        const dropHighlight = (side === 'player' && this.phase === 'play' && this.currentSide === 'player' && this.p.currentEnergy && inst) ? 'drop-target-glow' : '';
+        const dropHighlight = (side === 'player' && !this.actionLocked && this.phase === 'play' && this.currentSide === 'player' && this.p.currentEnergy && inst) ? 'drop-target-glow' : '';
 
         if (!inst) {
-          return `<div ${dropAttr} class="${isActive ? 'w-28 h-34 sm:w-32 sm:h-38 border-2 border-dashed border-sky-400 bg-white/55' : 'w-20 h-26 sm:w-24 sm:h-30 border border-dashed border-slate-300 bg-white/45'} rounded-2xl flex items-center justify-center text-[10px] font-bold text-slate-500 text-center p-1">${isActive ? 'バトル場<br>(たね配置)' : 'ベンチ'}</div>`;
+          return `<div ${dropAttr} class="${isActive ? 'w-28 h-36 sm:w-32 sm:h-40 border-2 border-dashed border-sky-400 bg-white/55' : 'w-20 h-28 sm:w-24 sm:h-32 border border-dashed border-slate-300 bg-white/45'} rounded-2xl flex items-center justify-center text-[10px] font-bold text-slate-500 text-center p-1">${isActive ? 'バトル場<br>(たね配置)' : 'ベンチ'}</div>`;
         }
 
         if (this.phase === 'setup' && side === 'opp') {
-          return `<div onclick="battle.inspectFieldPokemon('opp','${z}',${i})" class="${isActive ? 'w-28 h-34 sm:w-32 sm:h-38' : 'w-20 h-26 sm:w-24 sm:h-30'} pocket-card-back rounded-2xl flex flex-col items-center justify-center text-white p-1.5 cursor-pointer"><span class="text-xs font-black tracking-wider">POKÉMON</span><span class="text-[9px] text-sky-200 mt-1 font-bold">裏向き配置中</span></div>`;
+          return `<div onclick="battle.inspectFieldPokemon('opp','${z}',${i})" class="${isActive ? 'w-28 h-36 sm:w-32 sm:h-40' : 'w-20 h-28 sm:w-24 sm:h-32'} pocket-card-back rounded-2xl flex flex-col items-center justify-center text-white p-1.5 cursor-pointer"><span class="text-xs font-black tracking-wider">POKÉMON</span><span class="text-[9px] text-sky-200 mt-1 font-bold">裏向き配置中</span></div>`;
         }
 
         const c = CARD_MAP[inst.cardId];
         const pct = Math.max(0, Math.round((inst.hp / inst.maxHp) * 100));
-        const canAtk = isActive && side === 'player' && this.phase === 'play' && this.currentSide === 'player' && !(this.turn === 1 && this.isFirstTurnPlayer) && c.attacks.some(a => this.canPay(inst, a.cost));
-        const hasAb = c.ability && !inst.abilityUsed && side === 'player' && this.phase === 'play' && this.currentSide === 'player';
+        const canAtk = isActive && side === 'player' && !this.actionLocked && this.phase === 'play' && this.currentSide === 'player' && !(this.turn === 1 && this.isFirstTurnPlayer) && c.attacks.some(a => this.canPay(inst, a.cost));
+        const hasAb = c.ability && !inst.abilityUsed && side === 'player' && !this.actionLocked && this.phase === 'play' && this.currentSide === 'player';
 
         return `
-          <div ${dropAttr} onclick="battle.inspectFieldPokemon('${side}','${z}',${i})" class="pk-card border-${c.rarity} card-bg-${c.type} ${canAtk ? 'playable-glow' : ''} ${dropHighlight} ${isActive ? 'w-30 h-36 sm:w-36 sm:h-40 p-2' : 'w-21 h-28 sm:w-25 sm:h-32 p-1.5'} flex flex-col justify-between cursor-pointer relative">
+          <div ${dropAttr} onclick="battle.inspectFieldPokemon('${side}','${z}',${i})" class="pk-card border-${c.rarity} card-bg-${c.type} ${canAtk ? 'playable-glow' : ''} ${dropHighlight} ${isActive ? 'w-28 h-36 sm:w-32 sm:h-40 p-2' : 'w-20 h-28 sm:w-24 sm:h-32 p-1.5'} flex flex-col justify-between cursor-pointer relative">
             ${this.phase === 'setup' && side === 'player' ? '<div class="absolute inset-0 bg-indigo-950/65 z-20 flex items-center justify-center text-white text-[10px] font-black rounded-xl pointer-events-none">裏向き準備OK</div>' : ''}
             <div class="flex justify-between items-center text-[9px] font-black bg-white/92 rounded px-1 py-0.5 text-slate-900">
               <span class="truncate">${c.name}</span><span class="text-rose-600 ml-0.5">${inst.hp}</span>
@@ -2677,7 +3082,10 @@
       render() {
         if (!this.p || !this.o) return;
         document.getElementById('battle-turn-badge').textContent = this.phase === 'setup' ? '初期配置フェーズ' : `ターン ${this.turn}`;
-        document.getElementById('btn-setup-ready').classList.toggle('hidden', this.phase !== 'setup');
+        const setupBtn = document.getElementById('btn-setup-ready');
+        setupBtn.classList.toggle('hidden', this.phase !== 'setup');
+        setupBtn.disabled = this.isOnlineP2P && this.localSetupReady;
+        if (this.phase === 'setup') setupBtn.textContent = this.localSetupReady ? '相手の初期配置を待っています...' : 'バトル開始！（オープン）';
 
         this.renderPointDots('opp-points-dots', this.o.points, 'bg-rose-500 border-rose-700');
         this.renderPointDots('player-points-dots', this.p.points, 'bg-sky-500 border-sky-700');
@@ -2691,7 +3099,7 @@
 
         const curOrb = document.getElementById('current-energy-orb');
         const nextOrb = document.getElementById('next-energy-orb');
-        if (this.p.currentEnergy && this.phase === 'play' && this.currentSide === 'player') {
+        if (this.p.currentEnergy && !this.actionLocked && this.phase === 'play' && this.currentSide === 'player') {
           const m = TYPE_META[this.p.currentEnergy];
           curOrb.style.background = `radial-gradient(circle at 30% 30%, ${m.glow}, ${m.c1}, ${m.c2})`;
           curOrb.textContent = m.code;
@@ -2718,7 +3126,7 @@
         document.getElementById('player-bench').innerHTML = [0, 1, 2].map(i => this.renderFieldSlot(this.p.bench[i], 'player', 'bench', i, false)).join('');
 
         const qBtn = document.getElementById('quick-attack-btn');
-        const showAtk = this.phase === 'play' && this.currentSide === 'player' && !(this.turn === 1 && this.isFirstTurnPlayer) && this.p.active && CARD_MAP[this.p.active.cardId].attacks.some(a => this.canPay(this.p.active, a.cost));
+        const showAtk = !this.actionLocked && this.phase === 'play' && this.currentSide === 'player' && !(this.turn === 1 && this.isFirstTurnPlayer) && this.p.active && CARD_MAP[this.p.active.cardId].attacks.some(a => this.canPay(this.p.active, a.cost));
         qBtn.classList.toggle('hidden', !showAtk);
 
         document.getElementById('player-hand').innerHTML = this.p.hand.map((id, idx) => {
