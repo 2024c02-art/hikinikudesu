@@ -285,7 +285,7 @@
           <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
             <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">HOST • 部屋を作る</span>
             <h3 class="text-base font-black text-slate-900">合言葉を発行して友達を待つ</h3>
-            <p class="text-xs text-slate-500">発行された6桁の合言葉を友達に教えてください。</p>
+            <p class="text-xs text-slate-500">発行された8文字の合言葉を友達に教えてください。</p>
             <button onclick="onlineLobby.createFriendRoom()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow">合言葉を発行して待機する</button>
             <div id="friend-host-box" class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-center space-y-1">
               <div class="text-[10px] font-bold text-emerald-700">あなたの合言葉（ルームID）</div>
@@ -297,8 +297,8 @@
           <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
             <span class="px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 text-[10px] font-black">GUEST • 部屋に入る</span>
             <h3 class="text-base font-black text-slate-900">合言葉を入力して参加</h3>
-            <p class="text-xs text-slate-500">友達から聞いた6桁の合言葉を入力してください。</p>
-            <input id="friend-join-input" type="text" maxlength="6" placeholder="例: 482910" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-center text-lg font-black tracking-widest uppercase" />
+            <p class="text-xs text-slate-500">友達から聞いた8文字の合言葉を入力してください。</p>
+            <input id="friend-join-input" type="text" maxlength="8" autocapitalize="characters" placeholder="例: 7KQ9M2RX" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-center text-lg font-black tracking-widest uppercase" />
             <button onclick="onlineLobby.joinFriendRoom()" class="w-full py-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow">この合言葉でバトル参加！</button>
             <div id="friend-join-status" class="text-[11px] text-center font-bold text-sky-700"></div>
           </div>
@@ -979,6 +979,22 @@
         };
       },
 
+      sanitizeCount(value, fallback = 0, max = 10000000) {
+        if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) return fallback;
+        return Math.min(max, Math.floor(value));
+      },
+
+      isValidDeck(cards, collection) {
+        if (!Array.isArray(cards) || cards.length !== 20) return false;
+        const counts = {};
+        for (const id of cards) {
+          if (typeof id !== 'string' || !CARD_MAP[id]) return false;
+          counts[id] = (counts[id] || 0) + 1;
+          if (counts[id] > 2 || counts[id] > (collection[id] || 0)) return false;
+        }
+        return true;
+      },
+
       init() {
         try {
           const raw = localStorage.getItem(this.IDX_KEY);
@@ -1005,22 +1021,39 @@
           loaded = { ...defaults, ...loaded, id: accId };
           const savedCollection = loaded.collection && typeof loaded.collection === 'object' && !Array.isArray(loaded.collection)
             ? loaded.collection : {};
-          loaded.collection = { ...defaults.collection, ...savedCollection };
+          loaded.collection = {};
+          CARDS.forEach(c => {
+            const rawCount = savedCollection[c.id];
+            loaded.collection[c.id] = rawCount === undefined
+              ? defaults.collection[c.id]
+              : this.sanitizeCount(rawCount, 0, 999);
+          });
           const savedDecks = Array.isArray(loaded.decks) ? loaded.decks : defaults.decks;
           loaded.decks = savedDecks
             .filter(d => d && typeof d === 'object' && Array.isArray(d.cards))
             .map(d => ({
               name: typeof d.name === 'string' && d.name.trim() ? d.name.slice(0, 50) : 'マイデッキ',
               energies: Array.isArray(d.energies) ? [...new Set(d.energies.filter(t => ENERGY_TYPES.includes(t)))].slice(0, 3) : [],
-              cards: d.cards.filter(id => typeof id === 'string' && !!CARD_MAP[id])
+              cards: [...d.cards]
             }))
+            .filter(d => this.isValidDeck(d.cards, loaded.collection))
             .slice(0, 8);
-          if (loaded.decks.length === 0) loaded.decks = defaults.decks;
+          if (loaded.decks.length === 0) {
+            loaded.decks = [{ name: '復旧用デッキ（未編成）', energies: ['Fire'], cards: [] }];
+          }
           loaded.decks.forEach(d => { if (d.energies.length === 0) d.energies = ['Fire']; });
         }
         if (!loaded.collection || typeof loaded.collection !== 'object' || Array.isArray(loaded.collection)) loaded.collection = {};
-        CARDS.forEach(c => { if (loaded.collection[c.id] === undefined) loaded.collection[c.id] = 2; });
-        loaded.rating = Number.isFinite(Number(loaded.rating)) ? Number(loaded.rating) : 1000;
+        CARDS.forEach(c => {
+          loaded.collection[c.id] = this.sanitizeCount(loaded.collection[c.id], 2, 999);
+        });
+        loaded.hourglass = this.sanitizeCount(loaded.hourglass, 240);
+        loaded.gold = this.sanitizeCount(loaded.gold, 500);
+        loaded.packPoints = this.sanitizeCount(loaded.packPoints, 200);
+        loaded.rating = typeof loaded.rating === 'number' && Number.isFinite(loaded.rating) ? Math.max(500, Math.floor(loaded.rating)) : 1000;
+        loaded.wins = this.sanitizeCount(loaded.wins, 0);
+        loaded.losses = this.sanitizeCount(loaded.losses, 0);
+        loaded.streak = this.sanitizeCount(loaded.streak, 0);
         const slot = Number(loaded.activeDeckSlot);
         loaded.activeDeckSlot = Number.isInteger(slot) ? Math.max(0, Math.min(slot, loaded.decks.length - 1)) : 0;
         this.data = loaded; this.saveCurrent();
@@ -1166,6 +1199,16 @@
             if (!imp || typeof imp !== 'object' || Array.isArray(imp) ||
                 !imp.collection || typeof imp.collection !== 'object' || Array.isArray(imp.collection) ||
                 !Array.isArray(imp.decks)) throw new Error();
+            for (const key of ['hourglass', 'gold', 'packPoints']) {
+              if (imp[key] !== undefined && (typeof imp[key] !== 'number' || !Number.isFinite(imp[key]) || imp[key] < 0)) throw new Error();
+            }
+            const importedCollection = {};
+            for (const card of CARDS) {
+              const count = imp.collection[card.id] === undefined ? 0 : imp.collection[card.id];
+              if (typeof count !== 'number' || !Number.isFinite(count) || !Number.isInteger(count) || count < 0 || count > 999) throw new Error();
+              importedCollection[card.id] = count;
+            }
+            if (!imp.decks.length || imp.decks.some(d => !d || !this.isValidDeck(d.cards, importedCollection))) throw new Error();
             imp.id = this.currentId;
             localStorage.setItem(this.DATA_PREFIX + this.currentId, JSON.stringify(imp));
             this.loadAccount(this.currentId); this.openModal();
@@ -1276,30 +1319,54 @@
         battle.startBattle({ mode: 'cpu', oppDeckKey: pickKey, oppName: `CPUライバル ${rivalName}`, oppRating: rivalRp, isOnlineP2P: false });
       },
 
+      generateRoomCode() {
+        const alphabet = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+        const bytes = new Uint8Array(8);
+        if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(bytes);
+        else for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+        return Array.from(bytes, b => alphabet[b % alphabet.length]).join('');
+      },
+
       createFriendRoom() {
         if (!this.ensure20Deck()) return;
         this.cancelNetwork();
         if (typeof Peer === 'undefined') { ui.toast('P2P通信ライブラリが読み込めませんでした'); return; }
-        const code = String(Math.floor(100000 + Math.random() * 900000));
-        const peerId = `pokepokedx-p20-room-${code}`;
-        document.getElementById('friend-host-box').classList.remove('hidden');
-        document.getElementById('friend-room-code').textContent = code;
-        document.getElementById('friend-host-status').textContent = '合言葉を発行中...';
-
-        const p = new Peer(peerId);
-        this.peer = p;
-        p.on('open', () => { document.getElementById('friend-host-status').textContent = '友達の参加を待っています...'; });
-        p.on('connection', incoming => {
-          this.conn = incoming; this.isHost = true;
-          this.bindConnection(incoming, 'friend');
-        });
-        p.on('error', () => { document.getElementById('friend-host-status').textContent = '接続エラー。もう一度発行してください。'; });
+        const hostBox = document.getElementById('friend-host-box');
+        const codeEl = document.getElementById('friend-room-code');
+        const statusEl = document.getElementById('friend-host-status');
+        hostBox.classList.remove('hidden');
+        let attempts = 0;
+        const openRoom = () => {
+          attempts++;
+          const code = this.generateRoomCode();
+          const peerId = `pokepokedx-p20-room-${code}`;
+          codeEl.textContent = code;
+          statusEl.textContent = '合言葉を発行中...';
+          const p = new Peer(peerId);
+          this.peer = p;
+          p.on('open', () => { statusEl.textContent = '友達の参加を待っています...'; });
+          p.on('connection', incoming => {
+            this.conn = incoming; this.isHost = true;
+            this.bindConnection(incoming, 'friend');
+          });
+          p.on('error', err => {
+            if (err?.type === 'unavailable-id' && attempts < 6) {
+              try { p.destroy(); } catch (e) {}
+              if (this.peer === p) this.peer = null;
+              openRoom();
+            } else {
+              statusEl.textContent = '接続エラー。もう一度発行してください。';
+              ui.toast(err?.type === 'unavailable-id' ? 'ルームIDが重複しました。再発行してください。' : 'ルームを作成できませんでした');
+            }
+          });
+        };
+        openRoom();
       },
 
       joinFriendRoom() {
         if (!this.ensure20Deck()) return;
-        const code = (document.getElementById('friend-join-input').value || '').trim();
-        if (code.length < 4) { ui.toast('合言葉を入力してください'); return; }
+        const code = (document.getElementById('friend-join-input').value || '').trim().toUpperCase();
+        if (!/^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/.test(code)) { ui.toast('8文字の合言葉を正しく入力してください'); return; }
         this.cancelNetwork();
         if (typeof Peer === 'undefined') { ui.toast('P2P通信ライブラリが読み込めませんでした'); return; }
 
@@ -1344,6 +1411,8 @@
             battle.receiveSetupReady(msg);
           } else if (msg.type === 'SYNC_STATE') {
             battle.receiveRemoteState(msg);
+          } else if (msg.type === 'BOARD_ACK') {
+            battle.receiveRemoteBoardAck(msg);
           } else if (msg.type === 'REMOTE_EFFECT') {
             battle.receiveRemoteEffect(msg);
           } else if (msg.type === 'MATCH_END') {
@@ -1486,7 +1555,15 @@
         document.getElementById('modal-select-cancel').style.display = cancel ? 'inline-block' : 'none';
         document.getElementById('modal-select').classList.remove('hidden');
       },
-      closeSelectModal() { document.getElementById('modal-select').classList.add('hidden'); }
+      closeSelectModal() {
+        document.getElementById('modal-select').classList.add('hidden');
+        if (typeof battle !== 'undefined') {
+          if (battle.pendingRareCandy || battle.pendingGenomeAttack) {
+            battle.pendingRareCandy = false; battle.pendingGenomeAttack = null;
+            battle.actionLocked = false; battle.render();
+          }
+        }
+      }
     };
 
     /* ==================== 9. パック開封システム (全30パック対応) ==================== */
@@ -1855,7 +1932,7 @@
 
     /* ==================== 11. 豪華Canvas VFXエンジン ==================== */
     const battleVfx = {
-      canvas: null, ctx: null, particles: [], beams: [], running: false, resizeHandler: null,
+      canvas: null, ctx: null, particles: [], beams: [], running: false, resizeHandler: null, rafId: null,
       init() {
         this.canvas = document.getElementById('battle-vfx-canvas'); if (!this.canvas) return;
         this.ctx = this.canvas.getContext('2d'); this.resize();
@@ -1891,7 +1968,15 @@
           this.particles.push({ x: cx, y: cy, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd - 1, size: 3.5, color: i % 2 === 0 ? c1 : c2, life: 1, decay: 0.03 });
         }
       },
+      stop() {
+        this.running = false;
+        if (this.rafId !== null && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(this.rafId);
+        this.rafId = null;
+        this.particles.length = 0; this.beams.length = 0;
+        if (this.ctx && this.canvas) this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      },
       loop() {
+        if (!this.running) return;
         if (this.ctx && this.canvas) {
           this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
           for (let i = this.beams.length - 1; i >= 0; i--) {
@@ -1910,7 +1995,7 @@
             this.ctx.restore();
           }
         }
-        requestAnimationFrame(() => this.loop());
+        if (this.running) this.rafId = requestAnimationFrame(() => this.loop());
       }
     };
 
@@ -1921,6 +2006,10 @@
       p: null, o: null, logs: [], draggingEnergy: false, ghostEl: null,
       actionLocked: false, localSetupReady: false, remoteSetupReady: false,
       setupStarted: false, promotionModalOpen: false, pendingSelfKO: false,
+      pendingPromotionNext: null, pendingRemotePassTurn: false,
+      localBoardRevision: 0, remoteBoardRevision: 0,
+      resolvingAttackSide: null, sessionId: 0,
+      pendingRareCandy: false, pendingGenomeAttack: null,
 
       shuffle(arr) {
         const a = [...arr];
@@ -2002,7 +2091,7 @@
 
       createInst(cardId, turnPlayed = 0) {
         const b = CARD_MAP[cardId];
-        return { cardId, hp: b.hp, maxHp: b.hp, energies: [], turnPlayed, abilityUsed: false };
+        return { cardId, hp: b.hp, maxHp: b.hp, energies: [], turnPlayed, abilityUsed: false, status: null, statusEffects: [] };
       },
 
       pickRandomEnergy(types) {
@@ -2038,6 +2127,10 @@
       },
 
       startBattle(cfg) {
+        this.sessionId++;
+        this.localBoardRevision = 0; this.remoteBoardRevision = 0;
+        this.pendingPromotionNext = null; this.pendingRemotePassTurn = false;
+        this.resolvingAttackSide = null; this.pendingRareCandy = false; this.pendingGenomeAttack = null;
         this.mode = cfg.mode || 'cpu';
         this.isOnlineP2P = !!cfg.isOnlineP2P;
         this.oppRating = cfg.oppRating || 1000;
@@ -2047,6 +2140,7 @@
         this.over = false;
         this.logs = [];
         this.actionLocked = false;
+        this.pendingSelfKO = false; this.pendingPromotionNext = null; this.pendingRemotePassTurn = false;
         this.localSetupReady = false;
         this.remoteSetupReady = false;
         this.setupStarted = false;
@@ -2090,6 +2184,7 @@
 
       getRemoteShadowSnapshot() {
         return {
+          basedOnRevision: this.remoteBoardRevision,
           points: this.o.points,
           discard: [...this.o.discard],
           active: this.o.active ? JSON.parse(JSON.stringify(this.o.active)) : null,
@@ -2110,12 +2205,14 @@
       },
 
       applyRemoteReceiverBoard(board) {
-        if (!board || !this.p) return;
-        // The remote player's view of our board carries effects applied to our active/bench.
-        this.p.active = board.active || null;
-        this.p.bench = Array.isArray(board.bench) ? board.bench : [];
-        this.p.discard = Array.isArray(board.discard) ? board.discard : this.p.discard;
-        this.p.points = Number(board.points) || 0;
+        if (!board || !this.p) return false;
+        // Only accept effects based on the exact local-board revision the peer last saw.
+        // This prevents an old shadow snapshot from rolling back our newer discard/points/field.
+        this.p.active = board.active ? JSON.parse(JSON.stringify(board.active)) : null;
+        this.p.bench = Array.isArray(board.bench) ? JSON.parse(JSON.stringify(board.bench)) : this.p.bench;
+        this.p.discard = Array.isArray(board.discard) ? [...board.discard] : this.p.discard;
+        this.p.points = Number.isFinite(Number(board.points)) ? Math.max(0, Math.min(3, Number(board.points))) : this.p.points;
+        return true;
       },
 
       confirmSetup() {
@@ -2130,11 +2227,12 @@
             return;
           }
           this.localSetupReady = true;
+          this.localBoardRevision++;
           const btn = document.getElementById('btn-setup-ready');
           btn.disabled = true;
           btn.textContent = '相手の初期配置を待っています...';
           try {
-            onlineLobby.conn?.send({ type: 'SETUP_READY', turn: this.turn, senderBoard: this.getLocalBoardSnapshot() });
+            onlineLobby.conn?.send({ type: 'SETUP_READY', turn: this.turn, senderRevision: this.localBoardRevision, senderBoard: this.getLocalBoardSnapshot() });
           } catch (e) { ui.toast('初期配置を相手に送信できませんでした'); }
           this.log('初期配置を送信しました。相手の「バトル開始！」を待っています...');
           if (this.remoteSetupReady) this.beginBattleAfterSetup();
@@ -2148,6 +2246,7 @@
       receiveSetupReady(msg) {
         if (!this.isOnlineP2P || this.over || this.phase !== 'setup' || !msg?.senderBoard) return;
         this.applyRemoteSenderBoard(msg.senderBoard);
+        this.remoteBoardRevision = Math.max(this.remoteBoardRevision, Number(msg.senderRevision) || 0);
         this.remoteSetupReady = true;
         this.log('相手の初期配置が完了しました。');
         if (this.localSetupReady) this.beginBattleAfterSetup();
@@ -2172,14 +2271,33 @@
 
       syncToPeer(passTurn = false) {
         if (!this.isOnlineP2P || !onlineLobby.conn || this.phase !== 'play') return;
+        this.localBoardRevision++;
         try {
           onlineLobby.conn.send({
             type: 'SYNC_STATE', passTurn, turn: this.turn, phase: this.phase,
+            senderRevision: this.localBoardRevision,
+            receiverBaseRevision: this.remoteBoardRevision,
             senderBoard: this.getLocalBoardSnapshot(),
             receiverBoard: this.getRemoteShadowSnapshot(),
             lastLog: this.logs[0] || ''
           });
         } catch (e) { ui.toast('対戦相手への状態同期に失敗しました'); }
+      },
+
+      sendBoardAck() {
+        if (!this.isOnlineP2P || !onlineLobby.conn || this.phase !== 'play') return;
+        try {
+          onlineLobby.conn.send({ type: 'BOARD_ACK', senderRevision: this.localBoardRevision, senderBoard: this.getLocalBoardSnapshot() });
+        } catch (e) { ui.toast('盤面確認の同期に失敗しました'); }
+      },
+
+      receiveRemoteBoardAck(msg) {
+        if (!this.isOnlineP2P || this.over || !msg?.senderBoard) return;
+        const rev = Number(msg.senderRevision);
+        if (!Number.isFinite(rev) || rev < this.remoteBoardRevision) return;
+        this.remoteBoardRevision = rev;
+        this.applyRemoteSenderBoard(msg.senderBoard);
+        this.render();
       },
 
       receiveRemoteEffect(msg) {
@@ -2188,38 +2306,58 @@
           this.p.deck = this.shuffle([...this.p.deck, ...this.p.hand]);
           this.p.hand = [];
           this.drawCards('player', 3);
+          this.localBoardRevision++;
           this.log('相手のレッドカード！手札を山札に戻して3枚引きました。');
           this.render();
-          this.syncToPeer(false);
+          this.sendBoardAck();
         }
       },
 
       receiveRemoteState(msg) {
         if (this.over) return;
-        if (Number.isFinite(Number(msg.turn))) this.turn = Number(msg.turn);
+        const incomingTurn = Number(msg.turn);
+        const staleTurnMessage = Number.isFinite(incomingTurn) && incomingTurn < this.turn;
+        if (Number.isFinite(incomingTurn)) this.turn = Math.max(this.turn, incomingTurn);
         if (msg.senderBoard) {
-          this.applyRemoteSenderBoard(msg.senderBoard);
-          if (this.o.points >= 3) { this.endMatch('opp', '相手が3ポイント先取しました！'); return; }
+          const senderRev = Number(msg.senderRevision);
+          if (!Number.isFinite(senderRev) || senderRev >= this.remoteBoardRevision) {
+            if (Number.isFinite(senderRev)) this.remoteBoardRevision = senderRev;
+            this.applyRemoteSenderBoard(msg.senderBoard);
+            if (this.o.points >= 3) { this.endMatch('opp', '相手が3ポイント先取しました！'); return; }
+          }
         }
+        let acceptedReceiverBoard = false;
         if (msg.receiverBoard) {
-          this.applyRemoteReceiverBoard(msg.receiverBoard);
+          const baseRev = Number(msg.receiverBaseRevision ?? msg.receiverBoard.basedOnRevision);
+          if (Number.isFinite(baseRev) && baseRev === this.localBoardRevision) {
+            acceptedReceiverBoard = this.applyRemoteReceiverBoard(msg.receiverBoard);
+            if (acceptedReceiverBoard) this.localBoardRevision++;
+          }
           if (!this.p.active && this.p.bench.length === 0 && this.phase === 'play') {
             this.endMatch('opp', '場のポケモンがいなくなりました。'); return;
           }
         }
         if (msg.lastLog) this.log(msg.lastLog);
-        if (msg.passTurn) {
+        if (msg.passTurn && !staleTurnMessage) {
           this.turn = Math.max(this.turn, Number(msg.turn) || 0) + 1;
-          this.startTurn('player');
+          if (!this.p.active && this.p.bench.length > 0) {
+            this.pendingRemotePassTurn = true;
+            this.currentSide = 'player';
+            this.openPromotionSelector();
+          } else {
+            this.startTurn('player');
+          }
         } else {
           this.render();
+          if (this.phase === 'play' && !this.p.active && this.p.bench.length > 0) this.openPromotionSelector();
         }
-        if (this.phase === 'play' && !this.p.active && this.p.bench.length > 0) this.openPromotionSelector();
+        if (acceptedReceiverBoard) this.sendBoardAck();
       },
 
       openPromotionSelector() {
         if (this.promotionModalOpen || this.p.active || this.p.bench.length === 0 || this.over) return;
         this.promotionModalOpen = true;
+        this.actionLocked = true;
         const html = this.p.bench.map((b, bi) => `<div onclick="battle.promote('player',${bi});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-sky-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(b.cardId)}<span class="text-xs font-black text-sky-700 mt-1">バトル場へ</span></div>`).join('');
         ui.openSelectModal('きぜつ！バトル場に出すポケモンを選択（必須）', html, false);
       },
@@ -2290,7 +2428,7 @@
       },
 
       endTurn() {
-        if (this.over || this.actionLocked || this.phase !== 'play' || this.currentSide !== 'player') return;
+        if (this.over || this.actionLocked || this.pendingSelfKO || this.phase !== 'play' || this.currentSide !== 'player') return;
         if (this.isOnlineP2P) {
           this.currentSide = 'opp';
           this.log('相手のターンを待っています...');
@@ -2339,8 +2477,17 @@
         if (this.isOnlineP2P) this.syncToPeer(false);
       },
 
+      isFirstTurnFor(side) {
+        return this.turn === 1 && ((side === 'player' && this.isFirstTurnPlayer) || (side === 'opp' && !this.isFirstTurnPlayer));
+      },
+
+      canUseSupporter(side) {
+        const board = side === 'player' ? this.p : this.o;
+        return !!board && !board.supporterUsed && !this.isFirstTurnFor(side);
+      },
+
       isPlayable(id) {
-        if (this.over || this.actionLocked || (this.phase === 'setup' && this.localSetupReady)) return false;
+        if (this.over || this.actionLocked || this.promotionModalOpen || (this.phase === 'setup' && this.localSetupReady)) return false;
         const c = CARD_MAP[id]; if (!c) return false;
         if (this.phase === 'setup') return c.category === 'Pokemon' && c.stage === 'Basic' && (!this.p.active || this.p.bench.length < 3);
         if (this.currentSide !== 'player') return false;
@@ -2348,7 +2495,7 @@
           if (c.stage === 'Basic') return this.p.bench.length < 3;
           return [this.p.active, ...this.p.bench].filter(Boolean).some(p => CARD_MAP[p.cardId].name === c.evolvesFrom && p.turnPlayed < this.turn);
         }
-        if (c.category === 'Trainer') return c.subType === 'Supporter' ? (!this.p.supporterUsed && this.turn > 1) : true;
+        if (c.category === 'Trainer') return c.subType === 'Supporter' ? this.canUseSupporter('player') : true;
         return false;
       },
 
@@ -2387,25 +2534,36 @@
         }
 
         if (c.category === 'Trainer') {
-          if (c.subType === 'Supporter' && (this.turn === 1 || this.p.supporterUsed)) { ui.toast('サポートは1ターンに1枚（先攻1ターン目不可）です'); return; }
+          if (c.subType === 'Supporter' && !this.canUseSupporter('player')) { ui.toast('サポートは1ターンに1枚（先攻1ターン目不可）です'); return; }
           this.execTrainer('player', idx);
         }
       },
 
       evolve(hIdx, z, i) { return this.evolveCard('player', hIdx, z, i); },
 
-      evolveCard(side, hIdx, z, i) {
+      evolveCard(side, hIdx, z, i, allowRareCandy = false, deferRenderAndSync = false) {
         const board = side === 'player' ? this.p : this.o;
         const evoId = board.hand[hIdx], evoC = CARD_MAP[evoId];
         const t = z === 'active' ? board.active : board.bench[i];
-        if (!evoC || !t) return false;
+        if (!evoC || !t || evoC.category !== 'Pokemon' || evoC.stage === 'Basic') return false;
+        const baseC = CARD_MAP[t.cardId];
+        if (!baseC || t.turnPlayed >= this.turn) return false;
+        const directLine = evoC.evolvesFrom === baseC.name;
+        const rareCandyLine = allowRareCandy && baseC.stage === 'Basic' && evoC.stage === 'Stage2' &&
+          CARDS.some(c => c.category === 'Pokemon' && c.stage === 'Stage1' &&
+            c.evolvesFrom === baseC.name && evoC.evolvesFrom === c.name);
+        if (!directLine && !rareCandyLine) return false;
         board.hand.splice(hIdx, 1);
         const dmg = t.maxHp - t.hp;
         t.cardId = evoId; t.maxHp = evoC.hp; t.hp = Math.max(10, evoC.hp - dmg); t.turnPlayed = this.turn; t.abilityUsed = false;
+        t.status = null; t.statusEffects = []; t.temporaryFlags = {};
         sound.rarePull(); battleVfx.triggerBurst(side, '#0ea5e9', '#a855f7');
         this.showCutin('EVOLUTION!', `${evoC.name} に進化！`);
-        this.log(`${evoC.name}に進化した！`); this.render();
-        if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
+        this.log(`${evoC.name}に進化した！`);
+        if (!deferRenderAndSync) {
+          this.render();
+          if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
+        }
         return true;
       },
 
@@ -2413,29 +2571,48 @@
         const board = side === 'player' ? this.p : this.o;
         const field = [{ z: 'active', i: 0, inst: board.active }, ...board.bench.map((inst, i) => ({ z: 'bench', i, inst }))]
           .filter(t => t.inst && CARD_MAP[t.inst.cardId]?.stage === 'Basic' && t.inst.turnPlayed < this.turn);
-        const stage2 = board.hand.map((id, hIdx) => ({ id, hIdx, card: CARD_MAP[id] }))
-          .filter(x => x.card?.category === 'Pokemon' && x.card.stage === 'Stage2');
-        const result = [];
-        for (const evo of stage2) {
+        const stage2 = [...new Set(board.hand.filter(id => CARD_MAP[id]?.category === 'Pokemon' && CARD_MAP[id].stage === 'Stage2'))];
+        const unique = new Map();
+        for (const evoId of stage2) {
+          const evo = CARD_MAP[evoId];
           for (const base of field) {
             const baseName = CARD_MAP[base.inst.cardId].name;
             const hasMatchingStage1 = CARDS.some(c => c.category === 'Pokemon' && c.stage === 'Stage1' &&
-              c.evolvesFrom === baseName && evo.card.evolvesFrom === c.name);
-            if (hasMatchingStage1) result.push({ hIdx: evo.hIdx, z: base.z, i: base.i, cardId: evo.id, baseId: base.inst.cardId });
+              c.evolvesFrom === baseName && evo.evolvesFrom === c.name);
+            if (!hasMatchingStage1) continue;
+            const key = `${evoId}|${base.z}|${base.i}`;
+            if (!unique.has(key)) unique.set(key, { evoCardId: evoId, z: base.z, i: base.i, baseId: base.inst.cardId });
           }
         }
-        return result;
+        return [...unique.values()];
       },
 
-      resolveRareCandy(side, hIdx, z, i) {
+      resolveRareCandy(side, evoCardId, z, i) {
         const board = side === 'player' ? this.p : this.o;
-        const options = this.getRareCandyOptions(side);
-        const valid = options.some(x => x.hIdx === hIdx && x.z === z && x.i === i);
-        if (!valid) { ui.toast('その進化先・進化元の組み合わせでは使えません'); return false; }
-        return this.evolveCard(side, hIdx, z, i);
+        const valid = this.getRareCandyOptions(side).some(x => x.evoCardId === evoCardId && x.z === z && x.i === i);
+        const evoIdx = board.hand.indexOf(evoCardId);
+        const candyIdx = board.hand.indexOf('t_rare_candy');
+        if (!valid || evoIdx < 0 || candyIdx < 0) {
+          if (side === 'player') { this.pendingRareCandy = false; this.actionLocked = false; ui.toast('手札または進化対象が変わったため、ふしぎなアメを使えません'); this.render(); }
+          return false;
+        }
+        // Commit the evolution first without rendering/syncing, then consume the Item and publish one atomic state.
+        const ok = this.evolveCard(side, evoIdx, z, i, true, true);
+        if (!ok) {
+          if (side === 'player') { this.pendingRareCandy = false; this.actionLocked = false; this.render(); }
+          return false;
+        }
+        const currentCandyIdx = board.hand.indexOf('t_rare_candy');
+        if (currentCandyIdx >= 0) board.hand.splice(currentCandyIdx, 1);
+        board.discard.push('t_rare_candy');
+        if (side === 'player') { this.pendingRareCandy = false; this.actionLocked = false; }
+        this.render();
+        if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
+        return true;
       },
 
       async resolveMisty(side, z, i) {
+        const session = this.sessionId;
         const board = side === 'player' ? this.p : this.o;
         const target = z === 'active' ? board.active : board.bench[i];
         if (!target || CARD_MAP[target.cardId]?.type !== 'Water') return;
@@ -2447,19 +2624,21 @@
         }
         const heads = results.filter(Boolean).length;
         if (side === 'player') {
-          if (this.actionLocked) return;
+          if (this.actionLocked || this.over) return;
           this.actionLocked = true;
           this.render();
           try {
             await this.playCoinTossSequence('カスミのコイントス！', 'ウラが出るまで投げ続ける！', results);
           } finally {
-            this.actionLocked = false;
+            if (session === this.sessionId && !this.over) this.actionLocked = false;
           }
-          if (this.over) return;
+          if (this.over || session !== this.sessionId) return;
         }
-        for (let n = 0; n < heads; n++) target.energies.push('Water');
+        const currentTarget = z === 'active' ? board.active : board.bench[i];
+        if (!currentTarget || currentTarget !== target) { this.render(); return; }
+        for (let n = 0; n < heads; n++) currentTarget.energies.push('Water');
         if (heads) sound.energy();
-        this.log(`カスミのコイントス！オモテ${heads}回で${CARD_MAP[target.cardId].name}に水エネルギーを${heads}個つけた！`);
+        this.log(`カスミのコイントス！オモテ${heads}回で${CARD_MAP[currentTarget.cardId].name}に水エネルギーを${heads}個つけた！`);
         this.render();
         if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
       },
@@ -2479,24 +2658,27 @@
         const s = side === 'player' ? this.p : this.o, opp = side === 'player' ? this.o : this.p;
         const id = s.hand[hIdx], c = CARD_MAP[id];
         if (!c) return;
+        if (c.subType === 'Supporter' && !this.canUseSupporter(side)) {
+          if (side === 'player') ui.toast('このターンはサポートを使えません');
+          return;
+        }
 
-        // Rare Candy is validated before consuming it; Stage 2 must match the Basic's full evolution line.
+        // Rare Candy stays in hand until the player confirms a legal target.
         if (c.id === 't_rare_candy') {
           const opts = this.getRareCandyOptions(side);
           if (!opts.length) {
             if (side === 'player') ui.toast('ふしぎなアメを使える進化先がありません');
             return;
           }
-          s.hand.splice(hIdx, 1); s.discard.push(id); sound.draw();
-          const validOptions = this.getRareCandyOptions(side); // indices changed when the Item left the hand
           if (side === 'player') {
-            const html = validOptions.map(o => `<div onclick="battle.resolveRareCandy('player',${o.hIdx},'${o.z}',${o.i});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-sky-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(o.cardId)}<span class="text-xs font-black text-emerald-700 mt-1">${CARD_MAP[o.baseId].name}から進化</span></div>`).join('');
-            ui.openSelectModal('ふしぎなアメ：進化させるポケモンを選択', html, false);
+            this.pendingRareCandy = true; this.actionLocked = true;
+            const html = opts.map(o => `<div onclick="battle.resolveRareCandy('player','${o.evoCardId}','${o.z}',${o.i});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-sky-50 border cursor-pointer flex flex-col items-center">${ui.renderMiniCard(o.evoCardId)}<span class="text-xs font-black text-emerald-700 mt-1">${CARD_MAP[o.baseId].name}から進化</span></div>`).join('');
+            this.render();
+            ui.openSelectModal('ふしぎなアメ：進化させるポケモンを選択', html, true);
           } else {
-            const o = validOptions[0]; if (o) this.resolveRareCandy('opp', o.hIdx, o.z, o.i);
+            const o = opts[0];
+            if (o) this.resolveRareCandy('opp', o.evoCardId, o.z, o.i);
           }
-          this.render();
-          if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
           return;
         }
 
@@ -2732,23 +2914,60 @@
         this.render();
         if (side === 'player' && this.isOnlineP2P) this.syncToPeer(false);
       },
-      attack(side, atkIdx) {
-        if (this.over || this.actionLocked || this.phase !== 'play') return;
+      resolveGenomeHack(side, atkIdx, copiedAttackIdx) {
+        if (!this.pendingGenomeAttack || this.pendingGenomeAttack.session !== this.sessionId) return;
+        this.pendingGenomeAttack = null;
+        this.actionLocked = false;
+        this.render();
+        this.attack(side, atkIdx, copiedAttackIdx);
+      },
+
+      attack(side, atkIdx, copiedAttackIdx = null) {
+        if (this.over || this.actionLocked || this.phase !== 'play' || this.pendingSelfKO) return;
         if (side === 'player' && this.currentSide !== 'player') return;
-        if (this.turn === 1 && ((side === 'player' && this.isFirstTurnPlayer) || (side === 'opp' && !this.isFirstTurnPlayer))) {
+        if (this.isFirstTurnFor(side)) {
           if (side === 'player') ui.toast('先攻1ターン目はワザを使えません！');
           return;
         }
 
         const s = side === 'player' ? this.p : this.o, opp = side === 'player' ? this.o : this.p;
         if (!s.active || !opp.active) return;
-        const attC = CARD_MAP[s.active.cardId], atk = attC.attacks[atkIdx];
-        if (!this.canPay(s.active, atk.cost)) { if (side === 'player') ui.toast('エネルギーが足りません！'); return; }
+        const attC = CARD_MAP[s.active.cardId];
+        const declaredAtk = attC.attacks[atkIdx];
+        if (!declaredAtk) return;
+        const isGenomeHack = attC.id === 'c_mew_ex' && declaredAtk.name === 'ゲノムハック';
+        if (!this.canPay(s.active, declaredAtk.cost)) { if (side === 'player') ui.toast('エネルギーが足りません！'); return; }
+
+        let atk = declaredAtk;
+        if (isGenomeHack && copiedAttackIdx === null) {
+          const targetCard = CARD_MAP[opp.active.cardId];
+          const copies = (targetCard.attacks || []).map((copy, i) => ({ copy, i })).filter(x => x.copy.name !== 'ゲノムハック');
+          if (!copies.length) { if (side === 'player') ui.toast('コピーできる相手のワザがありません'); return; }
+          if (side === 'player') {
+            this.pendingGenomeAttack = { session: this.sessionId, side, atkIdx };
+            this.actionLocked = true;
+            const html = copies.map(x => `<div onclick="battle.resolveGenomeHack('player',${atkIdx},${x.i});ui.closeSelectModal();" class="p-3 rounded-2xl bg-slate-50 hover:bg-purple-50 border cursor-pointer flex flex-col items-center"><span class="text-sm font-black text-slate-900">${escapeHtml(x.copy.name)}</span><span class="text-xs text-slate-600">${Number(x.copy.damage) || 0}ダメージ</span><span class="text-[10px] text-slate-500">${escapeHtml(x.copy.text || '追加効果なし')}</span></div>`).join('');
+            this.render();
+            ui.openSelectModal('ゲノムハック：相手のワザを選択', html, true);
+            return;
+          }
+          const best = copies.reduce((a, b) => {
+            const da = this.calcDamagePreview(s.active, a.copy, opp.active, side).final;
+            const db = this.calcDamagePreview(s.active, b.copy, opp.active, side).final;
+            return db > da ? b : a;
+          }, copies[0]);
+          copiedAttackIdx = best.i;
+        }
+        if (isGenomeHack) {
+          atk = (CARD_MAP[opp.active.cardId].attacks || [])[copiedAttackIdx];
+          if (!atk || atk.name === 'ゲノムハック') return;
+        }
 
         const prev = this.calcDamagePreview(s.active, atk, opp.active, side);
         const dmg = prev.final;
+        this.resolvingAttackSide = side;
 
-        if (atk.text.includes('エネルギーを2個トラッシュ')) {
+        if (atk.text?.includes('エネルギーを2個トラッシュ')) {
           const eT = attC.type;
           for (let k = 0; k < 2; k++) { const ei = s.active.energies.indexOf(eT); if (ei !== -1) s.active.energies.splice(ei, 1); }
         }
@@ -2767,9 +2986,10 @@
         battleVfx.triggerAttackVfx(side, attC.type, dmg >= 100);
         prev.isWeak ? sound.superEffective() : sound.attack();
 
+        const defendingCardName = CARD_MAP[opp.active.cardId].name;
         opp.active.hp -= dmg;
         this.showDmg(side === 'player' ? 'opp-active' : 'player-active', dmg, prev.isWeak);
-        this.log(`${attC.name}の「${atk.name}」！${CARD_MAP[opp.active.cardId].name}に${dmg}ダメージ！${prev.isWeak ? '（弱点+20！）' : ''}`);
+        this.log(`${attC.name}の「${isGenomeHack ? 'ゲノムハック（' + atk.name + '）' : atk.name}」！${defendingCardName}に${dmg}ダメージ！${prev.isWeak ? '（弱点+20！）' : ''}`);
 
         if (atk.name === 'ディメンションストーム') opp.bench.forEach(b => { b.hp -= 20; });
         if (atk.name === 'せいなるほのお' && opp.bench.length > 0) opp.bench[0].hp -= 30;
@@ -2778,19 +2998,28 @@
         for (let bi = opp.bench.length - 1; bi >= 0; bi--) {
           if (opp.bench[bi].hp <= 0) this.checkKO(side === 'player' ? 'opp' : 'player', 'bench', bi, true);
         }
-
         this.checkKO(side === 'player' ? 'opp' : 'player', 'active', 0);
-        if (this.over) return;
-        if (selfDamageAttack) this.checkKO(side, 'active', 0);
+        if (!this.over && selfDamageAttack) this.checkKO(side, 'active', 0);
+        this.resolvingAttackSide = null;
         if (this.over) return;
         this.render();
 
-        // A KO caused by an ability or self-damage never advances the turn by itself.
-        // The attack action is what ends the turn, regardless of whether either active was KO'd.
+        if (this.pendingSelfKO) {
+          if (!this.pendingPromotionNext) {
+            this.pendingPromotionNext = side === 'player'
+              ? { side: 'opp', incrementTurn: !this.isOnlineP2P, onlinePassTurn: this.isOnlineP2P }
+              : { side: 'player', incrementTurn: true, onlinePassTurn: false };
+          }
+          return;
+        }
+
         if (side === 'player') {
           if (this.isOnlineP2P) {
             this.currentSide = 'opp'; this.log('相手のターンを待っています...'); this.render(); this.syncToPeer(true);
-          } else setTimeout(() => { if (!this.over) { this.turn++; this.startTurn('opp'); } }, 750);
+          } else {
+            this.currentSide = 'opp'; this.render();
+            setTimeout(() => { if (!this.over) { this.turn++; this.startTurn('opp'); } }, 750);
+          }
         }
       },
 
@@ -2832,6 +3061,11 @@
 
         if (defSide === 'player') {
           this.pendingSelfKO = true;
+          if (this.resolvingAttackSide === 'player') {
+            this.pendingPromotionNext = { side: 'opp', incrementTurn: !this.isOnlineP2P, onlinePassTurn: this.isOnlineP2P };
+          } else if (this.resolvingAttackSide === 'opp' || (!this.isOnlineP2P && this.currentSide === 'opp')) {
+            this.pendingPromotionNext = { side: 'player', incrementTurn: true, onlinePassTurn: false };
+          }
           this.render();
           this.openPromotionSelector();
         } else if (!this.isOnlineP2P) {
@@ -2846,9 +3080,33 @@
         const s = side === 'player' ? this.p : this.o;
         if (!s || !s.bench[bi]) return;
         s.active = s.bench.splice(bi, 1)[0];
-        if (side === 'player') { this.promotionModalOpen = false; this.pendingSelfKO = false; }
+        if (side === 'player') {
+          this.promotionModalOpen = false; this.pendingSelfKO = false; this.actionLocked = false;
+        }
         this.log(`${CARD_MAP[s.active.cardId].name}をバトル場に出した！`);
+        const pending = side === 'player' ? this.pendingPromotionNext : null;
+        if (side === 'player') this.pendingPromotionNext = null;
         this.render();
+        if (pending) {
+          if (pending.side === 'opp') {
+            if (pending.onlinePassTurn && this.isOnlineP2P) {
+              this.currentSide = 'opp'; this.log('相手のターンを待っています...'); this.syncToPeer(true);
+            } else {
+              if (pending.incrementTurn) this.turn++;
+              if (this.isOnlineP2P) { this.currentSide = 'opp'; this.syncToPeer(true); }
+              else { this.currentSide = 'opp'; this.render(); setTimeout(() => { if (!this.over) this.startTurn('opp'); }, 750); }
+            }
+          } else if (pending.side === 'player') {
+            if (pending.incrementTurn) this.turn++;
+            this.startTurn('player');
+          }
+          return;
+        }
+        if (side === 'player' && this.pendingRemotePassTurn) {
+          this.pendingRemotePassTurn = false;
+          this.startTurn('player');
+          return;
+        }
         if (this.isOnlineP2P) this.syncToPeer(false);
       },
 
@@ -2910,12 +3168,16 @@
         }
 
         const supIdx = o.hand.findIndex(id => CARD_MAP[id]?.subType === 'Supporter');
-        if (difficulty !== 'easy' && supIdx !== -1 && !o.supporterUsed && this.turn > 1) this.execTrainer('opp', supIdx);
+        if (difficulty !== 'easy' && supIdx !== -1 && this.canUseSupporter('opp')) this.execTrainer('opp', supIdx);
 
         if (difficulty !== 'easy') {
           [o.active, ...o.bench].filter(Boolean).forEach((inst, idx) => {
             if (CARD_MAP[inst.cardId]?.ability && !inst.abilityUsed) this.useAbility('opp', idx === 0 ? 'active' : 'bench', idx === 0 ? 0 : idx - 1);
           });
+        }
+        if (this.pendingSelfKO) {
+          if (!this.pendingPromotionNext) this.pendingPromotionNext = { side: 'player', incrementTurn: true, onlinePassTurn: false };
+          return;
         }
 
         this.render();
@@ -2932,6 +3194,7 @@
                   ? ready.reduce((best, x) => x.damage > best.damage ? x : best, ready[0])
                   : ready[0];
               this.attack('opp', choice.ai);
+              if (this.pendingSelfKO) return;
               if (!this.over) setTimeout(() => { if (!this.over) { this.turn++; this.startTurn('player'); } }, 750);
               return;
             }
@@ -2976,7 +3239,7 @@
           if (z === 'active' && this.o.active) {
             prevList = c.attacks.map(a => this.calcDamagePreview(inst, a, this.o.active, 'player'));
             c.attacks.forEach((a, ai) => {
-              const ok = this.canPay(inst, a.cost) && !(this.turn === 1 && this.isFirstTurnPlayer);
+              const ok = this.canPay(inst, a.cost) && !this.isFirstTurnFor('player');
               act += `<button ${ok ? '' : 'disabled'} onclick="battle.attack('player',${ai});ui.closeCardModal();" class="px-4 py-2 rounded-xl ${ok ? 'bg-gradient-to-r from-rose-500 to-orange-500 text-white font-black shadow' : 'bg-slate-200 text-slate-400'} text-xs">${a.name} (${prevList[ai].final})</button>`;
             });
           }
@@ -2999,6 +3262,12 @@
       endMatch(winner, reason, notifyPeer = true) {
         if (this.over) return;
         this.over = true;
+        this.sessionId++;
+        this.actionLocked = false; this.pendingRareCandy = false; this.pendingGenomeAttack = null;
+        this.pendingSelfKO = false; this.pendingPromotionNext = null; this.pendingRemotePassTurn = false;
+        this.promotionModalOpen = false;
+        document.getElementById('modal-select')?.classList.add('hidden');
+        battleVfx.stop();
         if (this.isOnlineP2P && notifyPeer && onlineLobby.conn) {
           try { onlineLobby.conn.send({ type: 'MATCH_END', winner: winner === 'player' ? 'opp' : 'player', reason }); } catch (e) {}
         }
@@ -3057,7 +3326,7 @@
 
         const c = CARD_MAP[inst.cardId];
         const pct = Math.max(0, Math.round((inst.hp / inst.maxHp) * 100));
-        const canAtk = isActive && side === 'player' && !this.actionLocked && this.phase === 'play' && this.currentSide === 'player' && !(this.turn === 1 && this.isFirstTurnPlayer) && c.attacks.some(a => this.canPay(inst, a.cost));
+        const canAtk = isActive && side === 'player' && !this.actionLocked && this.phase === 'play' && this.currentSide === 'player' && !this.isFirstTurnFor('player') && c.attacks.some(a => this.canPay(inst, a.cost));
         const hasAb = c.ability && !inst.abilityUsed && side === 'player' && !this.actionLocked && this.phase === 'play' && this.currentSide === 'player';
 
         return `
@@ -3118,7 +3387,7 @@
         const fEz = document.getElementById('flag-energy-zone');
         fEz.textContent = this.phase === 'setup' ? '初期配置中' : (this.p.currentEnergy ? `エネ発生: ${TYPE_META[this.p.currentEnergy].code} (未付与)` : 'エネ発生: 付与済');
         fEz.className = this.p.currentEnergy ? 'px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-black' : 'px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200';
-        document.getElementById('flag-supporter').textContent = `サポート: ${this.p.supporterUsed || this.turn === 1 ? '不可' : '可'}`;
+        document.getElementById('flag-supporter').textContent = `サポート: ${!this.canUseSupporter('player') ? '不可' : '可'}`;
 
         document.getElementById('opp-active').innerHTML = this.renderFieldSlot(this.o.active, 'opp', 'active', 0, true);
         document.getElementById('opp-bench').innerHTML = [0, 1, 2].map(i => this.renderFieldSlot(this.o.bench[i], 'opp', 'bench', i, false)).join('');
@@ -3126,7 +3395,7 @@
         document.getElementById('player-bench').innerHTML = [0, 1, 2].map(i => this.renderFieldSlot(this.p.bench[i], 'player', 'bench', i, false)).join('');
 
         const qBtn = document.getElementById('quick-attack-btn');
-        const showAtk = !this.actionLocked && this.phase === 'play' && this.currentSide === 'player' && !(this.turn === 1 && this.isFirstTurnPlayer) && this.p.active && CARD_MAP[this.p.active.cardId].attacks.some(a => this.canPay(this.p.active, a.cost));
+        const showAtk = !this.actionLocked && this.phase === 'play' && this.currentSide === 'player' && !this.isFirstTurnFor('player') && this.p.active && CARD_MAP[this.p.active.cardId].attacks.some(a => this.canPay(this.p.active, a.cost));
         qBtn.classList.toggle('hidden', !showAtk);
 
         document.getElementById('player-hand').innerHTML = this.p.hand.map((id, idx) => {
@@ -3161,7 +3430,17 @@
     /* ==================== 13. メインアプリコントローラ ==================== */
     const app = {
       switchScreen(name) {
-        if (name !== 'battle') onlineLobby.cancelNetwork();
+        if (name !== 'battle') {
+          onlineLobby.cancelNetwork();
+          battleVfx.stop();
+          if (battle) {
+            battle.sessionId++; battle.actionLocked = false;
+            battle.pendingRareCandy = false; battle.pendingGenomeAttack = null;
+            battle.pendingSelfKO = false; battle.pendingPromotionNext = null;
+            battle.pendingRemotePassTurn = false; battle.promotionModalOpen = false;
+          }
+          document.getElementById('modal-select')?.classList.add('hidden');
+        }
         ['home', 'lobby', 'pack', 'deck', 'battle'].forEach(s => document.getElementById(`screen-${s}`).classList.add('hidden'));
         document.getElementById(`screen-${name}`).classList.remove('hidden');
         if (name === 'pack') { packSystem.resetStage(); packSystem.renderPackShop(); }
